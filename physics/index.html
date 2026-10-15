@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysicsKids - Yosh Bolalar Uchun Fizika | Физика для детей</title>
+  <meta name="description" content="Yosh bolalar uchun qiziqarli fizika olami. Gravitatsiya, magnitizm, yorug'lik, moddaning holatlari, laboratoriya tajribalari va magnit labirinti o'yini!">
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>">
+  <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="../shared/subscription.css">
+  <link rel="stylesheet" href="../shared/chatbot.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Quantum Grid Background -->
+  <div class="physics-bg-grid" aria-hidden="true"></div>
+
+  <!-- Unified Header & Direct World Switches -->
+  <header class="physics-header">
+    <div class="header-inner">
+      <!-- Left: Brand Logo -->
+      <div class="brand-link" onclick="location.reload()" title="PhysicsKids">
+        <span class="brand-icon">⚛️</span>
+        <div class="brand-title">
+          <h1>PhysicsKids</h1>
+          <span id="physics-brand-tagline">Fizika — Tabiat Mo‘jizalari! 💡</span>
+        </div>
+      </div>
+
+      <!-- Center: Subject Quick Switcher Pill Strip -->
+      <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
+        <a href="../english/index.html" class="subject-nav-item" title="Ingliz tili olamiga o‘tish">
+          <span class="subject-icon">🦁</span>
+          <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
+        </a>
+        <a href="../math/index.html" class="subject-nav-item" title="Matematika olamiga o‘tish">
+          <span class="subject-icon">🚀</span>
+          <span class="subject-label" id="link-txt-math">Matematika</span>
+        </a>
+        <span class="subject-nav-item active-subject" title="Hozirgi fan: Fizika">
+          <span class="subject-icon">⚛️</span>
+          <span class="subject-label">Fizika</span>
+        </span>
+      </nav>
+
+      <!-- Right: Stats & Action Controls -->
+      <div class="header-actions">
+        <!-- Stats Group -->
+        <div class="header-stats" title="Sizning ballaringiz">
+          <div class="stat-pill stat-streak" title="Kunlik seriya" id="physics-stat-streak">
+            <span>🔥</span>
+            <span id="stat-streak-count">1 kun</span>
+          </div>
+          <div class="stat-pill stat-stars" title="To‘plangan yulduzlar" id="physics-stat-stars">
+            <span>⭐</span>
+            <span id="stat-stars-count">25</span>
+          </div>
+          <div class="stat-pill stat-gems" title="Olmoslar" id="physics-stat-gems">
+            <span>💎</span>
+            <span id="stat-gems-count">6</span>
+          </div>
+        </div>
+
+        <!-- Language Switcher Pill -->
+        <div class="lang-switcher-pill" role="group" aria-label="Tilni tanlash / Выбор языка">
+          <button class="lang-btn active" id="btn-lang-uz" onclick="window.physicsApp.setLanguage('uz')">
+            <span>🇺🇿</span>
+            <span>UZ</span>
+          </button>
+          <button class="lang-btn" id="btn-lang-ru" onclick="window.physicsApp.setLanguage('ru')">
+            <span>🇷🇺</span>
+            <span>RU</span>
+          </button>
+        </div>
+
+        <!-- Sound Button -->
+        <button class="btn-ctrl btn-icon-only" id="sound-toggle-btn" title="Ovozni yoqish / o‘chirish">
+          <span id="sound-icon">🔊</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="btn-ctrl btn-icon-only" id="theme-toggle-btn" title="Mavzuni o‘zgartirish">
+          <span id="theme-icon">☀️</span>
+        </button>
+
+        <!-- Home Hub Link -->
+        <a href="../index.html" class="btn-ctrl btn-icon-only btn-portal-link" title="Bosh sahifaga qaytish">
+          <span>🏠</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="physics-container">
+    
+    <!-- Mascot Hero Banner (Sparky the Lightbulb) -->
+    <section class="sparky-hero" id="sparky-hero">
+      <div class="sparky-avatar-wrap" id="sparky-mascot" title="Menga bosing! / Tap me!">
+        <span class="sparky-avatar">💡</span>
+        <span class="mascot-click-tag" id="sparky-click-hint">Menga bosing! 👆</span>
+      </div>
+
+      <div class="sparky-bubble">
+        <h2 class="sparky-title" id="sparky-title">Bzz-bzz! Men Sparkyman — Sizning Fizik Do‘stingiz! ⚡</h2>
+        <p class="sparky-speech-text" id="sparky-speech-text">
+          Nega narsalar yerga tushadi? Magnitlar nimalarni tortadi? Muz qachon bug‘ga aylanadi? Keling, tabiatning eng ajoyib sirlarini birgalikda tajribalar orqali o‘rganamiz!
+        </p>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="physics-nav-bar" aria-label="Physics Navigation">
+      <button class="physics-nav-btn active" data-target="sec-physics-concepts">
+        <span>📖</span>
+        <span id="tab-txt-concepts">Fizika Qoidalari</span>
+      </button>
+
+      <button class="physics-nav-btn" data-target="sec-experiments">
+        <span>🔬</span>
+        <span id="tab-txt-experiments">Laboratoriya & Tajribalar</span>
+      </button>
+
+      <button class="physics-nav-btn" data-target="sec-physics-sandbox">
+        <span>🌍</span>
+        <span id="tab-txt-sandbox">Gravitatsiya Sandbo‘ksi</span>
+      </button>
+
+      <button class="physics-nav-btn" data-target="sec-physics-quiz">
+        <span>🎯</span>
+        <span id="tab-txt-quiz">Sinov & Viktorina</span>
+      </button>
+
+      <button class="physics-nav-btn" data-target="sec-physics-game">
+        <span>🧲</span>
+        <span id="tab-txt-game">Magnit O‘yini (Mini-Game)</span>
+      </button>
+
+      <button class="physics-nav-btn" data-target="sec-physics-badges">
+        <span>🏆</span>
+        <span id="tab-txt-badges">Yutuqlar & Nishonlar</span>
+      </button>
+    </nav>
+
+    <!-- =========================================================================
+         SECTION 1: PHYSICS CONCEPTS & RULES (Qoidalar)
+         ========================================================================= -->
+    <section class="physics-section active" id="sec-physics-concepts">
+      <div class="section-hero-title">
+        <h2 id="sec-concepts-title">Tabiat Qoidalari va Yashirin Kuchlar 🌍</h2>
+        <p id="sec-concepts-desc">Gravitatsiya, magnitizm, yorug‘lik va moddalarning ajoyib xususiyatlarini bilib oling!</p>
+      </div>
+
+      <div class="physics-concepts-grid" id="physics-concepts-list">
+        <!-- Injected via concepts.js -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2: INTERACTIVE EXPERIMENTS & LAB (Tajribalar)
+         ========================================================================= -->
+    <section class="physics-section" id="sec-experiments">
+      <div class="section-hero-title">
+        <h2 id="sec-lab-title">Interaktiv Fizika Laboratoriyasi 🔬</h2>
+        <p id="sec-lab-desc">Haqiqiy olimlar kabi tajribalar o‘tkazing va fizik qonunlarni o‘z ko‘zingiz bilan ko‘ring!</p>
+      </div>
+
+      <!-- Lab Sub Navigation -->
+      <div class="lab-sub-tray">
+        <button class="lab-sub-btn active" data-target="panel-gravity-drop">
+          <span id="subtab-gravity">🍏 1. Gravitatsiya Minorasi</span>
+        </button>
+        <button class="lab-sub-btn" data-target="panel-magnet-lab">
+          <span id="subtab-magnet">🧲 2. Magnit Maydoni</span>
+        </button>
+        <button class="lab-sub-btn" data-target="panel-state-changer">
+          <span id="subtab-state">🧊 3. Harorat va Modda Holati</span>
+        </button>
+      </div>
+
+      <!-- Experiment 1: Gravity Drop Tower -->
+      <div class="lab-panel active" id="panel-gravity-drop">
+        <div class="lab-card">
+          <div class="gravity-hud-bar">
+            <div class="lab-stat-pill">
+              ⏱️ <span id="lbl-gravity-timer">Tushish vaqti:</span> <strong id="gravity-timer-display" style="color: var(--cyan);">0.00s</strong>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn btn-primary" id="gravity-drop-btn">
+                <span id="gravity-drop-txt">⬇️ Tashlash (Drop)</span>
+              </button>
+              <button class="btn-ctrl" id="gravity-reset-btn">
+                <span id="gravity-reset-txt">🔄 Qaytarish</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="lab-controls-strip">
+            <span style="font-weight: 700; font-size: 0.9rem;" id="lbl-gravity-obj">Obyektni tanlang:</span>
+            <button class="lab-chip-btn gravity-obj-btn active" data-object="apple" id="btn-obj-apple">🍎 Olma</button>
+            <button class="lab-chip-btn gravity-obj-btn" data-object="feather" id="btn-obj-feather">🪶 Pat</button>
+            <button class="lab-chip-btn gravity-obj-btn" data-object="basketball" id="btn-obj-ball">🏀 Koptok</button>
+            <button class="lab-chip-btn gravity-obj-btn" data-object="rock" id="btn-obj-rock">🪨 Og‘ir Tosh</button>
+          </div>
+
+          <div class="lab-controls-strip">
+            <span style="font-weight: 700; font-size: 0.9rem;" id="lbl-gravity-env">Muhit / Gravitatsiya:</span>
+            <button class="lab-chip-btn gravity-env-btn active" data-env="earth" id="btn-env-earth">🌍 Yer (Kuchli)</button>
+            <button class="lab-chip-btn gravity-env-btn" data-env="moon" id="btn-env-moon">🌕 Oy (6 barobar kuchsiz)</button>
+          </div>
+
+          <div class="gravity-tower-arena" id="gravity-tower-arena">
+            <div class="tower-ruler">
+              <span>10m</span>
+              <span>8m</span>
+              <span>6m</span>
+              <span>4m</span>
+              <span>2m</span>
+              <span>0m</span>
+            </div>
+
+            <div class="gravity-item" id="gravity-falling-item">
+              <span>🍎</span>
+            </div>
+
+            <div class="gravity-ground"></div>
+          </div>
+
+          <div class="lab-desc-banner" id="gravity-result-note">
+            Obyektni tanlang va "Tashlash" tugmasini bosing!
+          </div>
+        </div>
+      </div>
+
+      <!-- Experiment 2: Magnet Play -->
+      <div class="lab-panel" id="panel-magnet-lab">
+        <div class="lab-card">
+          <div class="lab-controls-strip">
+            <span style="font-weight: 700; font-size: 0.9rem;" id="lbl-magnet-item">Sinab ko‘rish uchun buyum tanlang:</span>
+            <button class="lab-chip-btn magnet-test-btn active" data-item="paperclip" id="btn-mag-clip">📎 Qisqich</button>
+            <button class="lab-chip-btn magnet-test-btn" data-item="nail" id="btn-mag-nail">🔩 Mix</button>
+            <button class="lab-chip-btn magnet-test-btn" data-item="duck" id="btn-mag-duck">🦆 O‘rdakcha</button>
+            <button class="lab-chip-btn magnet-test-btn" data-item="wood" id="btn-mag-wood">🪵 Yog‘och</button>
+            <button class="lab-chip-btn magnet-test-btn" data-item="magnet" id="btn-mag-mag">🧲 Ikkinchi Magnit</button>
+          </div>
+
+          <div class="header-actions" style="justify-content: center; margin-bottom: 16px;">
+            <button class="btn btn-ctrl" id="flip-magnet-pole-btn">
+              <span id="txt-flip-poles">🔄 Qutblarni almashtirish (N ⟷ S)</span>
+            </button>
+          </div>
+
+          <div class="magnet-lab-arena">
+            <!-- Lab Magnet Wand -->
+            <div class="lab-magnet-wand" id="lab-magnet-wand">
+              <div class="magnet-pole pole-north" id="lab-magnet-n">N</div>
+              <div class="magnet-pole pole-south" id="lab-magnet-s">S</div>
+            </div>
+
+            <!-- Target Object -->
+            <div class="magnet-target-box" id="magnet-target-object">
+              <!-- Injected via experiments.js -->
+            </div>
+          </div>
+
+          <div class="magnet-status-box" id="magnet-status-msg">
+            Buyumni tanlang va magnit qanday munosabat bildirishini ko‘ring!
+          </div>
+        </div>
+      </div>
+
+      <!-- Experiment 3: Temperature State Changer -->
+      <div class="lab-panel" id="panel-state-changer">
+        <div class="lab-card">
+          <div class="state-changer-arena">
+            <div class="state-visual-box state-water" id="state-visual-container">
+              <!-- Injected via experiments.js -->
+            </div>
+          </div>
+
+          <div class="temp-slider-wrap">
+            <div style="font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">
+              <span id="lbl-temp">Harorat:</span> <span id="temp-value-display" style="color: var(--cyan);">20°C</span>
+            </div>
+            <input type="range" id="temp-slider" class="temp-slider" min="-20" max="120" value="20">
+            <div class="temp-labels">
+              <span id="temp-lbl-1">-20°C (Muz ❄️)</span>
+              <span id="temp-lbl-2">0°C (Eriydi)</span>
+              <span id="temp-lbl-3">100°C (Qaynaydi 🔥)</span>
+              <span id="temp-lbl-4">120°C (Bug‘ 💨)</span>
+            </div>
+          </div>
+
+          <div class="lab-controls-strip">
+            <button class="btn-ctrl" id="preset-freeze-btn">❄️ Sovutish (-10°C)</button>
+            <button class="btn-ctrl" id="preset-room-btn">💧 Xona harorati (25°C)</button>
+            <button class="btn-ctrl" id="preset-boil-btn">🔥 Qaynatish (105°C)</button>
+          </div>
+
+          <div class="lab-desc-banner" id="state-desc-box">
+            <strong>Hozirgi holat:</strong> Suyuq Holat (Suv 💧 / Liquid)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2.5: GRAVITY & PHYSICS SANDBOX
+         ========================================================================= -->
+    <section class="physics-section" id="sec-physics-sandbox">
+      <!-- Injected via physics-sandbox.js -->
+    </section>
+
+    <!-- =========================================================================
+         SECTION 3: INTERACTIVE QUIZ (Viktorina)
+         ========================================================================= -->
+    <section class="physics-section" id="sec-physics-quiz">
+      <div class="section-hero-title">
+        <h2 id="sec-quiz-title">Fizika Sinovlari va Viktorina 🎯</h2>
+        <p id="sec-quiz-desc">Bilimlaringizni sinang, to‘g‘ri javoblarni topib yulduzlar va ballar to‘plang!</p>
+      </div>
+
+      <div id="physics-quiz-container">
+        <!-- Injected via quizzes.js -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 4: MINI-GAME (Magnit Labirinti)
+         ========================================================================= -->
+    <section class="physics-section" id="sec-physics-game">
+      <div class="section-hero-title">
+        <h2 id="sec-game-title">Magnit Labirinti va Yulduzlar Qutqaruvi 🧲</h2>
+        <p id="sec-game-desc">Sichqoncha yoki barmog‘ingiz bilan temir sharchani magnit yordamida labirintdan olib chiqing!</p>
+      </div>
+
+      <div class="maze-wrapper">
+        <div class="maze-hud">
+          <div class="lab-stat-pill">
+            <span id="maze-score-label">⭐ Ball:</span> <strong id="maze-score-display">0</strong>
+          </div>
+
+          <div class="lab-stat-pill">
+            <span id="maze-stars-label">Yulduzlar:</span> <strong id="maze-stars-display" style="color: var(--amber);">0 / 4</strong>
+          </div>
+
+          <button class="btn-ctrl" id="maze-toggle-pole-btn">
+            <span>🧲 Rejim: <strong>Tortish (Attract)</strong></span>
+          </button>
+
+          <button class="btn btn-primary" id="maze-start-btn">
+            ▶️ O‘yinni Boshlash / Start Game
+          </button>
+        </div>
+
+        <div class="maze-canvas-container">
+          <canvas id="magnet-maze-canvas"></canvas>
+        </div>
+
+        <div id="maze-win-banner" style="display: none;"></div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 5: BADGES & ACHIEVEMENTS (Yutuqlar)
+         ========================================================================= -->
+    <section class="physics-section" id="sec-physics-badges">
+      <div class="section-hero-title">
+        <h2 id="sec-badges-title">Fizika Yutuqlari va Nishonlar Zali 🏆</h2>
+        <p id="sec-badges-desc">Tajribalar o‘tkazib to‘plagan ilmiy darajalaringiz va nishonlaringiz!</p>
+      </div>
+
+      <div class="badges-container">
+        <div class="badges-grid" id="physics-badges-grid">
+          <!-- Injected via app.js -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="physics-footer">
+    <div class="footer-emojis">💡 ⚛️ 🧲 🍏 🌟</div>
+    <p id="physics-footer-p1"><strong>PhysicsKids</strong> — Yosh bolalar uchun eng qiziqarli fizika akademiyasi.</p>
+    <p id="physics-footer-p2" style="font-size: 0.9rem; margin-top: 4px;">Hech qanday internet yoki server talab qilmasdan, kompyuter va planshetlarda to‘liq ishlaydi!</p>
+  </footer>
+
+  <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/subscription.js"></script>
+  <script src="../shared/gamification.js"></script>
+  <script src="../shared/mascot-companion.js"></script>
+  <script src="../shared/chatbot.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/concepts.js"></script>
+  <script src="js/experiments.js"></script>
+  <script src="js/physics-sandbox.js"></script>
+  <script src="js/quizzes.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

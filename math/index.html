@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MathKids - Yosh Bolalar Uchun Matematika | Математика для детей</title>
+  <meta name="description" content="Yosh bolalar uchun qiziqarli va interaktiv matematika olami. Qo‘shish, ayrish, ko‘paytirish, bo‘lish, qoralama doska va kosmik raketa o‘yini!">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+  
+  <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="../shared/subscription.css">
+  <link rel="stylesheet" href="../shared/chatbot.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Mathematical Pattern Background -->
+  <div class="math-bg-grid" aria-hidden="true"></div>
+
+  <!-- Header & Top Controls -->
+  <!-- Header & Top Controls -->
+  <header class="math-header">
+    <div class="header-inner">
+      <!-- Left: Brand Logo -->
+      <div class="brand-link" onclick="location.reload()" title="MathKids">
+        <span class="brand-icon">🚀</span>
+        <div class="brand-title">
+          <h1>MathKids</h1>
+          <span id="math-brand-tagline">Matematika — Oson va Qiziqarli! 🔢</span>
+        </div>
+      </div>
+
+      <!-- Center: Subject Quick Switcher Pill Strip -->
+      <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
+        <a href="../english/index.html" class="subject-nav-item" title="Ingliz tili darsiga o‘tish">
+          <span class="subject-icon">🦁</span>
+          <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
+        </a>
+        <span class="subject-nav-item active-subject" title="Hozirgi fan: Matematika">
+          <span class="subject-icon">🚀</span>
+          <span class="subject-label">Matematika</span>
+        </span>
+        <a href="../physics/index.html" class="subject-nav-item" title="Fizika darsiga o‘tish">
+          <span class="subject-icon">⚛️</span>
+          <span class="subject-label" id="link-txt-physics">Fizika</span>
+        </a>
+      </nav>
+
+      <!-- Right: Stats & Action Controls -->
+      <div class="header-actions">
+        <!-- Stats Group -->
+        <div class="header-stats" title="Sizning ballaringiz">
+          <div class="stat-pill stat-streak" title="Kunlik seriya" id="math-stat-streak">
+            <span>🔥</span>
+            <span id="stat-streak-count">1 kun</span>
+          </div>
+          <div class="stat-pill stat-stars" title="To‘plangan yulduzlar" id="math-stat-stars">
+            <span>⭐</span>
+            <span id="stat-stars-count">20</span>
+          </div>
+          <div class="stat-pill stat-gems" title="Olmoslar" id="math-stat-gems">
+            <span>💎</span>
+            <span id="stat-gems-count">5</span>
+          </div>
+        </div>
+
+        <!-- Language Switcher Pill -->
+        <div class="lang-switcher-pill" role="group" aria-label="Tilni tanlash / Выбор языка">
+          <button class="lang-btn active" id="btn-lang-uz" onclick="window.mathApp.setLanguage('uz')">
+            <span>🇺🇿</span>
+            <span>UZ</span>
+          </button>
+          <button class="lang-btn" id="btn-lang-ru" onclick="window.mathApp.setLanguage('ru')">
+            <span>🇷🇺</span>
+            <span>RU</span>
+          </button>
+        </div>
+
+        <!-- Built-in Scratchpad Toggle -->
+        <button class="btn-ctrl btn-scratchpad" id="toggle-scratchpad-btn" title="Qoralama doskani ochish / yopish">
+          <span>📝</span>
+          <span id="txt-scratchpad">Qoralama</span>
+        </button>
+
+        <!-- Sound Button -->
+        <button class="btn-ctrl btn-icon-only" id="sound-toggle-btn" title="Ovozni yoqish / o‘chirish">
+          <span id="sound-icon">🔊</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="btn-ctrl btn-icon-only" id="theme-toggle-btn" title="Mavzuni o‘zgartirish">
+          <span id="theme-icon">☀️</span>
+        </button>
+
+        <!-- Home Hub Link -->
+        <a href="../index.html" class="btn-ctrl btn-icon-only btn-portal-back" title="Bosh sahifaga qaytish">
+          <span>🏠</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="math-container">
+    
+    <!-- Mascot Hero Banner (Cosmo the Robot) -->
+    <section class="cosmo-hero" id="cosmo-hero">
+      <div class="cosmo-avatar-wrap" id="cosmo-mascot" title="Menga bosing! / Tap me!">
+        <span class="cosmo-avatar">🤖</span>
+        <span class="mascot-click-tag" id="cosmo-click-hint">Menga bosing! 👆</span>
+      </div>
+
+      <div class="cosmo-bubble">
+        <h2 class="cosmo-title" id="cosmo-title">Bip-bop! Men Cosmo — Matematika Do‘stingizman! 🌟</h2>
+        <p class="cosmo-speech-text" id="cosmo-speech-text">
+          Keling, raqamlar sehrini birga kashf qilamiz! Narsalarni sanang, misollarni yeching va raketangiz bilan asteroidlarni portlating!
+        </p>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="math-nav-bar" aria-label="Math Navigation">
+      <button class="math-nav-btn active" data-target="sec-lessons">
+        <span>📐</span>
+        <span id="tab-txt-lessons">Qoidalar & Ko‘rgazmalar</span>
+      </button>
+
+      <button class="math-nav-btn" data-target="sec-practice">
+        <span>🎯</span>
+        <span id="tab-txt-practice">Mashqlar & Misollar</span>
+      </button>
+
+      <button class="math-nav-btn" data-target="sec-fractions">
+        <span>🍕</span>
+        <span id="tab-txt-fractions">Pitsa Kasrlar</span>
+      </button>
+
+      <button class="math-nav-btn" data-target="sec-rocket-game">
+        <span>🚀</span>
+        <span id="tab-txt-game">Raketa O‘yini (Mini-Game)</span>
+      </button>
+
+      <button class="math-nav-btn" data-target="sec-badges">
+        <span>🏆</span>
+        <span id="tab-txt-badges">Yutuqlar & Nishonlar</span>
+      </button>
+    </nav>
+
+    <!-- =========================================================================
+         SECTION 1: MATH RULES & FORMULAS (Qoidalar)
+         ========================================================================= -->
+    <section class="math-section active" id="sec-lessons">
+      <div class="section-hero-title">
+        <h2 id="sec-lessons-title">Matematika Qoidalari va Jonli Hisoblagichlar 🍎</h2>
+        <p id="sec-lessons-desc">Qo‘shish, ayrish, ko‘paytirish va bo‘lishni vizual mevalar va yulduzlar orqali o‘rganing!</p>
+      </div>
+
+      <div class="math-rules-grid" id="math-lessons-container">
+        <!-- Injected via lessons.js -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2: PRACTICE & EXERCISES (Mashqlar)
+         ========================================================================= -->
+    <section class="math-section" id="sec-practice">
+      <div class="section-hero-title">
+        <h2 id="sec-practice-title">Misollar Generatori va Mashqlar 🎯</h2>
+        <p id="sec-practice-desc">Amallarni va qiyinlik darajasini tanlang, to‘g‘ri javoblarni topib yulduzlar yutib oling!</p>
+      </div>
+
+      <!-- Controls: Operation, Difficulty, Mode -->
+      <div class="practice-control-panel">
+        <div class="control-strip">
+          <span class="strip-label" id="lbl-op">Amal:</span>
+          <button class="practice-op-btn active" data-op="addition" id="btn-op-add">➕ Qo‘shish</button>
+          <button class="practice-op-btn" data-op="subtraction" id="btn-op-sub">➖ Ayrish</button>
+          <button class="practice-op-btn" data-op="multiplication" id="btn-op-mul">✖️ Ko‘paytirish</button>
+          <button class="practice-op-btn" data-op="division" id="btn-op-div">➗ Bo‘lish</button>
+          <button class="practice-op-btn" data-op="mixed" id="btn-op-mix">🔀 Aralash</button>
+        </div>
+
+        <div class="control-strip">
+          <span class="strip-label" id="lbl-diff">Daraja:</span>
+          <button class="practice-diff-btn active" data-diff="easy" id="btn-diff-easy">🌱 Oson (1-10)</button>
+          <button class="practice-diff-btn" data-diff="medium" id="btn-diff-med">⭐ O‘rtacha (1-50)</button>
+          <button class="practice-diff-btn" data-diff="hard" id="btn-diff-hard">🔥 Qiyin (1-100)</button>
+        </div>
+
+        <div class="control-strip">
+          <span class="strip-label" id="lbl-mode">Rejim:</span>
+          <button class="practice-mode-btn active" data-mode="zen" id="btn-mode-zen">🧘 Xotirjam (Zen)</button>
+          <button class="practice-mode-btn" data-mode="speed" id="btn-mode-speed">⚡ Tezkor (60s Poyga)</button>
+        </div>
+      </div>
+
+      <!-- Practice Arena -->
+      <div id="practice-problem-arena">
+        <!-- Injected via practice.js -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2.5: FRACTION PIZZA SLICER SANDBOX
+         ========================================================================= -->
+    <section class="math-section" id="sec-fractions">
+      <!-- Injected via fraction-sandbox.js -->
+    </section>
+
+    <!-- =========================================================================
+         SECTION 3: ACTION MINI-GAME (Raketa O'yini)
+         ========================================================================= -->
+    <section class="math-section" id="sec-rocket-game">
+      <div class="section-hero-title">
+        <h2 id="sec-game-title">Kosmik Raketa va Asteroidlar O‘yini 🚀</h2>
+        <p id="sec-game-desc">Tepadagi matematik topshiriqni hisoblang va to‘g‘ri javobli asteroidni lazer bilan portlating!</p>
+      </div>
+
+      <div class="rocket-game-wrapper">
+        <div class="rocket-hud">
+          <div class="target-mission-box" id="rocket-target-display">
+            Nishon: <strong>6 × 4 = ?</strong>
+          </div>
+
+          <div class="hud-stat-pill">
+            <span id="hud-score-label">⭐ Ball:</span> <strong id="rocket-score">0</strong>
+          </div>
+
+          <div class="hud-stat-pill">
+            <span id="hud-lives-label">Qalqon:</span> <span id="rocket-lives">❤️❤️❤️</span>
+          </div>
+
+          <div class="hud-stat-pill">
+            <span id="hud-combo-label">Kombinatsiya:</span> <strong id="rocket-combo" style="color: var(--orange);">x1</strong>
+          </div>
+
+          <button class="btn btn-primary" id="rocket-start-btn" onclick="window.mathRocketGame.start()">
+            🚀 O‘yinni boshlash / Launch Game
+          </button>
+        </div>
+
+        <div class="rocket-canvas-container">
+          <canvas id="rocket-game-canvas"></canvas>
+        </div>
+
+        <div id="rocket-game-over-banner" class="game-over-banner" style="display: none;"></div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 4: BADGES & REWARDS (Yutuqlar)
+         ========================================================================= -->
+    <section class="math-section" id="sec-badges">
+      <div class="section-hero-title">
+        <h2 id="sec-badges-title">Matematik Yutuqlar va Nishonlar 🏆</h2>
+        <p id="sec-badges-desc">Hisoblash orqali to‘plangan yulduzlaringiz va zabt etilgan cho‘qqilaringiz!</p>
+      </div>
+
+      <div class="badges-container">
+        <div class="badges-grid" id="math-badges-grid">
+          <!-- Injected via app.js -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       SLIDE-UP WHITEBOARD / SCRATCHPAD (QORALAMA DOSKA)
+       ========================================================================= -->
+  <aside class="scratchpad-drawer" id="scratchpad-drawer" aria-label="Qoralama Doska">
+    <div class="scratchpad-header">
+      <div class="scratchpad-title">
+        <span>📝</span>
+        <span id="scratchpad-header-txt">Qoralama Doska (Scratchpad)</span>
+      </div>
+      <button class="scratchpad-close" id="close-scratchpad-btn" title="Yopish">✕</button>
+    </div>
+
+    <div class="scratchpad-toolbar">
+      <!-- Neon Chalk Colors -->
+      <button class="chalk-color-btn active" style="background: #FFD166;" data-color="#FFD166" title="Sariq bo‘r"></button>
+      <button class="chalk-color-btn" style="background: #00E676;" data-color="#00E676" title="Yashil bo‘r"></button>
+      <button class="chalk-color-btn" style="background: #38BDF8;" data-color="#38BDF8" title="Moviy bo‘r"></button>
+      <button class="chalk-color-btn" style="background: #FF5E13;" data-color="#FF5E13" title="Olovrang bo‘r"></button>
+      <button class="chalk-color-btn" style="background: #FFFFFF;" data-color="#FFFFFF" title="Oq bo‘r"></button>
+
+      <!-- Eraser & Tools -->
+      <button class="wb-tool-btn" id="whiteboard-eraser-btn" title="O‘chirg‘ich">🧹 <span id="wb-eraser-txt">O‘chirg‘ich</span></button>
+      <button class="wb-tool-btn" id="whiteboard-clear-btn" title="Tozalash">🗑️ <span id="wb-clear-txt">Tozalash</span></button>
+      <button class="wb-tool-btn" id="whiteboard-grid-btn" title="Katak / Nuqta">📐 <span id="wb-grid-txt">Katak</span></button>
+      
+      <!-- Brush Size Slider -->
+      <input type="range" id="whiteboard-size" min="2" max="15" value="5" title="Chiziq qalinligi" style="width: 60px;">
+    </div>
+
+    <div class="scratchpad-canvas-wrap">
+      <canvas id="whiteboard-canvas"></canvas>
+    </div>
+  </aside>
+
+  <!-- Footer -->
+  <footer class="math-footer">
+    <div class="footer-emojis">🤖 📐 🚀 🔢 ⭐</div>
+    <p id="math-footer-p1"><strong>MathKids</strong> — Yosh bolalar uchun eng qiziqarli matematika akademiyasi.</p>
+    <p id="math-footer-p2" style="font-size: 0.9rem; margin-top: 4px;">Hech qanday internet yoki server talab qilmasdan, kompyuter va planshetlarda to‘liq ishlaydi!</p>
+  </footer>
+
+  <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/subscription.js"></script>
+  <script src="../shared/gamification.js"></script>
+  <script src="../shared/mascot-companion.js"></script>
+  <script src="../shared/chatbot.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/whiteboard.js"></script>
+  <script src="js/lessons.js"></script>
+  <script src="js/practice.js"></script>
+  <script src="js/fraction-sandbox.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

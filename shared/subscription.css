@@ -1,0 +1,1077 @@
+/**
+ * Kiddo Academy - Subscription, Local Payment Gateway & Paywall Styles
+ * Pricing: Free vs Pro ($15 / month, 185,000 UZS)
+ * Payment: Click.uz, Payme.uz, Uzcard, Humo, Visa, Mastercard
+ * Aesthetics: Playful, Premium, Glassmorphic & Kid-Friendly
+ */
+
+/* =========================================================================
+   1. HEADER SUBSCRIPTION BADGES & UPGRADE CTA
+   ========================================================================= */
+.header-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+  border: 2px solid transparent;
+}
+
+.plan-badge-free {
+  background: #F1F5F9;
+  color: #475569;
+  border-color: #CBD5E1;
+}
+
+.plan-badge-free:hover {
+  background: #E2E8F0;
+  transform: translateY(-2px);
+}
+
+.plan-badge-pro {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  color: #B45309;
+  border-color: #F59E0B;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+  animation: proCrownPulse 3s ease-in-out infinite;
+}
+
+@keyframes proCrownPulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25); }
+  50% { box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45); }
+}
+
+.plan-badge-pro .crown-icon {
+  display: inline-block;
+  animation: crownWiggle 2.5s ease-in-out infinite;
+}
+
+@keyframes crownWiggle {
+  0%, 80%, 100% { transform: rotate(0deg); }
+  85% { transform: rotate(-8deg) scale(1.1); }
+  95% { transform: rotate(8deg) scale(1.1); }
+}
+
+/* Shiny Upgrade to Pro Button */
+.btn-upgrade-pro {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #FF5E7E 0%, #FF2A55 50%, #FFAA00 100%);
+  background-size: 200% auto;
+  color: #FFFFFF !important;
+  font-size: 0.88rem;
+  font-weight: 800;
+  padding: 7px 18px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 94, 126, 0.4), 0 2px 0 #D93858;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.btn-upgrade-pro::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: rotate(25deg);
+  animation: shineShimmer 2.8s infinite;
+}
+
+@keyframes shineShimmer {
+  0% { left: -60%; }
+  30%, 100% { left: 140%; }
+}
+
+.btn-upgrade-pro:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 7px 22px rgba(255, 94, 126, 0.55), 0 3px 0 #D93858;
+}
+
+.btn-upgrade-pro:active {
+  transform: translateY(1px);
+}
+
+/* =========================================================================
+   2. GENERIC SUBSCRIPTION MODAL BACKDROP & CONTAINER
+   ========================================================================= */
+.sub-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10005;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sub-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sub-modal-card {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 860px;
+  max-height: 92vh;
+  border-radius: 28px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 3px solid #E2E8F0;
+}
+
+.sub-modal-backdrop.open .sub-modal-card {
+  transform: scale(1) translateY(0);
+}
+
+.sub-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: #F1F5F9;
+  color: #64748B;
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.sub-modal-close:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+  transform: rotate(90deg);
+}
+
+/* Modal Hero Header */
+.sub-modal-hero {
+  background: linear-gradient(135deg, #4338CA 0%, #2563EB 50%, #06B6D4 100%);
+  padding: 36px 30px 28px;
+  color: #FFFFFF;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 25px 25px 0 0;
+}
+
+.sub-modal-hero::before {
+  content: '✨';
+  position: absolute;
+  top: 15px;
+  left: 25px;
+  font-size: 1.8rem;
+  opacity: 0.6;
+  animation: floatEmoji 3s ease-in-out infinite alternate;
+}
+
+.sub-modal-hero::after {
+  content: '🚀';
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  font-size: 2.2rem;
+  opacity: 0.6;
+  animation: floatEmoji 3s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatEmoji {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-12px) rotate(8deg); }
+}
+
+.sub-modal-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
+  padding: 5px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.sub-modal-hero h2 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.sub-modal-hero p {
+  font-size: 1.05rem;
+  opacity: 0.92;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* Billing Toggle Switch (Monthly vs Annual) */
+.billing-cycle-toggle-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 22px 0 10px;
+}
+
+.billing-toggle-pill {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.billing-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.billing-toggle-btn.active {
+  background: #FFFFFF;
+  color: #1D4ED8;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.save-chip-tag {
+  background: #F59E0B;
+  color: #78350F;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 4px;
+}
+
+/* =========================================================================
+   3. PRICING PLANS COMPARISON CARDS
+   ========================================================================= */
+.sub-plans-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 22px;
+  padding: 28px 30px;
+}
+
+.plan-card {
+  border-radius: 22px;
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.plan-card-free {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+}
+
+.plan-card-pro {
+  background: #FFFFFF;
+  border: 3px solid #2563EB;
+  box-shadow: 0 16px 36px -10px rgba(37, 99, 235, 0.22);
+  transform: scale(1.02);
+}
+
+.plan-popular-ribbon {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 16px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+}
+
+.plan-header {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.plan-header h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-desc {
+  font-size: 0.88rem;
+  color: #64748B;
+  line-height: 1.35;
+}
+
+.plan-price-wrap {
+  margin: 14px 0 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.plan-price-wrap .price-amount {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.plan-price-wrap .price-period {
+  font-size: 0.95rem;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.plan-uzs-price {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #2563EB;
+}
+
+.plan-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-features-list li {
+  font-size: 0.92rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.35;
+  color: #334155;
+}
+
+.feat-icon-check {
+  color: #10B981;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.feat-icon-limit {
+  color: #94A3B8;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.plan-card-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-current-plan {
+  background: #E2E8F0;
+  color: #475569;
+  cursor: default;
+}
+
+.btn-select-pro {
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+.btn-select-pro:hover {
+  background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+}
+
+/* =========================================================================
+   4. CHECKOUT SCREEN & LOCAL PAYMENT METHODS (Uzbekistan)
+   ========================================================================= */
+.checkout-view-wrap {
+  padding: 26px 30px;
+}
+
+.checkout-steps-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px dashed #E2E8F0;
+}
+
+.checkout-back-btn {
+  background: #F1F5F9;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.checkout-back-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.checkout-order-summary {
+  text-align: right;
+}
+
+.order-plan-name {
+  font-size: 0.85rem;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.order-total-price {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+/* Payment Method Tabs (Click, Payme, Cards) */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.payment-tab-btn {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: inherit;
+}
+
+.payment-tab-btn:hover {
+  border-color: #94A3B8;
+  transform: translateY(-2px);
+}
+
+.payment-tab-btn.active {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15);
+}
+
+.pay-logo-badge {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pay-logo-img {
+  max-height: 32px;
+  object-fit: contain;
+}
+
+.pay-logo-custom-click {
+  background: #0073FF;
+  color: #FFFFFF;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: -0.5px;
+}
+
+.pay-logo-custom-payme {
+  background: #14D8C8;
+  color: #0F172A;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: -0.5px;
+}
+
+.pay-logo-custom-cards {
+  display: flex;
+  gap: 4px;
+}
+
+.card-mini-chip {
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.chip-uzcard { background: #004B93; color: white; }
+.chip-humo { background: #E67E22; color: white; }
+.chip-visa { background: #1A1F71; color: white; }
+.chip-master { background: #EB001B; color: white; }
+
+.pay-method-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+/* Form Container */
+.payment-form-box {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 22px;
+  margin-bottom: 22px;
+}
+
+.form-group-custom {
+  margin-bottom: 16px;
+}
+
+.form-group-custom:last-child {
+  margin-bottom: 0;
+}
+
+.form-group-custom label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.form-input-custom {
+  width: 100%;
+  height: 48px;
+  border: 2px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0F172A;
+  background: #FFFFFF;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input-custom:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.card-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.input-with-icon-wrap {
+  position: relative;
+}
+
+.card-detected-badge {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: none;
+}
+
+.security-assurance-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: #64748B;
+  font-size: 0.84rem;
+  margin-bottom: 20px;
+}
+
+.btn-submit-pay {
+  width: 100%;
+  height: 54px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-submit-pay:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.45);
+}
+
+/* =========================================================================
+   5. OTP SMS VERIFICATION MODAL OVERLAY
+   ========================================================================= */
+.otp-verify-box {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.otp-verify-box .otp-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.otp-verify-box h4 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.otp-verify-box p {
+  color: #64748B;
+  font-size: 0.92rem;
+  margin-bottom: 20px;
+}
+
+.otp-input-code {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 12px;
+  text-align: center;
+  width: 240px;
+  height: 56px;
+  border: 2px solid #CBD5E1;
+  border-radius: 16px;
+  margin: 0 auto 16px;
+  display: block;
+  font-family: inherit;
+}
+
+.otp-hint-demo {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+/* =========================================================================
+   6. CELEBRATORY CONFETTI & PRO CONFIRMATION SCREEN
+   ========================================================================= */
+.pro-success-screen {
+  text-align: center;
+  padding: 36px 20px 24px;
+}
+
+.pro-success-mascot {
+  font-size: 4.5rem;
+  margin-bottom: 12px;
+  display: inline-block;
+  animation: bounceCelebration 1s ease infinite alternate;
+}
+
+@keyframes bounceCelebration {
+  0% { transform: scale(1) translateY(0); }
+  100% { transform: scale(1.15) translateY(-14px); }
+}
+
+.pro-success-screen h2 {
+  font-size: 2.3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #F59E0B, #EA580C, #2563EB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.pro-receipt-card {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 440px;
+  margin: 20px auto 26px;
+  text-align: left;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.92rem;
+  border-bottom: 1px dashed #E2E8F0;
+}
+
+.receipt-row:last-child {
+  border-bottom: none;
+  font-weight: 800;
+  color: #1E293B;
+  font-size: 1.05rem;
+  padding-top: 10px;
+}
+
+.receipt-lbl {
+  color: #64748B;
+}
+
+.btn-start-pro-adventure {
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  color: #FFFFFF;
+  padding: 14px 40px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-start-pro-adventure:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* =========================================================================
+   7. SOFT PAYWALL / LIMIT REACHED MODAL
+   ========================================================================= */
+.paywall-modal-box {
+  background: #FFFFFF;
+  border-radius: 26px;
+  max-width: 520px;
+  width: 100%;
+  padding: 34px 28px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  position: relative;
+  border: 3px solid #FFD166;
+  transform: scale(0.92);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sub-modal-backdrop.open .paywall-modal-box {
+  transform: scale(1);
+}
+
+.paywall-mascot-head {
+  width: 90px;
+  height: 90px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+}
+
+.paywall-modal-box h3 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #1E293B;
+}
+
+.paywall-modal-box p {
+  font-size: 1.02rem;
+  color: #64748B;
+  line-height: 1.45;
+  margin-bottom: 24px;
+}
+
+.paywall-perks-pill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  background: #F8FAFC;
+  padding: 16px 20px;
+  border-radius: 18px;
+  margin-bottom: 24px;
+  border: 1px solid #E2E8F0;
+}
+
+.paywall-perks-pill-list div {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paywall-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-paywall-upgrade {
+  flex: 1;
+  background: linear-gradient(135deg, #FF5E7E, #FF2A55);
+  color: #FFFFFF;
+  padding: 13px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1.05rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(255, 94, 126, 0.4);
+}
+
+.btn-paywall-close {
+  background: #F1F5F9;
+  color: #64748B;
+  padding: 13px 20px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+/* =========================================================================
+   8. KID-FRIENDLY SPONSOR PLACEHOLDER BANNER ADS (Free Plan only)
+   ========================================================================= */
+.kiddo-ad-banner-wrap {
+  width: 100%;
+  max-width: 980px;
+  margin: 24px auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.kiddo-ad-card {
+  background: linear-gradient(135deg, #F0FDF4 0%, #EFF6FF 100%);
+  border: 2px dashed #93C5FD;
+  border-radius: 20px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.kiddo-ad-badge {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: #E2E8F0;
+  color: #64748B;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.kiddo-ad-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.kiddo-ad-icon {
+  font-size: 2.2rem;
+  flex-shrink: 0;
+}
+
+.kiddo-ad-info h5 {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #1E293B;
+  margin-bottom: 2px;
+}
+
+.kiddo-ad-info p {
+  font-size: 0.84rem;
+  color: #64748B;
+  margin: 0;
+}
+
+.kiddo-ad-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.kiddo-ad-btn {
+  background: #2563EB;
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+}
+
+.kiddo-ad-remove-pro-btn {
+  background: transparent;
+  color: #D97706;
+  font-size: 0.78rem;
+  font-weight: 800;
+  border: 1px solid #F59E0B;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kiddo-ad-remove-pro-btn:hover {
+  background: #FEF3C7;
+}
+
+/* =========================================================================
+   9. OFFICIAL ACHIEVEMENT CERTIFICATE GENERATOR MODAL
+   ========================================================================= */
+.certificate-modal-box {
+  background: #FFFFFF;
+  border-radius: 28px;
+  max-width: 900px;
+  width: 100%;
+  padding: 30px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+  position: relative;
+  max-height: 94vh;
+  overflow-y: auto;
+}
+
+.certificate-preview-container {
+  border: 8px solid #D97706;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  background: #FFFDF9;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.certificate-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px);
+  z-index: 5;
+}
+
+.certificate-watermark-text {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #DC2626;
+  transform: rotate(-15deg);
+  border: 4px dashed #DC2626;
+  padding: 8px 24px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+/* =========================================================================
+   10. RESPONSIVE MEDIA QUERIES
+   ========================================================================= */
+@media (max-width: 768px) {
+  .sub-plans-grid {
+    grid-template-columns: 1fr;
+    padding: 20px 16px;
+  }
+  .payment-methods-grid {
+    grid-template-columns: 1fr;
+  }
+  .sub-modal-hero {
+    padding: 28px 18px 22px;
+  }
+  .sub-modal-hero h2 {
+    font-size: 1.6rem;
+  }
+  .card-inputs-row {
+    grid-template-columns: 1fr;
+  }
+}

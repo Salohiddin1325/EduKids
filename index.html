@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yoshlar Akademiyasi - Bolalar Uchun Ta'lim Portali | Детский Образовательный Портал</title>
+  <meta name="description" content="Yosh bolalar uchun ingliz tili, matematika va fizika fanlarini o‘rgatuvchi zamonaviy interaktiv platformalar!">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌟</text></svg>">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/shared.css">
+  <link rel="stylesheet" href="shared/subscription.css">
+  <link rel="stylesheet" href="shared/chatbot.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #FFF1F2 0%, #EFF6FF 50%, #ECFDF5 100%);
+      color: #1E293B;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      overflow-x: hidden;
+    }
+
+    /* Top Language Switcher Bar */
+    .hub-top-bar {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .lang-switcher-pill {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px;
+      border-radius: 999px;
+      border: 2px solid #E2E8F0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      gap: 4px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #64748B;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lang-btn:hover {
+      color: #1E293B;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transform: scale(1.02);
+    }
+
+    .hub-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .hub-badge {
+      display: inline-block;
+      background: #FFD166;
+      color: #713F12;
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 10px rgba(255, 209, 102, 0.4);
+    }
+
+    .hub-header h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FF5E7E, #2563EB);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .hub-header p {
+      font-size: 1.2rem;
+      color: #64748B;
+      max-width: 660px;
+      margin: 0 auto;
+      line-height: 1.4;
+    }
+
+    /* Cards Grid */
+    .portal-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 28px;
+      max-width: 1100px;
+      width: 100%;
+      margin-bottom: 40px;
+    }
+
+    .portal-card {
+      background: #FFFFFF;
+      border: 4px solid #E2E8F0;
+      border-radius: 32px;
+      padding: 36px 28px;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .portal-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.16);
+    }
+
+    /* English Card Theme */
+    .card-english:hover {
+      border-color: #FF5E7E;
+    }
+    .card-english .portal-mascot {
+      background: linear-gradient(135deg, #FFE4E6, #FECDD3);
+    }
+    .card-english .portal-btn {
+      background: #FF5E7E;
+      box-shadow: 0 6px 0 #D93858;
+    }
+    .card-english .portal-btn:hover {
+      box-shadow: 0 8px 0 #D93858;
+    }
+
+    /* Math Card Theme */
+    .card-math:hover {
+      border-color: #2563EB;
+    }
+    .card-math .portal-mascot {
+      background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
+    }
+    .card-math .portal-btn {
+      background: #2563EB;
+      box-shadow: 0 6px 0 #1D4ED8;
+    }
+    .card-math .portal-btn:hover {
+      box-shadow: 0 8px 0 #1D4ED8;
+    }
+
+    /* Physics Card Theme */
+    .card-physics:hover {
+      border-color: #8B5CF6;
+    }
+    .card-physics .portal-mascot {
+      background: linear-gradient(135deg, #EDE9FE, #DDD6FE);
+    }
+    .card-physics .portal-btn {
+      background: #8B5CF6;
+      box-shadow: 0 6px 0 #6D28D9;
+    }
+    .card-physics .portal-btn:hover {
+      box-shadow: 0 8px 0 #6D28D9;
+    }
+
+    .portal-mascot {
+      width: 120px;
+      height: 120px;
+      border-radius: 32px;
+      font-size: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      transition: transform 0.25s ease;
+    }
+
+    .portal-card:hover .portal-mascot {
+      transform: scale(1.1) rotate(4deg);
+    }
+
+    .portal-card h2 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .portal-desc {
+      font-size: 1.05rem;
+      color: #64748B;
+      margin-bottom: 24px;
+      line-height: 1.45;
+      flex: 1;
+    }
+
+    .portal-features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .feature-tag {
+      background: #F1F5F9;
+      color: #475569;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .portal-btn {
+      color: #FFFFFF;
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 999px;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease;
+    }
+
+    .portal-btn:active {
+      transform: translateY(3px);
+    }
+
+    .hub-footer {
+      text-align: center;
+      color: #94A3B8;
+      font-size: 0.95rem;
+      max-width: 800px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 680px) {
+      .hub-header h1 {
+        font-size: 2.2rem;
+      }
+      .hub-top-bar {
+        justify-content: center;
+      }
+      .portal-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar with Gamification Controls & Language -->
+  <div class="hub-top-bar" style="justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
+        <span class="level-icon-badge" id="hud-level-icon">🌱</span>
+        <div class="level-info-text">
+          <span class="level-title-tag">LEVEL</span>
+          <span class="level-number-name" id="hud-level-name">Lvl 1: Boshlang‘ich Sayyoh</span>
+          <div class="xp-bar-wrap">
+            <div class="xp-bar-fill" id="hud-level-progress" style="width: 45%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-pill stat-streak flame-streak-chip" style="background: white; border: 2px solid #E2E8F0; padding: 4px 12px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+        <span class="flame-icon">🔥</span>
+        <span id="stat-streak-count">1 kun</span>
+      </div>
+
+      <div class="stat-pill stat-stars" style="background: white; border: 2px solid #E2E8F0; padding: 4px 12px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; color: #D97706;">
+        <span>⭐</span>
+        <span id="stat-stars-count">25</span>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-ctrl btn-star-store" onclick="window.gamificationHub.openStoreModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; border: none;">
+        <span>⭐</span> <span id="txt-hub-store">Do‘kon</span>
+      </button>
+
+      <button class="btn btn-ctrl" onclick="window.subscriptionManager.openCertificateModal()" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Yutuq Sertifikati">
+        <span>📜</span> <span id="txt-hub-cert" style="font-size: 0.88rem; font-weight: 700;">Sertifikat</span>
+      </button>
+
+      <button class="btn btn-ctrl btn-parent-mode" onclick="window.gamificationHub.openParentDashboard()" style="padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Ota-onalar paneli">
+        <span>👨‍👩‍👧</span>
+      </button>
+
+      <div class="lang-switcher-pill" role="group" aria-label="Language Switcher">
+        <button class="lang-btn active" id="btn-lang-uz" onclick="setSiteLanguage('uz')">
+          <span>🇺🇿</span>
+          <span>UZ</span>
+        </button>
+        <button class="lang-btn" id="btn-lang-ru" onclick="setSiteLanguage('ru')">
+          <span>🇷🇺</span>
+          <span>RU</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <header class="hub-header">
+    <div class="hub-badge" id="hub-badge">🌟 Yosh Bolalar Ta'lim Portali</div>
+    <h1 id="hub-title">Keling, Birgalikda O‘rganamiz!</h1>
+    <p id="hub-desc">Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!</p>
+  </header>
+
+  <main class="portal-cards-grid">
+    <!-- English Portal Card -->
+    <a href="./english/index.html" class="portal-card card-english">
+      <div class="portal-mascot">🦁</div>
+      <h2 id="card-en-title">Ingliz Tili (KiddoLingo)</h2>
+      <p class="portal-desc" id="card-en-desc">Ovozli talaffuzli lug‘at, sodda grammatika saboqlari, viktorinalar va havo sharlari o‘yini!</p>
+      
+      <div class="portal-features-list">
+        <span class="feature-tag" id="en-feat-1">🔊 Ovozli Talaffuz</span>
+        <span class="feature-tag" id="en-feat-2">🐢 Toshbaqa Rejimi</span>
+        <span class="feature-tag" id="en-feat-3">🎈 Shar Portlatish</span>
+        <span class="feature-tag" id="en-feat-4">🧠 Xotira Kartalari</span>
+      </div>
+
+      <div class="portal-btn">
+        <span id="en-btn-text">Ingliz Tilini Boshlash</span>
+        <span>➜</span>
+      </div>
+    </a>
+
+    <!-- Mathematics Portal Card -->
+    <a href="./math/index.html" class="portal-card card-math">
+      <div class="portal-mascot">🚀</div>
+      <h2 id="card-math-title">Matematika (MathKids)</h2>
+      <p class="portal-desc" id="card-math-desc">Jonli hisoblagichlar, misollar generatori, chizish uchun qoralama doska va kosmik raketa o‘yini!</p>
+      
+      <div class="portal-features-list">
+        <span class="feature-tag" id="math-feat-1">🍎 Mevali Hisoblagich</span>
+        <span class="feature-tag" id="math-feat-2">📝 Qoralama Doska</span>
+        <span class="feature-tag" id="math-feat-3">⚡ 60s Poyga</span>
+        <span class="feature-tag" id="math-feat-4">🚀 Raketa O‘yini</span>
+      </div>
+
+      <div class="portal-btn">
+        <span id="math-btn-text">Matematikani Boshlash</span>
+        <span>➜</span>
+      </div>
+    </a>
+
+    <!-- Physics Portal Card -->
+    <a href="./physics/index.html" class="portal-card card-physics">
+      <div class="portal-mascot">⚛️</div>
+      <h2 id="card-phys-title">Fizika (PhysicsKids)</h2>
+      <p class="portal-desc" id="card-phys-desc">Gravitatsiya minorasi, magnit maydoni, muz va bug‘ laboratoriyasi hamda magnit labirinti o‘yini!</p>
+      
+      <div class="portal-features-list">
+        <span class="feature-tag" id="phys-feat-1">🍏 Gravitatsiya</span>
+        <span class="feature-tag" id="phys-feat-2">🧲 Magnit Laboratoriyasi</span>
+        <span class="feature-tag" id="phys-feat-3">🧊 Modda O‘zgarishi</span>
+        <span class="feature-tag" id="phys-feat-4">🌀 Magnit Labirinti</span>
+      </div>
+
+      <div class="portal-btn">
+        <span id="phys-btn-text">Fizikani Boshlash</span>
+        <span>➜</span>
+      </div>
+    </a>
+  </main>
+
+  <footer class="hub-footer">
+    <p id="hub-footer-text">KiddoLingo & MathKids & PhysicsKids — 100% oflayn ishlaydigan, bolalar uchun xavfsiz va quvnoq ta'lim loyihasi.</p>
+  </footer>
+
+  <script>
+    const HUB_TRANSLATIONS = {
+      uz: {
+        badge: "🌟 Yosh Bolalar Ta'lim Portali",
+        title: "Keling, Birgalikda O‘rganamiz!",
+        desc: "Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!",
+        cardEnTitle: "Ingliz Tili (KiddoLingo)",
+        cardEnDesc: "Ovozli talaffuzli lug‘at, sodda grammatika saboqlari, viktorinalar va havo sharlari o‘yini!",
+        enFeat1: "🔊 Ovozli Talaffuz",
+        enFeat2: "🐢 Toshbaqa Rejimi",
+        enFeat3: "🎈 Shar Portlatish",
+        enFeat4: "🧠 Xotira Kartalari",
+        enBtn: "Ingliz Tilini Boshlash",
+        cardMathTitle: "Matematika (MathKids)",
+        cardMathDesc: "Jonli hisoblagichlar, misollar generatori, chizish uchun qoralama doska va kosmik raketa o‘yini!",
+        mathFeat1: "🍎 Mevali Hisoblagich",
+        mathFeat2: "📝 Qoralama Doska",
+        mathFeat3: "⚡ 60s Poyga",
+        mathFeat4: "🚀 Raketa O‘yini",
+        mathBtn: "Matematikani Boshlash",
+        cardPhysTitle: "Fizika (PhysicsKids)",
+        cardPhysDesc: "Gravitatsiya minorasi, magnit maydoni, muz va bug‘ laboratoriyasi hamda magnit labirinti o‘yini!",
+        physFeat1: "🍏 Gravitatsiya",
+        physFeat2: "🧲 Magnit Laboratoriyasi",
+        physFeat3: "🧊 Modda O‘zgarishi",
+        physFeat4: "🌀 Magnit Labirinti",
+        physBtn: "Fizikani Boshlash",
+        footer: "KiddoLingo & MathKids & PhysicsKids — 100% oflayn ishlaydigan, bolalar uchun xavfsiz va quvnoq ta'lim loyihasi."
+      },
+      ru: {
+        badge: "🌟 Детский Образовательный Портал",
+        title: "Давайте Учиться Вместе!",
+        desc: "Какой предмет ты хочешь изучать? Выбери один из предметов ниже и отправляйся в увлекательное путешествие!",
+        cardEnTitle: "Английский Язык (KiddoLingo)",
+        cardEnDesc: "Словарь с озвучкой произношения, простые уроки грамматики, викторины и игра с воздушными шариками!",
+        enFeat1: "🔊 Озвучка Слов",
+        enFeat2: "🐢 Режим Черепашки",
+        enFeat3: "🎈 Лопание Шариков",
+        enFeat4: "🧠 Карточки Памяти",
+        enBtn: "Начать Английский",
+        cardMathTitle: "Математика (MathKids)",
+        cardMathDesc: "Живые счетчики, генератор примеров, интерактивная доска и игра с космической ракетой!",
+        mathFeat1: "🍎 Фруктовый Счетчик",
+        mathFeat2: "📝 Доска для Рисования",
+        mathFeat3: "⚡ 60-сек Гонка",
+        mathFeat4: "🚀 Игра Ракета",
+        mathBtn: "Начать Математику",
+        cardPhysTitle: "Физика (PhysicsKids)",
+        cardPhysDesc: "Башня гравитации, опыты с магнитами, лаборатория льда и пара, а также магнитный лабиринт!",
+        physFeat1: "🍏 Гравитация",
+        physFeat2: "🧲 Лаборатория Магнитов",
+        physFeat3: "🧊 Состояния Веществ",
+        physFeat4: "🌀 Магнитный Лабиринт",
+        physBtn: "Начать Физику",
+        footer: "KiddoLingo & MathKids & PhysicsKids — 100% офлайн, безопасный и веселый образовательный проект для детей."
+      }
+    };
+
+    function setSiteLanguage(lang) {
+      localStorage.setItem('kiddo_language', lang);
+      document.documentElement.lang = lang;
+
+      document.body.classList.add('lang-transitioning');
+      setTimeout(() => {
+        document.body.classList.remove('lang-transitioning');
+      }, 200);
+
+      const t = HUB_TRANSLATIONS[lang] || HUB_TRANSLATIONS.uz;
+
+      document.getElementById('hub-badge').textContent = t.badge;
+      document.getElementById('hub-title').textContent = t.title;
+      document.getElementById('hub-desc').textContent = t.desc;
+
+      document.getElementById('card-en-title').textContent = t.cardEnTitle;
+      document.getElementById('card-en-desc').textContent = t.cardEnDesc;
+      document.getElementById('en-feat-1').textContent = t.enFeat1;
+      document.getElementById('en-feat-2').textContent = t.enFeat2;
+      document.getElementById('en-feat-3').textContent = t.enFeat3;
+      document.getElementById('en-feat-4').textContent = t.enFeat4;
+      document.getElementById('en-btn-text').textContent = t.enBtn;
+
+      document.getElementById('card-math-title').textContent = t.cardMathTitle;
+      document.getElementById('card-math-desc').textContent = t.cardMathDesc;
+      document.getElementById('math-feat-1').textContent = t.mathFeat1;
+      document.getElementById('math-feat-2').textContent = t.mathFeat2;
+      document.getElementById('math-feat-3').textContent = t.mathFeat3;
+      document.getElementById('math-feat-4').textContent = t.mathFeat4;
+      document.getElementById('math-btn-text').textContent = t.mathBtn;
+
+      document.getElementById('card-phys-title').textContent = t.cardPhysTitle;
+      document.getElementById('card-phys-desc').textContent = t.cardPhysDesc;
+      document.getElementById('phys-feat-1').textContent = t.physFeat1;
+      document.getElementById('phys-feat-2').textContent = t.physFeat2;
+      document.getElementById('phys-feat-3').textContent = t.physFeat3;
+      document.getElementById('phys-feat-4').textContent = t.physFeat4;
+      document.getElementById('phys-btn-text').textContent = t.physBtn;
+
+      document.getElementById('hub-footer-text').textContent = t.footer;
+
+      const btnUz = document.getElementById('btn-lang-uz');
+      const btnRu = document.getElementById('btn-lang-ru');
+      if (btnUz && btnRu) {
+        btnUz.classList.toggle('active', lang === 'uz');
+        btnRu.classList.toggle('active', lang === 'ru');
+      }
+
+      const storeTxt = document.getElementById('txt-hub-store');
+      if (storeTxt) {
+        storeTxt.textContent = lang === 'ru' ? 'Магазин' : 'Do‘kon';
+      }
+
+      if (window.gamificationHub) {
+        window.gamificationHub.updateAllUI();
+      }
+
+      if (window.astroCat) {
+        window.astroCat.onLanguageChanged(lang);
+      }
+
+      if (window.astroBot) {
+        window.astroBot.setLanguage(lang);
+      }
+    }
+
+    // Initialize saved language
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('kiddo_language') || 'uz';
+      setSiteLanguage(savedLang);
+    });
+  </script>
+
+  <script src="shared/subscription.js"></script>
+  <script src="shared/gamification.js"></script>
+  <script src="shared/mascot-companion.js"></script>
+  <script src="shared/chatbot.js"></script>
+</body>
+</html>
