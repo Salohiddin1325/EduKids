@@ -288,10 +288,10 @@
   <!-- Top Bar with Gamification Controls & Language -->
   <div class="hub-top-bar" style="justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-      <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
+      <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
         <span class="level-icon-badge" id="hud-level-icon">🌱</span>
         <div class="level-info-text">
-          <span class="level-title-tag">LEVEL</span>
+          <span class="level-title-tag" id="hud-level-title-tag">LEVEL</span>
           <span class="level-number-name" id="hud-level-name">Lvl 1: Boshlang‘ich Sayyoh</span>
           <div class="xp-bar-wrap">
             <div class="xp-bar-fill" id="hud-level-progress" style="width: 45%;"></div>
@@ -306,24 +306,29 @@
 
       <div class="stat-pill stat-stars" style="background: white; border: 2px solid #E2E8F0; padding: 4px 12px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; color: #D97706;">
         <span>⭐</span>
-        <span id="stat-stars-count">25</span>
+        <span id="stat-stars-count">35</span>
+      </div>
+
+      <div class="stat-pill stat-gems" style="background: white; border: 2px solid #E2E8F0; padding: 4px 12px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; color: #0284C7;" title="Olmoslar">
+        <span>💎</span>
+        <span id="stat-gems-count">8</span>
       </div>
     </div>
 
     <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="btn btn-ctrl btn-pro-upgrade" onclick="window.subscriptionManager.openPricingModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 2px solid #F59E0B; color: #92400E; font-weight: 800;" title="Pro Plan ($13/oy)">
+      <button class="btn btn-ctrl btn-pro-upgrade" id="btn-hub-pro-upgrade" onclick="window.subscriptionManager && window.subscriptionManager.openPricingModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 2px solid #F59E0B; color: #92400E; font-weight: 800;" title="Pro Plan ($13/oy)">
         <span>👑</span> <span id="txt-hub-pro">PRO ($13/oy)</span>
       </button>
 
-      <button class="btn btn-ctrl btn-star-store" onclick="window.gamificationHub.openStoreModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; border: none;">
+      <button class="btn btn-ctrl btn-star-store" id="btn-hub-star-store" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; border: none;">
         <span>⭐</span> <span id="txt-hub-store">Astro-Shop</span>
       </button>
 
-      <button class="btn btn-ctrl" onclick="window.subscriptionManager.openCertificateModal()" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Grand Master Sertifikati">
+      <button class="btn btn-ctrl" id="btn-hub-cert" onclick="window.subscriptionManager && window.subscriptionManager.openCertificateModal()" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Grand Master Sertifikati">
         <span>📜</span> <span id="txt-hub-cert" style="font-size: 0.88rem; font-weight: 700;">Sertifikat</span>
       </button>
 
-      <button class="btn btn-ctrl btn-parent-mode" onclick="window.gamificationHub.openParentDashboard()" style="padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Ota-onalar paneli (OTP)">
+      <button class="btn btn-ctrl btn-parent-mode" id="btn-hub-parent-mode" onclick="window.gamificationHub && window.gamificationHub.openParentDashboard()" style="padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Ota-onalar paneli (OTP)">
         <span>👨‍👩‍👧</span>
       </button>
 
@@ -418,13 +423,28 @@
     <p id="hub-footer-text">KiddoLingo & MathKids & PhysicsKids — 100% oflayn ishlaydigan, bolalar uchun xavfsiz va quvnoq ta'lim loyihasi.</p>
   </footer>
 
+  <!-- Shared Engine Scripts -->
+  <script src="shared/uzbek-speech.js"></script>
+  <script src="shared/subscription.js"></script>
+  <script src="shared/screen-vfx.js"></script>
+  <script src="shared/gamification.js"></script>
+  <script src="shared/level-map.js"></script>
+  <script src="shared/mascot-companion.js"></script>
+  <script src="shared/chatbot.js"></script>
+
+  <!-- Hub Controller & Multilingual System -->
   <script>
     const HUB_TRANSLATIONS = {
       uz: {
+        pageTitle: "Yoshlar Akademiyasi - Bolalar Uchun Ta'lim Portali | KiddoLingo, MathKids, PhysicsKids",
         badge: "🌟 Yosh Bolalar Ta'lim Portali",
         title: "Keling, Birgalikda O‘rganamiz!",
         desc: "Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!",
         discount: "Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat",
+        proText: "PRO ($13/oy)",
+        proActiveText: "PRO FAOL",
+        storeText: "Astro-Shop",
+        certText: "Sertifikat",
         cardEnTitle: "Ingliz Tili (KiddoLingo)",
         cardEnDesc: "500 ta so‘zli lug‘at, ovozli talaffuz, sodda grammatika va 50+ darajali mini-o‘yinlar!",
         enFeat1: "📚 500 ta So‘z",
@@ -449,10 +469,15 @@
         footer: "KiddoLingo & MathKids & PhysicsKids — 100% oflayn ishlaydigan, bolalar uchun xavfsiz va quvnoq ta'lim loyihasi."
       },
       ru: {
+        pageTitle: "Детская Академия - Образовательный Портал Для Детей | KiddoLingo, MathKids, PhysicsKids",
         badge: "🌟 Детский Образовательный Портал",
         title: "Давайте Учиться Вместе!",
         desc: "Какой предмет ты хочешь изучать? Выбери один из предметов ниже и отправляйся в увлекательное путешествие!",
         discount: "Спецпредложение: Pro план $13/мес (160,000 UZS) • 50+ Уровней, 500 Слов & Официальный Сертификат",
+        proText: "PRO ($13/мес)",
+        proActiveText: "PRO АКТИВЕН",
+        storeText: "Магазин",
+        certText: "Сертификат",
         cardEnTitle: "Английский Язык (KiddoLingo)",
         cardEnDesc: "Словарь на 500 слов с озвучкой, уроки грамматики и 50+ уровней мини-игр!",
         enFeat1: "📚 500 Слов",
@@ -479,62 +504,138 @@
     };
 
     function setSiteLanguage(lang) {
-      localStorage.setItem('kiddo_language', lang);
-      document.documentElement.lang = lang;
+      const activeLang = (lang === 'ru') ? 'ru' : 'uz';
+      localStorage.setItem('kiddo_language', activeLang);
+      document.documentElement.lang = activeLang;
 
       document.body.classList.add('lang-transitioning');
       setTimeout(() => {
         document.body.classList.remove('lang-transitioning');
       }, 200);
 
-      const t = HUB_TRANSLATIONS[lang] || HUB_TRANSLATIONS.uz;
+      const t = HUB_TRANSLATIONS[activeLang];
+      const isRu = activeLang === 'ru';
 
-      document.getElementById('hub-badge').textContent = t.badge;
-      document.getElementById('hub-title').textContent = t.title;
-      document.getElementById('hub-desc').textContent = t.desc;
+      // Update Document Title
+      if (t.pageTitle) {
+        document.title = t.pageTitle;
+      }
+
+      // Update Header Text Elements
+      const badgeEl = document.getElementById('hub-badge');
+      if (badgeEl) badgeEl.textContent = t.badge;
+
+      const titleEl = document.getElementById('hub-title');
+      if (titleEl) titleEl.textContent = t.title;
+
+      const descEl = document.getElementById('hub-desc');
+      if (descEl) descEl.textContent = t.desc;
 
       const discEl = document.getElementById('hub-discount-text');
       if (discEl && t.discount) discEl.textContent = t.discount;
 
+      // Update Controls Text & Pro State
       const proTxt = document.getElementById('txt-hub-pro');
-      if (proTxt) proTxt.textContent = lang === 'ru' ? 'PRO ($13/мес)' : 'PRO ($13/oy)';
-
-      document.getElementById('card-en-title').textContent = t.cardEnTitle;
-      document.getElementById('card-en-desc').textContent = t.cardEnDesc;
-      document.getElementById('en-feat-1').textContent = t.enFeat1;
-      document.getElementById('en-feat-2').textContent = t.enFeat2;
-      document.getElementById('en-feat-3').textContent = t.enFeat3;
-      document.getElementById('en-feat-4').textContent = t.enFeat4;
-      document.getElementById('en-btn-text').textContent = t.enBtn;
-
-      document.getElementById('card-math-title').textContent = t.cardMathTitle;
-      document.getElementById('card-math-desc').textContent = t.cardMathDesc;
-      document.getElementById('math-feat-1').textContent = t.mathFeat1;
-      document.getElementById('math-feat-2').textContent = t.mathFeat2;
-      document.getElementById('math-feat-3').textContent = t.mathFeat3;
-      document.getElementById('math-feat-4').textContent = t.mathFeat4;
-      document.getElementById('math-btn-text').textContent = t.mathBtn;
-
-      document.getElementById('card-phys-title').textContent = t.cardPhysTitle;
-      document.getElementById('card-phys-desc').textContent = t.cardPhysDesc;
-      document.getElementById('phys-feat-1').textContent = t.physFeat1;
-      document.getElementById('phys-feat-2').textContent = t.physFeat2;
-      document.getElementById('phys-feat-3').textContent = t.physFeat3;
-      document.getElementById('phys-feat-4').textContent = t.physFeat4;
-      document.getElementById('phys-btn-text').textContent = t.physBtn;
-
-      document.getElementById('hub-footer-text').textContent = t.footer;
-
-      const btnUz = document.getElementById('btn-lang-uz');
-      const btnRu = document.getElementById('btn-lang-ru');
-      if (btnUz && btnRu) {
-        btnUz.classList.toggle('active', lang === 'uz');
-        btnRu.classList.toggle('active', lang === 'ru');
+      const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+      if (proTxt) {
+        proTxt.textContent = isPro ? t.proActiveText : t.proText;
       }
 
       const storeTxt = document.getElementById('txt-hub-store');
       if (storeTxt) {
-        storeTxt.textContent = lang === 'ru' ? 'Магазин' : 'Do‘kon';
+        storeTxt.textContent = t.storeText;
+      }
+
+      const certTxt = document.getElementById('txt-hub-cert');
+      if (certTxt) {
+        certTxt.textContent = t.certText;
+      }
+
+      // Update Control Tooltips
+      const lvlPill = document.getElementById('hud-level-pill');
+      if (lvlPill) {
+        lvlPill.title = isRu ? "Ваш уровень и опыт (Нажмите)" : "Darajangiz va tajribangiz (Bosing)";
+      }
+
+      const proBtn = document.getElementById('btn-hub-pro-upgrade');
+      if (proBtn) {
+        proBtn.title = isPro ? (isRu ? "PRO Активен - Полный доступ" : "PRO Faol - Cheksiz kirish") : (isRu ? "PRO План ($13/мес)" : "PRO Plan ($13/oy)");
+      }
+
+      const certBtn = document.getElementById('btn-hub-cert');
+      if (certBtn) {
+        certBtn.title = isRu ? "Сертификат Гранд-Мастера" : "Grand Master Sertifikati";
+      }
+
+      const parentBtn = document.getElementById('btn-hub-parent-mode');
+      if (parentBtn) {
+        parentBtn.title = isRu ? "Родительский контроль (OTP)" : "Ota-onalar paneli (OTP)";
+      }
+
+      // Update Cards
+      const cardEnTitle = document.getElementById('card-en-title');
+      if (cardEnTitle) cardEnTitle.textContent = t.cardEnTitle;
+      const cardEnDesc = document.getElementById('card-en-desc');
+      if (cardEnDesc) cardEnDesc.textContent = t.cardEnDesc;
+      const enFeat1 = document.getElementById('en-feat-1');
+      if (enFeat1) enFeat1.textContent = t.enFeat1;
+      const enFeat2 = document.getElementById('en-feat-2');
+      if (enFeat2) enFeat2.textContent = t.enFeat2;
+      const enFeat3 = document.getElementById('en-feat-3');
+      if (enFeat3) enFeat3.textContent = t.enFeat3;
+      const enFeat4 = document.getElementById('en-feat-4');
+      if (enFeat4) enFeat4.textContent = t.enFeat4;
+      const enBtn = document.getElementById('en-btn-text');
+      if (enBtn) enBtn.textContent = t.enBtn;
+
+      const cardMathTitle = document.getElementById('card-math-title');
+      if (cardMathTitle) cardMathTitle.textContent = t.cardMathTitle;
+      const cardMathDesc = document.getElementById('card-math-desc');
+      if (cardMathDesc) cardMathDesc.textContent = t.cardMathDesc;
+      const mathFeat1 = document.getElementById('math-feat-1');
+      if (mathFeat1) mathFeat1.textContent = t.mathFeat1;
+      const mathFeat2 = document.getElementById('math-feat-2');
+      if (mathFeat2) mathFeat2.textContent = t.mathFeat2;
+      const mathFeat3 = document.getElementById('math-feat-3');
+      if (mathFeat3) mathFeat3.textContent = t.mathFeat3;
+      const mathFeat4 = document.getElementById('math-feat-4');
+      if (mathFeat4) mathFeat4.textContent = t.mathFeat4;
+      const mathBtn = document.getElementById('math-btn-text');
+      if (mathBtn) mathBtn.textContent = t.mathBtn;
+
+      const cardPhysTitle = document.getElementById('card-phys-title');
+      if (cardPhysTitle) cardPhysTitle.textContent = t.cardPhysTitle;
+      const cardPhysDesc = document.getElementById('card-phys-desc');
+      if (cardPhysDesc) cardPhysDesc.textContent = t.cardPhysDesc;
+      const physFeat1 = document.getElementById('phys-feat-1');
+      if (physFeat1) physFeat1.textContent = t.physFeat1;
+      const physFeat2 = document.getElementById('phys-feat-2');
+      if (physFeat2) physFeat2.textContent = t.physFeat2;
+      const physFeat3 = document.getElementById('phys-feat-3');
+      if (physFeat3) physFeat3.textContent = t.physFeat3;
+      const physFeat4 = document.getElementById('phys-feat-4');
+      if (physFeat4) physFeat4.textContent = t.physFeat4;
+      const physBtn = document.getElementById('phys-btn-text');
+      if (physBtn) physBtn.textContent = t.physBtn;
+
+      // Update Footer
+      const footerText = document.getElementById('hub-footer-text');
+      if (footerText) footerText.textContent = t.footer;
+
+      // Toggle Active Language Buttons
+      const btnUz = document.getElementById('btn-lang-uz');
+      const btnRu = document.getElementById('btn-lang-ru');
+      if (btnUz && btnRu) {
+        btnUz.classList.toggle('active', activeLang === 'uz');
+        btnRu.classList.toggle('active', activeLang === 'ru');
+      }
+
+      // Synchronize Modules
+      if (window.subscriptionManager) {
+        window.subscriptionManager.lang = activeLang;
+        if (typeof window.subscriptionManager.updateUI === 'function') {
+          window.subscriptionManager.updateUI();
+        }
       }
 
       if (window.gamificationHub) {
@@ -542,11 +643,11 @@
       }
 
       if (window.astroCat) {
-        window.astroCat.onLanguageChanged(lang);
+        window.astroCat.onLanguageChanged(activeLang);
       }
 
       if (window.astroBot) {
-        window.astroBot.setLanguage(lang);
+        window.astroBot.setLanguage(activeLang);
       }
     }
 
@@ -556,13 +657,5 @@
       setSiteLanguage(savedLang);
     });
   </script>
-
-  <script src="shared/uzbek-speech.js"></script>
-  <script src="shared/subscription.js"></script>
-  <script src="shared/screen-vfx.js"></script>
-  <script src="shared/gamification.js"></script>
-  <script src="shared/level-map.js"></script>
-  <script src="shared/mascot-companion.js"></script>
-  <script src="shared/chatbot.js"></script>
 </body>
 </html>

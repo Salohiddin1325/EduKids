@@ -1657,9 +1657,24 @@
           this.openPricingModal();
         });
 
+        const existingBtnPro = topBar.querySelector('.btn-pro-upgrade') || document.querySelector('.btn-pro-upgrade');
+        if (existingBtnPro) {
+          const proTxt = existingBtnPro.querySelector('#txt-hub-pro') || existingBtnPro.querySelector('span:last-child');
+          const isRu = this.getLang() === 'ru';
+          if (isPro) {
+            existingBtnPro.classList.add('pro-active');
+            existingBtnPro.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+            existingBtnPro.style.borderColor = '#059669';
+            existingBtnPro.style.color = '#FFFFFF';
+            if (proTxt) proTxt.textContent = isRu ? 'PRO АКТИВЕН' : 'PRO FAOL';
+            existingBtnPro.title = isRu ? 'Pro Активен - Полный доступ' : 'Pro A‘zo - Cheksiz kirish';
+          }
+          return;
+        }
+
         const langSwitcher = topBar.querySelector('.lang-switcher-pill') || topBar.querySelector('#btn-lang-uz')?.parentElement;
-        if (langSwitcher) {
-          topBar.insertBefore(badge, langSwitcher);
+        if (langSwitcher && langSwitcher.parentNode) {
+          langSwitcher.parentNode.insertBefore(badge, langSwitcher);
         } else {
           topBar.appendChild(badge);
         }

@@ -288,13 +288,19 @@ class GamificationHub {
     const lvlProgressEl = document.getElementById('hud-level-progress');
 
     if (lvlNameEl) lvlNameEl.textContent = `Lvl ${curLevel.level}: ${levelTitle}`;
-    if (lvlIconEl) lvlIconEl.textContent = curLevel.icon;
-    if (lvlProgressEl && nextLevel) {
-      const curBase = curLevel.xpNeeded;
-      const nextTarget = nextLevel.xpNeeded;
-      const pct = Math.min(100, Math.max(0, ((this.xp - curBase) / (nextTarget - curBase)) * 100));
-      lvlProgressEl.style.width = `${pct}%`;
+    if (lvlProgressEl) {
+      if (nextLevel) {
+        const curBase = curLevel.xpNeeded;
+        const nextTarget = nextLevel.xpNeeded;
+        const pct = Math.min(100, Math.max(0, ((this.xp - curBase) / (nextTarget - curBase)) * 100));
+        lvlProgressEl.style.width = `${pct}%`;
+      } else {
+        lvlProgressEl.style.width = '100%';
+      }
     }
+
+    const lvlTagEl = document.getElementById('hud-level-title-tag');
+    if (lvlTagEl) lvlTagEl.textContent = isRu ? 'УРОВЕНЬ' : 'DARAJA';
 
     document.querySelectorAll('#stat-stars-count').forEach(el => el.textContent = this.stars);
     document.querySelectorAll('#stat-gems-count').forEach(el => el.textContent = this.gems);
@@ -1040,8 +1046,10 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       const brandEl = headerInner.querySelector('.brand-logo') || headerInner.querySelector('.brand-link');
-      if (brandEl && brandEl.nextSibling) {
+      if (brandEl) {
         headerInner.insertBefore(levelPill, brandEl.nextSibling);
+      } else {
+        headerInner.prepend(levelPill);
       }
     }
 
