@@ -1,6 +1,9 @@
 /**
  * MathKids - Math Rocket Blaster & Space Defender Mini-Game
- * Action-oriented math game: Solve the equations, blast the right asteroids with rocket lasers!
+ * Action-oriented math game featuring 50+ progressive levels and World Map progression:
+ *   - Levels 1–10: Starter / Beginner (Easy)
+ *   - Levels 11–25: Explorer / Intermediate (Medium)
+ *   - Levels 26–50+: Master / Expert (Challenging)
  */
 
 class MathRocketGame {
@@ -9,6 +12,11 @@ class MathRocketGame {
     this.ctx = null;
     this.active = false;
     this.animFrame = null;
+
+    // Progression & Level
+    this.currentLevel = 1;
+    this.targetScore = 80;
+    this.asteroidSpeedMultiplier = 1.0;
 
     // Game stats
     this.score = 0;
@@ -22,7 +30,6 @@ class MathRocketGame {
     this.particles = [];
     this.stars = [];
     this.rocketX = 0;
-    this.spawnTimer = null;
   }
 
   init() {
@@ -63,7 +70,31 @@ class MathRocketGame {
     }
   }
 
-  start() {
+  start(forcedLevel = null) {
+    if (forcedLevel) {
+      this.currentLevel = forcedLevel;
+    } else if (window.levelProgressionSystem) {
+      this.currentLevel = window.levelProgressionSystem.getCurrentLevel('math_rocket');
+    }
+
+    const cfg = window.levelProgressionSystem 
+      ? window.levelProgressionSystem.getLevelConfig('math_rocket', this.currentLevel)
+      : { speedMultiplier: 1.0, tier: { nameUz: 'Oson', nameRu: 'Легкий' } };
+
+    this.targetScore = 60 + (this.currentLevel * 20);
+    this.asteroidSpeedMultiplier = cfg.speedMultiplier;
+
+    // Update Level Display
+    const lvlEl = document.getElementById('rocket-level-display');
+    if (lvlEl) {
+      const isRu = this.getLang() === 'ru';
+      lvlEl.textContent = `${this.currentLevel} (${isRu ? cfg.tier.nameRu : cfg.tier.nameUz})`;
+    }
+
+    // Hide any game over banner
+    const banner = document.getElementById('rocket-game-over-banner');
+    if (banner) banner.style.display = 'none';
+
     this.active = true;
     this.score = 0;
     this.lives = 3;
@@ -100,28 +131,39 @@ class MathRocketGame {
   }
 
   generateNewTarget() {
-    const ops = ['+', '-', '×'];
+    let ops = ['+', '-'];
+    if (this.currentLevel >= 11) ops.push('×');
+    if (this.currentLevel >= 26) ops.push('÷');
+
     const op = ops[Math.floor(Math.random() * ops.length)];
     let a, b, ans;
 
     if (op === '+') {
-      a = Math.floor(Math.random() * 12) + 2;
-      b = Math.floor(Math.random() * 12) + 2;
+      const maxVal = this.currentLevel <= 10 ? 10 + this.currentLevel : (this.currentLevel <= 25 ? 50 : 100);
+      a = Math.floor(Math.random() * maxVal) + 2;
+      b = Math.floor(Math.random() * maxVal) + 2;
       ans = a + b;
     } else if (op === '-') {
-      b = Math.floor(Math.random() * 10) + 2;
-      a = b + Math.floor(Math.random() * 10) + 1;
+      const maxVal = this.currentLevel <= 10 ? 12 : (this.currentLevel <= 25 ? 50 : 100);
+      b = Math.floor(Math.random() * maxVal) + 2;
+      a = b + Math.floor(Math.random() * maxVal) + 1;
       ans = a - b;
-    } else {
-      a = Math.floor(Math.random() * 6) + 2;
-      b = Math.floor(Math.random() * 6) + 2;
+    } else if (op === '×') {
+      const maxFactor = this.currentLevel <= 25 ? 6 : 12;
+      a = Math.floor(Math.random() * maxFactor) + 2;
+      b = Math.floor(Math.random() * maxFactor) + 2;
       ans = a * b;
+    } else { // Division
+      b = Math.floor(Math.random() * 9) + 2;
+      ans = Math.floor(Math.random() * 10) + 1;
+      a = b * ans;
     }
 
     this.targetProblem = { a, b, op, ans };
     const hud = document.getElementById('rocket-target-display');
     if (hud) {
-      hud.innerHTML = `Nishon: <strong>${a} ${op} ${b} = ?</strong>`;
+      const isRu = this.getLang() === 'ru';
+      hud.innerHTML = `${isRu ? 'Мишень:' : 'Nishon:'} <strong>${a} ${op} ${b} = ?</strong> (Maqsad: ${this.score}/${this.targetScore})`;
     }
   }
 
@@ -131,29 +173,25 @@ class MathRocketGame {
     const values = [ans];
 
     while (values.length < 4) {
-      const offset = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 5) + 1);
+      const offset = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 6) + 1);
       const fake = Math.max(1, ans + offset);
       if (!values.includes(fake)) values.push(fake);
     }
 
     values.sort(() => Math.random() - 0.5);
 
-    const w = this.canvas.width;
-    const colWidth = w / 4;
-
-    values.forEach((val, idx) => {
+    const step = this.canvas.width / 5;
+    for (let i = 0; i < 4; i++) {
       this.asteroids.push({
-        x: colWidth * idx + colWidth / 2,
-        y: Math.random() * -120 - 40,
+        x: step * (i + 1) + (Math.random() * 20 - 10),
+        y: -40 - Math.random() * 60,
         radius: 34,
-        value: val,
-        isCorrect: val === ans,
-        speed: Math.random() * 0.8 + 0.9,
-        rot: Math.random() * Math.PI,
-        rotSpeed: (Math.random() - 0.5) * 0.04,
-        color: val === ans ? '#FF5E13' : '#3A86FF'
+        value: values[i],
+        isCorrect: values[i] === ans,
+        speed: (Math.random() * 0.7 + 0.8) * (this.asteroidSpeedMultiplier || 1.0),
+        color: values[i] === ans ? '#38BDF8' : '#94A3B8'
       });
-    });
+    }
   }
 
   handleCanvasClick(e) {
@@ -162,20 +200,19 @@ class MathRocketGame {
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    for (let i = this.asteroids.length - 1; i >= 0; i--) {
+    // Check collision with asteroids
+    for (let i = 0; i < this.asteroids.length; i++) {
       const ast = this.asteroids[i];
       const dist = Math.hypot(clickX - ast.x, clickY - ast.y);
-
-      if (dist <= ast.radius + 15) {
-        this.fireLaserAt(ast);
+      if (dist < ast.radius + 15) {
+        this.blastAsteroid(ast);
         break;
       }
     }
   }
 
-  fireLaserAt(ast) {
+  blastAsteroid(ast) {
     window.mathAudio.playLaser();
-    this.rocketX = ast.x;
 
     // Laser beam animation
     this.lasers.push({
@@ -187,7 +224,6 @@ class MathRocketGame {
     });
 
     if (ast.isCorrect) {
-      // Correct target blasted!
       setTimeout(() => {
         window.mathAudio.playExplosion();
         this.createExplosionParticles(ast.x, ast.y, '#FF5E13');
@@ -195,23 +231,18 @@ class MathRocketGame {
         this.combo++;
         window.mathApp.addStars(1);
 
-        if (this.score >= 100) {
-          window.mathApp.unlockBadge('rocket-master');
-          if (!this.level1Reached) {
-            this.level1Reached = true;
-            if (window.subscriptionManager && !window.subscriptionManager.canPlayGameLevel('rocket', 2)) {
-              this.stop();
-              return;
-            }
-          }
+        this.updateStatsUI();
+
+        // Check if level completed!
+        if (this.score >= this.targetScore) {
+          this.handleLevelWin();
+          return;
         }
 
-        this.updateStatsUI();
         this.generateNewTarget();
         this.spawnAsteroidsForTarget();
       }, 80);
     } else {
-      // Wrong asteroid hit!
       setTimeout(() => {
         window.mathAudio.playWrong();
         this.createExplosionParticles(ast.x, ast.y, '#94A3B8');
@@ -230,6 +261,85 @@ class MathRocketGame {
     }
   }
 
+  handleLevelWin() {
+    this.stop();
+    window.mathAudio.playFanfare();
+    if (window.mathConfetti) window.mathConfetti.launch(100, 0.5, 0.5);
+
+    const stars = this.lives === 3 ? 3 : (this.lives === 2 ? 2 : 1);
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.recordLevelCompletion('math_rocket', this.currentLevel, stars);
+    }
+
+    window.mathApp.unlockBadge('rocket-master');
+
+    const isRu = this.getLang() === 'ru';
+    const starsStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+    const title = isRu 
+      ? `🎉 Уровень ${this.currentLevel} успешно пройден!` 
+      : `🎉 ${this.currentLevel}-Bosqich Muvaffaqiyatli Yakunlandi!`;
+    const scoreText = isRu 
+      ? `Набранные очки: <strong>${this.score}</strong> | Жизней осталось: <strong>${'❤️'.repeat(this.lives)}</strong>` 
+      : `To‘plangan ball: <strong>${this.score}</strong> | Qolgan qalqon: <strong>${'❤️'.repeat(this.lives)}</strong>`;
+
+    const nextLevel = this.currentLevel + 1;
+    const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+    const btnNext = isRu 
+      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}`;
+
+    const banner = document.getElementById('rocket-game-over-banner');
+    if (banner) {
+      banner.innerHTML = `
+        <div class="game-over-box bounce-in" style="background: rgba(15, 23, 42, 0.95); border: 3px solid #38BDF8; border-radius: 24px; padding: 25px; color: #FFF; text-align: center; max-width: 480px; margin: 0 auto;">
+          <div class="win-stars" style="font-size: 2.4rem; margin-bottom: 8px;">${starsStr}</div>
+          <h3 style="font-size: 1.4rem; color: #38BDF8; margin-bottom: 10px;">${title}</h3>
+          <p style="font-size: 1rem; color: #CBD5E1; margin-bottom: 18px;">${scoreText}</p>
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="window.mathRocketGame.start(${this.currentLevel})">
+              🔄 ${isRu ? 'Сыграть снова' : 'Qaytadan o‘ynash'}
+            </button>
+            <button class="btn btn-primary" onclick="window.mathRocketGame.tryNextLevel()">
+              ${btnNext}
+            </button>
+            <button class="game-level-map-btn" onclick="window.mathRocketGame.openWorldMap()">
+              🗺️ ${isRu ? 'Карта 50+ уровней' : '50+ Bosqichlar Xaritasi'}
+            </button>
+          </div>
+        </div>
+      `;
+      banner.style.display = 'block';
+    }
+  }
+
+  tryNextLevel() {
+    const nextLevel = this.currentLevel + 1;
+    if (window.levelProgressionSystem && !window.levelProgressionSystem.canAccessLevel('math_rocket', nextLevel)) {
+      if (window.subscriptionManager) {
+        window.subscriptionManager.openGamePaywallModal('math_rocket', nextLevel);
+      }
+      return;
+    }
+
+    const banner = document.getElementById('rocket-game-over-banner');
+    if (banner) banner.style.display = 'none';
+
+    this.currentLevel = nextLevel;
+    this.start(nextLevel);
+  }
+
+  openWorldMap() {
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.openMapModal(
+        'math_rocket',
+        this.getLang() === 'ru' ? 'Ракетный Перехват (Rocket Blaster)' : 'Koinot Qutqaruvchisi (Rocket Blaster)',
+        (lvl) => {
+          this.start(lvl);
+        }
+      );
+    }
+  }
+
   createExplosionParticles(x, y, color) {
     for (let i = 0; i < 20; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -239,8 +349,8 @@ class MathRocketGame {
         y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        size: Math.random() * 5 + 3,
-        color: Math.random() > 0.4 ? color : '#FFD166',
+        radius: Math.random() * 4 + 2,
+        color,
         alpha: 1
       });
     }
@@ -254,109 +364,127 @@ class MathRocketGame {
   }
 
   update() {
-    // Starfield scroll
-    this.stars.forEach(s => {
-      s.y += s.speed;
-      if (s.y > this.canvas.height) {
-        s.y = 0;
-        s.x = Math.random() * this.canvas.width;
-      }
-    });
+    // Move asteroids
+    let targetAsteroidsOffscreen = false;
 
-    // Asteroids movement
-    let allFell = true;
-    this.asteroids.forEach(ast => {
+    for (let i = this.asteroids.length - 1; i >= 0; i--) {
+      const ast = this.asteroids[i];
       ast.y += ast.speed;
-      ast.rot += ast.rotSpeed;
-      if (ast.y < this.canvas.height + 50) {
-        allFell = false;
-      }
-    });
 
-    if (allFell && this.asteroids.length > 0) {
-      // Respawn if all passed
+      if (ast.y > this.canvas.height + 40) {
+        if (ast.isCorrect) targetAsteroidsOffscreen = true;
+        this.asteroids.splice(i, 1);
+      }
+    }
+
+    // If correct asteroid escaped, generate new wave
+    if (targetAsteroidsOffscreen || this.asteroids.length === 0) {
       this.spawnAsteroidsForTarget();
     }
 
-    // Lasers fade
+    // Update laser beams
     for (let i = this.lasers.length - 1; i >= 0; i--) {
-      this.lasers[i].alpha -= 0.15;
+      this.lasers[i].alpha -= 0.08;
       if (this.lasers[i].alpha <= 0) this.lasers.splice(i, 1);
     }
 
-    // Particles fade
+    // Update explosion particles
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.alpha -= 0.035;
+      p.alpha -= 0.03;
       if (p.alpha <= 0) this.particles.splice(i, 1);
+    }
+
+    // Move starfield
+    for (let i = 0; i < this.stars.length; i++) {
+      this.stars[i].y += this.stars[i].speed;
+      if (this.stars[i].y > this.canvas.height) {
+        this.stars[i].y = 0;
+        this.stars[i].x = Math.random() * this.canvas.width;
+      }
     }
   }
 
   draw() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Deep space background
     this.ctx.fillStyle = '#0B0F19';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     // Stars
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    this.stars.forEach(s => {
-      this.ctx.beginPath();
-      this.ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-      this.ctx.fill();
-    });
+    this.ctx.fillStyle = '#FFFFFF';
+    for (let i = 0; i < this.stars.length; i++) {
+      const s = this.stars[i];
+      this.ctx.globalAlpha = Math.random() * 0.4 + 0.6;
+      this.ctx.fillRect(s.x, s.y, s.size, s.size);
+    }
+    this.ctx.globalAlpha = 1;
 
-    // Lasers
-    this.lasers.forEach(l => {
+    // Laser beams
+    for (let i = 0; i < this.lasers.length; i++) {
+      const l = this.lasers[i];
       this.ctx.save();
-      this.ctx.strokeStyle = `rgba(0, 230, 118, ${l.alpha})`;
-      this.ctx.lineWidth = 4;
+      this.ctx.strokeStyle = `rgba(56, 189, 248, ${l.alpha})`;
+      this.ctx.lineWidth = 5;
+      this.ctx.shadowColor = '#38BDF8';
+      this.ctx.shadowBlur = 15;
       this.ctx.beginPath();
       this.ctx.moveTo(l.x1, l.y1);
       this.ctx.lineTo(l.x2, l.y2);
       this.ctx.stroke();
       this.ctx.restore();
-    });
+    }
 
     // Asteroids
-    this.asteroids.forEach(ast => {
-      this.ctx.save();
-      this.ctx.translate(ast.x, ast.y);
-      this.ctx.rotate(ast.rot);
-
-      // Asteroid rock circle
-      this.ctx.fillStyle = '#1E293B';
-      this.ctx.strokeStyle = ast.color;
-      this.ctx.lineWidth = 3;
-      this.ctx.beginPath();
-      this.ctx.arc(0, 0, ast.radius, 0, Math.PI * 2);
-      this.ctx.fill();
-      this.ctx.stroke();
-
-      // Number text inside asteroid
-      this.ctx.rotate(-ast.rot); // unrotate text
-      this.ctx.fillStyle = '#FFFFFF';
-      this.ctx.font = 'bold 22px Fredoka, sans-serif';
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'middle';
-      this.ctx.fillText(ast.value, 0, 0);
-
-      this.ctx.restore();
-    });
+    for (let i = 0; i < this.asteroids.length; i++) {
+      const ast = this.asteroids[i];
+      this.drawAsteroid(ast);
+    }
 
     // Particles
-    this.particles.forEach(p => {
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
       this.ctx.save();
+      this.ctx.globalAlpha = p.alpha;
       this.ctx.fillStyle = p.color;
-      this.ctx.globalAlpha = Math.max(0, p.alpha);
       this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
       this.ctx.fill();
       this.ctx.restore();
-    });
+    }
 
-    // Rocket Hero at bottom center
-    this.drawRocket(this.canvas.width / 2, this.canvas.height - 45);
+    // Player Rocket
+    this.drawRocket(this.rocketX, this.canvas.height - 45);
+  }
+
+  drawAsteroid(ast) {
+    this.ctx.save();
+    this.ctx.translate(ast.x, ast.y);
+
+    // Glow effect
+    this.ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
+    this.ctx.shadowBlur = 8;
+
+    // Outer rock body
+    this.ctx.fillStyle = '#1E293B';
+    this.ctx.strokeStyle = '#475569';
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.arc(0, 0, ast.radius, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.stroke();
+
+    // Inner glowing number
+    this.ctx.fillStyle = '#F8FAFC';
+    this.ctx.font = 'bold 22px system-ui, sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText(ast.value, 0, 0);
+
+    this.ctx.restore();
   }
 
   drawRocket(x, y) {
@@ -382,23 +510,27 @@ class MathRocketGame {
   handleGameOver() {
     this.stop();
     window.mathAudio.playFanfare();
-    if (window.mathConfetti) window.mathConfetti.launch(80, 0.5, 0.5);
 
     const isRu = this.getLang() === 'ru';
-    const title = isRu ? 'Миссия Завершена! / Mission Complete!' : 'Missiya Yakunlandi! / Mission Complete!';
-    const scoreText = isRu ? `Набранные очки: <strong>${this.score}</strong>` : `Siz to‘plagan umumiy ball: <strong>${this.score}</strong>`;
-    const btnText = isRu ? '🚀 Полететь снова / Launch Again' : '🚀 Qaytadan Parvoz / Launch Again';
+    const title = isRu ? 'Игра окончена!' : 'O‘yin Yakunlandi!';
+    const scoreText = isRu ? `Набранные очки: <strong>${this.score} / ${this.targetScore}</strong>` : `To‘plangan ball: <strong>${this.score} / ${this.targetScore}</strong>`;
+    const btnText = isRu ? '🔄 Сыграть снова' : '🔄 Qaytadan Parvoz';
 
     const banner = document.getElementById('rocket-game-over-banner');
     if (banner) {
       banner.innerHTML = `
-        <div class="game-over-box bounce-in">
-          <div class="trophy-icon">🏆</div>
-          <h3>${title}</h3>
-          <p>${scoreText}</p>
-          <button class="btn btn-primary" onclick="window.mathRocketGame.start()">
-            ${btnText}
-          </button>
+        <div class="game-over-box bounce-in" style="background: rgba(15, 23, 42, 0.95); border: 3px solid #EF4444; border-radius: 24px; padding: 25px; color: #FFF; text-align: center; max-width: 480px; margin: 0 auto;">
+          <div class="trophy-icon" style="font-size: 2.4rem; margin-bottom: 8px;">💥</div>
+          <h3 style="font-size: 1.4rem; color: #EF4444; margin-bottom: 10px;">${title}</h3>
+          <p style="font-size: 1rem; color: #CBD5E1; margin-bottom: 18px;">${scoreText}</p>
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="window.mathRocketGame.start(${this.currentLevel})">
+              ${btnText}
+            </button>
+            <button class="game-level-map-btn" onclick="window.mathRocketGame.openWorldMap()">
+              🗺️ 50+ Bosqichlar
+            </button>
+          </div>
         </div>
       `;
       banner.style.display = 'block';

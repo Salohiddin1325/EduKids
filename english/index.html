@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="uz" data-theme="light">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KiddoLingo - Yosh Bolalar Uchun Ingliz Tili | Английский язык для детей</title>
-  <meta name="description" content="Yosh bolalar uchun zamonaviy, rang-barang va qiziqarli ingliz tili o‘rganish platformasi. Lug‘at, ovozli talaffuz, grammatika, viktorinalar va mini-o‘yinlar!">
-  
+  <meta name="description"
+    content="Yosh bolalar uchun zamonaviy, rang-barang va qiziqarli ingliz tili o‘rganish platformasi. Lug‘at, ovozli talaffuz, grammatika, viktorinalar va mini-o‘yinlar!">
+
   <!-- Favicon Emoji -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦁</text></svg>">
-  
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦁</text></svg>">
+
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="../shared/shared.css">
   <link rel="stylesheet" href="../shared/subscription.css">
+  <link rel="stylesheet" href="../shared/level-map.css">
   <link rel="stylesheet" href="../shared/chatbot.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <!-- Floating Background Clouds -->
@@ -83,7 +88,8 @@
         </div>
 
         <!-- Turtle Mode Button -->
-        <button class="btn-ctrl btn-turtle" id="turtle-toggle-btn" title="Toshbaqa rejimi: so‘zlarni sekinroq va aniq eshiting!">
+        <button class="btn-ctrl btn-turtle" id="turtle-toggle-btn"
+          title="Toshbaqa rejimi: so‘zlarni sekinroq va aniq eshiting!">
           <span>🐢</span>
           <span id="txt-turtle">Toshbaqa</span>
         </button>
@@ -109,7 +115,7 @@
 
   <!-- Main Container -->
   <main class="app-container">
-    
+
     <!-- Friendly Interactive Mascot Hero Banner -->
     <section class="mascot-hero-card" id="mascot-hero">
       <div class="mascot-avatar-wrap" id="interactive-mascot" title="Menga bosing! / Tap me!">
@@ -121,7 +127,8 @@
         <div class="speech-bubble">
           <h2 class="mascot-greeting" id="mascot-greeting">Salom, yosh do‘stim! Men Zippyman! 🎉</h2>
           <p class="mascot-speech-text" id="mascot-speech-text">
-            Keling, ingliz tilini birgalikda o‘rganamiz! Kartochkalarni bosing, talaffuzni tinglang va qiziqarli o‘yinlar o‘ynang!
+            Keling, ingliz tilini birgalikda o‘rganamiz! Kartochkalarni bosing, talaffuzni tinglang va qiziqarli
+            o‘yinlar o‘ynang!
           </p>
         </div>
       </div>
@@ -161,33 +168,52 @@
     <section class="app-section active" id="section-vocab">
       <div class="section-banner">
         <h2 id="sec-vocab-title">Sehrli So‘zlar Olami 🌈</h2>
-        <p id="sec-vocab-desc">Har bir kartochkani bosing, inglizcha talaffuzini eshiting va tarjimasini bilib oling!</p>
+        <p id="sec-vocab-desc">Har bir kartochkani bosing, inglizcha talaffuzini eshiting va tarjimasini bilib oling!
+        </p>
       </div>
 
       <!-- Search & Category Filters -->
       <div class="vocab-filter-tray">
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
-          <input type="text" id="vocab-search-input" class="search-input" placeholder="So‘z qidiring (masalan: Lion, Apple, Olma, Книга)...">
+          <input type="text" id="vocab-search-input" class="search-input"
+            placeholder="So‘z qidiring (masalan: Lion, Apple, Olma, Книга)...">
         </div>
 
         <div class="category-chips-row">
-          <button class="category-filter-btn active" data-category="all" id="cat-btn-all">✨ Barchasi</button>
-          <button class="category-filter-btn" data-category="animals" id="cat-btn-animals">🦁 Hayvonlar</button>
-          <button class="category-filter-btn" data-category="fruits" id="cat-btn-fruits">🍎 Mevalar & Ovqat</button>
-          <button class="category-filter-btn" data-category="colors" id="cat-btn-colors">🎨 Rang & Shakllar</button>
-          <button class="category-filter-btn" data-category="family" id="cat-btn-family">👨‍👩‍👧 Oila & Odamlar</button>
-          <button class="category-filter-btn" data-category="nature" id="cat-btn-nature">🌲 Tabiat & Ob-havo</button>
-          <button class="category-filter-btn" data-category="body" id="cat-btn-body">🖐️ Tana a'zolari</button>
-          <button class="category-filter-btn" data-category="school" id="cat-btn-school">📚 Maktab & Uy</button>
-          <button class="category-filter-btn" data-category="actions" id="cat-btn-actions">🏃‍♂️ Harakatlar</button>
-          <button class="category-filter-btn" data-category="clothes" id="cat-btn-clothes">🧸 Kiyim & O‘yinchoq</button>
-          <button class="category-filter-btn" data-category="space" id="cat-btn-space">🚀 Koinot & Vaqt</button>
+          <button class="category-filter-btn active" data-category="all" id="cat-btn-all">✨ Barchasi (500)</button>
+          <button class="category-filter-btn" data-category="animals" id="cat-btn-animals">🦁 Hayvonlar (25)</button>
+          <button class="category-filter-btn" data-category="fruits" id="cat-btn-fruits">🍎 Mevalar (25)</button>
+          <button class="category-filter-btn" data-category="space" id="cat-btn-space">🚀 Koinot (25)</button>
+          <button class="category-filter-btn" data-category="vehicles" id="cat-btn-vehicles">🚗 Transport (25)</button>
+          <button class="category-filter-btn" data-category="emotions" id="cat-btn-emotions">😊 Hissiyotlar
+            (25)</button>
+          <button class="category-filter-btn" data-category="school" id="cat-btn-school">📚 Maktab (25)</button>
+          <button class="category-filter-btn" data-category="jobs" id="cat-btn-jobs">👩‍⚕️ Kasblar (25)</button>
+          <button class="category-filter-btn" data-category="nature" id="cat-btn-nature">🌲 Tabiat (25)</button>
+          <button class="category-filter-btn" data-category="body" id="cat-btn-body">🖐️ Tana a‘zolari (25)</button>
+          <button class="category-filter-btn" data-category="colors" id="cat-btn-colors">🎨 Ranglar (25)</button>
+          <button class="category-filter-btn" data-category="shapes" id="cat-btn-shapes">🔺 Shakllar (25)</button>
+          <button class="category-filter-btn" data-category="house" id="cat-btn-house">🏠 Uy & Jihozlar (25)</button>
+          <button class="category-filter-btn" data-category="verbs" id="cat-btn-verbs">🏃 Harakatlar (25)</button>
+          <button class="category-filter-btn" data-category="adjectives" id="cat-btn-adjectives">🌟 Sifatlar
+            (25)</button>
+          <button class="category-filter-btn" data-category="weather" id="cat-btn-weather">☀️ Ob-havo (25)</button>
+          <button class="category-filter-btn" data-category="food" id="cat-btn-food">🍕 Taomlar (25)</button>
+          <button class="category-filter-btn" data-category="sports" id="cat-btn-sports">⚽ Sport (25)</button>
+          <button class="category-filter-btn" data-category="clothing" id="cat-btn-clothing">👕 Kiyimlar (25)</button>
+          <button class="category-filter-btn" data-category="family" id="cat-btn-family">👨‍👩‍👧 Oila (25)</button>
+          <button class="category-filter-btn" data-category="time" id="cat-btn-time">⏰ Vaqt & Fasllar (25)</button>
         </div>
       </div>
 
       <!-- Vocabulary Cards Grid -->
       <div class="vocab-grid" id="vocab-cards-grid">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Vocabulary Pagination Controls -->
+      <div class="vocab-pagination-wrap" id="vocab-pagination-controls">
         <!-- Injected via JavaScript -->
       </div>
     </section>
@@ -212,7 +238,8 @@
     <section class="app-section" id="section-exercises">
       <div class="section-banner">
         <h2 id="sec-exercises-title">Mashqlar va Sinovlar 🎯</h2>
-        <p id="sec-exercises-desc">Bilimlaringizni sinab ko‘ring, to‘g‘ri javoblar uchun yulduzlar va ballar to‘plang!</p>
+        <p id="sec-exercises-desc">Bilimlaringizni sinab ko‘ring, to‘g‘ri javoblar uchun yulduzlar va ballar to‘plang!
+        </p>
       </div>
 
       <!-- Sub Navigation for Exercises -->
@@ -279,6 +306,12 @@
             <div class="memory-stat-pill">
               <span id="lbl-memory-time">Vaqt: </span><strong id="memory-timer-display">0s</strong>
             </div>
+            <div class="memory-stat-pill" style="border-color: #8B5CF6; background: #F5F3FF;">
+              <span>🎯 Daraja: </span><strong id="memory-level-display" style="color: #6D28D9;">1</strong>
+            </div>
+            <button class="game-level-map-btn" onclick="window.miniGamesManager.openMemoryMap()">
+              🗺️ 50+ Daraja
+            </button>
             <button class="btn btn-ctrl" onclick="window.miniGamesManager.initMemoryGame()">
               <span id="btn-memory-refresh">🔄 Yangilash</span>
             </button>
@@ -306,7 +339,16 @@
               <span id="lbl-balloon-score">⭐ Ball:</span> <span id="balloon-score-display">0</span>
             </div>
 
-            <button class="btn btn-primary" id="balloon-start-btn" onclick="window.miniGamesManager.toggleBalloonGame()">
+            <div class="balloon-score-pill" style="border-color: #10B981; background: #ECFDF5;">
+              <span>🎯 Daraja:</span> <strong id="balloon-level-display" style="color: #047857;">1</strong>
+            </div>
+
+            <button class="game-level-map-btn" onclick="window.miniGamesManager.openBalloonMap()">
+              🗺️ 50+ Daraja
+            </button>
+
+            <button class="btn btn-primary" id="balloon-start-btn"
+              onclick="window.miniGamesManager.toggleBalloonGame()">
               <span id="txt-balloon-start">▶️ O‘yinni boshlash</span>
             </button>
           </div>
@@ -314,6 +356,8 @@
           <div class="balloon-arena" id="balloon-arena">
             <!-- Floating Balloons Spawn Here -->
           </div>
+
+          <div id="balloon-win-banner" class="memory-win-banner" style="display: none;"></div>
         </div>
       </div>
     </section>
@@ -346,13 +390,17 @@
   <!-- Cute Footer -->
   <footer class="app-footer">
     <div class="footer-mascot">🦊 🦁 🐼 🐬</div>
-    <p id="english-footer-p1"><strong>KiddoLingo</strong> - Bolalar uchun eng quvnoq va xavfsiz ingliz tili platformasi.</p>
-    <p class="footer-note" id="english-footer-p2">Web Speech API va Web Audio API asosida tayyorlangan. Internet talab qilmasdan ham ravon ishlaydi!</p>
+    <p id="english-footer-p1"><strong>KiddoLingo</strong> - Bolalar uchun eng quvnoq va xavfsiz ingliz tili platformasi.
+    </p>
+    <p class="footer-note" id="english-footer-p2">Web Speech API va Web Audio API asosida tayyorlangan. Internet talab
+      qilmasdan ham ravon ishlaydi!</p>
   </footer>
 
-  <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/uzbek-speech.js"></script>
   <script src="../shared/subscription.js"></script>
+  <script src="../shared/screen-vfx.js"></script>
   <script src="../shared/gamification.js"></script>
+  <script src="../shared/level-map.js"></script>
   <script src="../shared/mascot-companion.js"></script>
   <script src="../shared/chatbot.js"></script>
   <script src="js/data.js"></script>
@@ -362,4 +410,5 @@
   <script src="js/games.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>

@@ -9,6 +9,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>">
   <link rel="stylesheet" href="../shared/shared.css">
   <link rel="stylesheet" href="../shared/subscription.css">
+  <link rel="stylesheet" href="../shared/level-map.css">
   <link rel="stylesheet" href="../shared/chatbot.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -347,8 +348,20 @@
             <span id="maze-stars-label">Yulduzlar:</span> <strong id="maze-stars-display" style="color: var(--amber);">0 / 4</strong>
           </div>
 
+          <div class="lab-stat-pill" style="border-color: #8B5CF6; background: #F5F3FF;">
+            <span>🎯 Daraja:</span> <strong id="maze-level-display" style="color: #6D28D9;">1</strong>
+          </div>
+
+          <button class="game-level-map-btn" onclick="window.magnetMazeGame.openWorldMap()">
+            🗺️ 50+ Daraja
+          </button>
+
           <button class="btn-ctrl" id="maze-toggle-pole-btn">
             <span>🧲 Rejim: <strong>Tortish (Attract)</strong></span>
+          </button>
+
+          <button class="btn btn-ctrl" onclick="window.magnetMazeGame.resetBallPosition()" title="To‘pni boshiga qaytarish">
+            🔄 To‘pni Qaytarish
           </button>
 
           <button class="btn btn-primary" id="maze-start-btn">
@@ -390,8 +403,11 @@
   </footer>
 
   <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/uzbek-speech.js"></script>
   <script src="../shared/subscription.js"></script>
+  <script src="../shared/screen-vfx.js"></script>
   <script src="../shared/gamification.js"></script>
+  <script src="../shared/level-map.js"></script>
   <script src="../shared/mascot-companion.js"></script>
   <script src="../shared/chatbot.js"></script>
   <script src="js/audio.js"></script>

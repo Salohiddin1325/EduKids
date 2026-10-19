@@ -11,6 +11,7 @@
   
   <link rel="stylesheet" href="../shared/shared.css">
   <link rel="stylesheet" href="../shared/subscription.css">
+  <link rel="stylesheet" href="../shared/level-map.css">
   <link rel="stylesheet" href="../shared/chatbot.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -127,6 +128,11 @@
         <span id="tab-txt-lessons">Qoidalar & Ko‘rgazmalar</span>
       </button>
 
+      <button class="math-nav-btn" data-target="sec-multiplication">
+        <span>✖️</span>
+        <span id="tab-txt-multiplication">Karra Jadvali</span>
+      </button>
+
       <button class="math-nav-btn" data-target="sec-practice">
         <span>🎯</span>
         <span id="tab-txt-practice">Mashqlar & Misollar</span>
@@ -147,6 +153,20 @@
         <span id="tab-txt-badges">Yutuqlar & Nishonlar</span>
       </button>
     </nav>
+
+    <!-- =========================================================================
+         SECTION 0.5: INTERACTIVE MULTIPLICATION TABLE (Karra Jadvali)
+         ========================================================================= -->
+    <section class="math-section" id="sec-multiplication">
+      <div class="section-hero-title">
+        <h2 id="sec-mult-title">Interaktiv Karra Jadvali ✖️</h2>
+        <p id="sec-mult-desc">Istalgan katakchani bosing, vizual mevali savatchalar orqali hisoblang va talaffuzini tinglang!</p>
+      </div>
+
+      <div id="multiplication-container">
+        <!-- Injected via multiplication.js -->
+      </div>
+    </section>
 
     <!-- =========================================================================
          SECTION 1: MATH RULES & FORMULAS (Qoidalar)
@@ -236,6 +256,14 @@
             <span id="hud-combo-label">Kombinatsiya:</span> <strong id="rocket-combo" style="color: var(--orange);">x1</strong>
           </div>
 
+          <div class="hud-stat-pill" style="border-color: #3B82F6; background: #EFF6FF;">
+            <span>🎯 Daraja:</span> <strong id="rocket-level-display" style="color: #1D4ED8;">1</strong>
+          </div>
+
+          <button class="game-level-map-btn" onclick="window.mathRocketGame.openWorldMap()">
+            🗺️ 50+ Daraja
+          </button>
+
           <button class="btn btn-primary" id="rocket-start-btn" onclick="window.mathRocketGame.start()">
             🚀 O‘yinni boshlash / Launch Game
           </button>
@@ -309,8 +337,11 @@
   </footer>
 
   <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/uzbek-speech.js"></script>
   <script src="../shared/subscription.js"></script>
+  <script src="../shared/screen-vfx.js"></script>
   <script src="../shared/gamification.js"></script>
+  <script src="../shared/level-map.js"></script>
   <script src="../shared/mascot-companion.js"></script>
   <script src="../shared/chatbot.js"></script>
   <script src="js/audio.js"></script>
@@ -319,6 +350,7 @@
   <script src="js/lessons.js"></script>
   <script src="js/practice.js"></script>
   <script src="js/fraction-sandbox.js"></script>
+  <script src="js/multiplication.js"></script>
   <script src="js/game.js"></script>
   <script src="js/app.js"></script>
 </body>

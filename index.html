@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared/shared.css">
   <link rel="stylesheet" href="shared/subscription.css">
+  <link rel="stylesheet" href="shared/level-map.css">
   <link rel="stylesheet" href="shared/chatbot.css">
 
   <style>
@@ -310,15 +311,19 @@
     </div>
 
     <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="btn btn-ctrl btn-star-store" onclick="window.gamificationHub.openStoreModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; border: none;">
-        <span>⭐</span> <span id="txt-hub-store">Do‘kon</span>
+      <button class="btn btn-ctrl btn-pro-upgrade" onclick="window.subscriptionManager.openPricingModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 2px solid #F59E0B; color: #92400E; font-weight: 800;" title="Pro Plan ($13/oy)">
+        <span>👑</span> <span id="txt-hub-pro">PRO ($13/oy)</span>
       </button>
 
-      <button class="btn btn-ctrl" onclick="window.subscriptionManager.openCertificateModal()" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Yutuq Sertifikati">
+      <button class="btn btn-ctrl btn-star-store" onclick="window.gamificationHub.openStoreModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; border: none;">
+        <span>⭐</span> <span id="txt-hub-store">Astro-Shop</span>
+      </button>
+
+      <button class="btn btn-ctrl" onclick="window.subscriptionManager.openCertificateModal()" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Grand Master Sertifikati">
         <span>📜</span> <span id="txt-hub-cert" style="font-size: 0.88rem; font-weight: 700;">Sertifikat</span>
       </button>
 
-      <button class="btn btn-ctrl btn-parent-mode" onclick="window.gamificationHub.openParentDashboard()" style="padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Ota-onalar paneli">
+      <button class="btn btn-ctrl btn-parent-mode" onclick="window.gamificationHub.openParentDashboard()" style="padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Ota-onalar paneli (OTP)">
         <span>👨‍👩‍👧</span>
       </button>
 
@@ -339,6 +344,15 @@
     <div class="hub-badge" id="hub-badge">🌟 Yosh Bolalar Ta'lim Portali</div>
     <h1 id="hub-title">Keling, Birgalikda O‘rganamiz!</h1>
     <p id="hub-desc">Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!</p>
+
+    <!-- Discount Badge -->
+    <div class="hub-discount-banner" onclick="window.subscriptionManager.openPricingModal()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border: 2px solid #F59E0B; padding: 8px 18px; border-radius: 999px; margin-top: 14px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);">
+      <span style="font-size: 1.1rem;">🔥</span>
+      <span id="hub-discount-text" style="font-size: 0.92rem; font-weight: 800; color: #92400E;">
+        Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat
+      </span>
+      <span style="background: #F59E0B; color: #FFF; font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 999px;">PRO</span>
+    </div>
   </header>
 
   <main class="portal-cards-grid">
@@ -349,9 +363,9 @@
       <p class="portal-desc" id="card-en-desc">Ovozli talaffuzli lug‘at, sodda grammatika saboqlari, viktorinalar va havo sharlari o‘yini!</p>
       
       <div class="portal-features-list">
-        <span class="feature-tag" id="en-feat-1">🔊 Ovozli Talaffuz</span>
-        <span class="feature-tag" id="en-feat-2">🐢 Toshbaqa Rejimi</span>
-        <span class="feature-tag" id="en-feat-3">🎈 Shar Portlatish</span>
+        <span class="feature-tag" id="en-feat-1">📚 500 ta So‘z</span>
+        <span class="feature-tag" id="en-feat-2">🔊 Audio Talaffuz</span>
+        <span class="feature-tag" id="en-feat-3">🎮 50+ Bosqichlar</span>
         <span class="feature-tag" id="en-feat-4">🧠 Xotira Kartalari</span>
       </div>
 
@@ -365,13 +379,13 @@
     <a href="./math/index.html" class="portal-card card-math">
       <div class="portal-mascot">🚀</div>
       <h2 id="card-math-title">Matematika (MathKids)</h2>
-      <p class="portal-desc" id="card-math-desc">Jonli hisoblagichlar, misollar generatori, chizish uchun qoralama doska va kosmik raketa o‘yini!</p>
+      <p class="portal-desc" id="card-math-desc">Jonli hisoblagichlar, 12×12 karra jadvali, 50+ darajali kosmik raketa o‘yini va 60s poyga!</p>
       
       <div class="portal-features-list">
-        <span class="feature-tag" id="math-feat-1">🍎 Mevali Hisoblagich</span>
-        <span class="feature-tag" id="math-feat-2">📝 Qoralama Doska</span>
+        <span class="feature-tag" id="math-feat-1">✖️ Karra Jadvali (12×12)</span>
+        <span class="feature-tag" id="math-feat-2">🍎 Mevali Hisoblagich</span>
         <span class="feature-tag" id="math-feat-3">⚡ 60s Poyga</span>
-        <span class="feature-tag" id="math-feat-4">🚀 Raketa O‘yini</span>
+        <span class="feature-tag" id="math-feat-4">🎮 50+ Bosqichlar</span>
       </div>
 
       <div class="portal-btn">
@@ -384,13 +398,13 @@
     <a href="./physics/index.html" class="portal-card card-physics">
       <div class="portal-mascot">⚛️</div>
       <h2 id="card-phys-title">Fizika (PhysicsKids)</h2>
-      <p class="portal-desc" id="card-phys-desc">Gravitatsiya minorasi, magnit maydoni, muz va bug‘ laboratoriyasi hamda magnit labirinti o‘yini!</p>
+      <p class="portal-desc" id="card-phys-desc">Gravitatsiya minorasi, magnit maydoni, muz va bug‘ laboratoriyasi hamda 50+ darajali magnit labirinti!</p>
       
       <div class="portal-features-list">
         <span class="feature-tag" id="phys-feat-1">🍏 Gravitatsiya</span>
         <span class="feature-tag" id="phys-feat-2">🧲 Magnit Laboratoriyasi</span>
-        <span class="feature-tag" id="phys-feat-3">🧊 Modda O‘zgarishi</span>
-        <span class="feature-tag" id="phys-feat-4">🌀 Magnit Labirinti</span>
+        <span class="feature-tag" id="phys-feat-3">🌀 Magnit Labirinti</span>
+        <span class="feature-tag" id="phys-feat-4">🎮 50+ Bosqichlar</span>
       </div>
 
       <div class="portal-btn">
@@ -410,26 +424,27 @@
         badge: "🌟 Yosh Bolalar Ta'lim Portali",
         title: "Keling, Birgalikda O‘rganamiz!",
         desc: "Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!",
+        discount: "Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat",
         cardEnTitle: "Ingliz Tili (KiddoLingo)",
-        cardEnDesc: "Ovozli talaffuzli lug‘at, sodda grammatika saboqlari, viktorinalar va havo sharlari o‘yini!",
-        enFeat1: "🔊 Ovozli Talaffuz",
-        enFeat2: "🐢 Toshbaqa Rejimi",
-        enFeat3: "🎈 Shar Portlatish",
+        cardEnDesc: "500 ta so‘zli lug‘at, ovozli talaffuz, sodda grammatika va 50+ darajali mini-o‘yinlar!",
+        enFeat1: "📚 500 ta So‘z",
+        enFeat2: "🔊 Audio Talaffuz",
+        enFeat3: "🎮 50+ Bosqichlar",
         enFeat4: "🧠 Xotira Kartalari",
         enBtn: "Ingliz Tilini Boshlash",
         cardMathTitle: "Matematika (MathKids)",
-        cardMathDesc: "Jonli hisoblagichlar, misollar generatori, chizish uchun qoralama doska va kosmik raketa o‘yini!",
-        mathFeat1: "🍎 Mevali Hisoblagich",
-        mathFeat2: "📝 Qoralama Doska",
+        cardMathDesc: "12×12 karra jadvali, mevali hisoblagich, 50+ darajali kosmik raketa va 60s poyga!",
+        mathFeat1: "✖️ Karra Jadvali (12×12)",
+        mathFeat2: "🍎 Mevali Hisoblagich",
         mathFeat3: "⚡ 60s Poyga",
-        mathFeat4: "🚀 Raketa O‘yini",
+        mathFeat4: "🎮 50+ Bosqichlar",
         mathBtn: "Matematikani Boshlash",
         cardPhysTitle: "Fizika (PhysicsKids)",
-        cardPhysDesc: "Gravitatsiya minorasi, magnit maydoni, muz va bug‘ laboratoriyasi hamda magnit labirinti o‘yini!",
+        cardPhysDesc: "Gravitatsiya minorasi, magnit maydoni, laboratoriya hamda 50+ darajali magnit labirinti!",
         physFeat1: "🍏 Gravitatsiya",
         physFeat2: "🧲 Magnit Laboratoriyasi",
-        physFeat3: "🧊 Modda O‘zgarishi",
-        physFeat4: "🌀 Magnit Labirinti",
+        physFeat3: "🌀 Magnit Labirinti",
+        physFeat4: "🎮 50+ Bosqichlar",
         physBtn: "Fizikani Boshlash",
         footer: "KiddoLingo & MathKids & PhysicsKids — 100% oflayn ishlaydigan, bolalar uchun xavfsiz va quvnoq ta'lim loyihasi."
       },
@@ -437,26 +452,27 @@
         badge: "🌟 Детский Образовательный Портал",
         title: "Давайте Учиться Вместе!",
         desc: "Какой предмет ты хочешь изучать? Выбери один из предметов ниже и отправляйся в увлекательное путешествие!",
+        discount: "Спецпредложение: Pro план $13/мес (160,000 UZS) • 50+ Уровней, 500 Слов & Официальный Сертификат",
         cardEnTitle: "Английский Язык (KiddoLingo)",
-        cardEnDesc: "Словарь с озвучкой произношения, простые уроки грамматики, викторины и игра с воздушными шариками!",
-        enFeat1: "🔊 Озвучка Слов",
-        enFeat2: "🐢 Режим Черепашки",
-        enFeat3: "🎈 Лопание Шариков",
+        cardEnDesc: "Словарь на 500 слов с озвучкой, уроки грамматики и 50+ уровней мини-игр!",
+        enFeat1: "📚 500 Слов",
+        enFeat2: "🔊 Озвучка Слов",
+        enFeat3: "🎮 50+ Уровней",
         enFeat4: "🧠 Карточки Памяти",
         enBtn: "Начать Английский",
         cardMathTitle: "Математика (MathKids)",
-        cardMathDesc: "Живые счетчики, генератор примеров, интерактивная доска и игра с космической ракетой!",
-        mathFeat1: "🍎 Фруктовый Счетчик",
-        mathFeat2: "📝 Доска для Рисования",
+        cardMathDesc: "Таблица умножения 12×12, фруктовый счетчик, игра-ракета на 50+ уровней и 60-сек гонка!",
+        mathFeat1: "✖️ Таблица 12×12",
+        mathFeat2: "🍎 Фруктовый Счетчик",
         mathFeat3: "⚡ 60-сек Гонка",
-        mathFeat4: "🚀 Игра Ракета",
+        mathFeat4: "🎮 50+ Уровней",
         mathBtn: "Начать Математику",
         cardPhysTitle: "Физика (PhysicsKids)",
-        cardPhysDesc: "Башня гравитации, опыты с магнитами, лаборатория льда и пара, а также магнитный лабиринт!",
+        cardPhysDesc: "Башня гравитации, опыты с магнитами и магнитный лабиринт на 50+ уровней!",
         physFeat1: "🍏 Гравитация",
         physFeat2: "🧲 Лаборатория Магнитов",
-        physFeat3: "🧊 Состояния Веществ",
-        physFeat4: "🌀 Магнитный Лабиринт",
+        physFeat3: "🌀 Магнитный Лабиринт",
+        physFeat4: "🎮 50+ Уровней",
         physBtn: "Начать Физику",
         footer: "KiddoLingo & MathKids & PhysicsKids — 100% офлайн, безопасный и веселый образовательный проект для детей."
       }
@@ -476,6 +492,12 @@
       document.getElementById('hub-badge').textContent = t.badge;
       document.getElementById('hub-title').textContent = t.title;
       document.getElementById('hub-desc').textContent = t.desc;
+
+      const discEl = document.getElementById('hub-discount-text');
+      if (discEl && t.discount) discEl.textContent = t.discount;
+
+      const proTxt = document.getElementById('txt-hub-pro');
+      if (proTxt) proTxt.textContent = lang === 'ru' ? 'PRO ($13/мес)' : 'PRO ($13/oy)';
 
       document.getElementById('card-en-title').textContent = t.cardEnTitle;
       document.getElementById('card-en-desc').textContent = t.cardEnDesc;
@@ -535,8 +557,11 @@
     });
   </script>
 
+  <script src="shared/uzbek-speech.js"></script>
   <script src="shared/subscription.js"></script>
+  <script src="shared/screen-vfx.js"></script>
   <script src="shared/gamification.js"></script>
+  <script src="shared/level-map.js"></script>
   <script src="shared/mascot-companion.js"></script>
   <script src="shared/chatbot.js"></script>
 </body>

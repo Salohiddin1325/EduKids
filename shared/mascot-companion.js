@@ -328,6 +328,9 @@ class AstroCatMascot {
         </div>
 
         <div class="mascot-svg-wrap">
+          <!-- Layer 0: Equipped Magical Pet -->
+          <div class="mascot-item-pet" id="mascot-layer-pet"></div>
+
           <!-- Layer 1: Equipped Outfit -->
           <div class="mascot-item-outfit" id="mascot-layer-outfit"></div>
 
@@ -401,6 +404,63 @@ class AstroCatMascot {
     this.updateEquippedVisuals();
   }
 
+  getBaseSVG() {
+    return `
+      <svg class="mascot-base-avatar" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="catHeadGradPrev" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFD166" />
+            <stop offset="100%" stop-color="#F4A261" />
+          </linearGradient>
+          <linearGradient id="catHelmetGlowPrev" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.8" />
+            <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.3" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="44" fill="url(#catHelmetGlowPrev)" stroke="#38BDF8" stroke-width="2.5" />
+        <polygon points="26,38 33,14 44,28" fill="#F4A261" stroke="#E76F51" stroke-width="2" stroke-linejoin="round" />
+        <polygon points="29,35 34,20 41,28" fill="#FFB5A7" />
+        <polygon points="74,38 67,14 56,28" fill="#F4A261" stroke="#E76F51" stroke-width="2" stroke-linejoin="round" />
+        <polygon points="71,35 66,20 59,28" fill="#FFB5A7" />
+        <circle cx="50" cy="52" r="32" fill="url(#catHeadGradPrev)" stroke="#E76F51" stroke-width="2.5" />
+        <circle cx="34" cy="58" r="5" fill="#FF8FA3" opacity="0.6" />
+        <circle cx="66" cy="58" r="5" fill="#FF8FA3" opacity="0.6" />
+        <circle cx="38" cy="48" r="6" fill="#1E293B" />
+        <circle cx="36" cy="46" r="2.2" fill="#FFFFFF" />
+        <circle cx="40" cy="50" r="1.1" fill="#FFFFFF" />
+        <circle cx="62" cy="48" r="6" fill="#1E293B" />
+        <circle cx="60" cy="46" r="2.2" fill="#FFFFFF" />
+        <circle cx="64" cy="50" r="1.1" fill="#FFFFFF" />
+        <polygon points="50,56 46,53 54,53" fill="#E76F51" />
+        <path d="M46 56 Q50 60 50 58 Q50 60 54 56" stroke="#8D3B1B" stroke-width="2" stroke-linecap="round" fill="none" />
+        <line x1="22" y1="52" x2="32" y2="54" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="22" y1="58" x2="32" y2="57" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="78" y1="52" x2="68" y2="54" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="78" y1="58" x2="68" y2="57" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
+        <path d="M22 34 Q50 18 78 34" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
+      </svg>
+    `;
+  }
+
+  getMascotHTML() {
+    const equipped = (window.gamificationHub && window.gamificationHub.equipped) ? window.gamificationHub.equipped : {};
+    const items = typeof STORE_ITEMS !== 'undefined' ? STORE_ITEMS : [];
+    const hatItem = equipped.hat ? items.find(i => i.id === equipped.hat) : null;
+    const accItem = equipped.acc ? items.find(i => i.id === equipped.acc) : null;
+    const outfitItem = equipped.outfit ? items.find(i => i.id === equipped.outfit) : null;
+    const petItem = equipped.pet ? items.find(i => i.id === equipped.pet) : null;
+
+    return `
+      <div class="mascot-svg-wrap" style="position: relative; width: 110px; height: 110px;">
+        <div class="mascot-item-pet" style="position: absolute; top: 10px; right: -24px; font-size: 2.1rem; z-index: 12;">${petItem ? petItem.emoji : ''}</div>
+        <div class="mascot-item-outfit" style="position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); font-size: 1.9rem; z-index: 9;">${outfitItem ? outfitItem.emoji : ''}</div>
+        ${this.getBaseSVG()}
+        <div class="mascot-item-acc" style="position: absolute; top: 26px; left: 50%; transform: translateX(-50%); font-size: 1.85rem; z-index: 11;">${accItem ? accItem.emoji : ''}</div>
+        <div class="mascot-item-hat" style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 2.4rem; z-index: 10;">${hatItem ? hatItem.emoji : ''}</div>
+      </div>
+    `;
+  }
+
   updateEquippedVisuals() {
     if (!window.gamificationHub) return;
     const equipped = window.gamificationHub.equipped;
@@ -408,10 +468,11 @@ class AstroCatMascot {
     const hatEl = document.getElementById('mascot-layer-hat');
     const accEl = document.getElementById('mascot-layer-acc');
     const outfitEl = document.getElementById('mascot-layer-outfit');
+    const petEl = document.getElementById('mascot-layer-pet');
 
     if (hatEl) {
       if (equipped && equipped.hat) {
-        const item = STORE_ITEMS.find(i => i.id === equipped.hat);
+        const item = (typeof STORE_ITEMS !== 'undefined' ? STORE_ITEMS : []).find(i => i.id === equipped.hat);
         hatEl.textContent = item ? item.emoji : '';
       } else {
         hatEl.textContent = '';
@@ -420,7 +481,7 @@ class AstroCatMascot {
 
     if (accEl) {
       if (equipped && equipped.acc) {
-        const item = STORE_ITEMS.find(i => i.id === equipped.acc);
+        const item = (typeof STORE_ITEMS !== 'undefined' ? STORE_ITEMS : []).find(i => i.id === equipped.acc);
         accEl.textContent = item ? item.emoji : '';
       } else {
         accEl.textContent = '';
@@ -429,10 +490,19 @@ class AstroCatMascot {
 
     if (outfitEl) {
       if (equipped && equipped.outfit) {
-        const item = STORE_ITEMS.find(i => i.id === equipped.outfit);
+        const item = (typeof STORE_ITEMS !== 'undefined' ? STORE_ITEMS : []).find(i => i.id === equipped.outfit);
         outfitEl.textContent = item ? item.emoji : '';
       } else {
         outfitEl.textContent = '';
+      }
+    }
+
+    if (petEl) {
+      if (equipped && equipped.pet) {
+        const item = (typeof STORE_ITEMS !== 'undefined' ? STORE_ITEMS : []).find(i => i.id === equipped.pet);
+        petEl.textContent = item ? item.emoji : '';
+      } else {
+        petEl.textContent = '';
       }
     }
   }
@@ -598,21 +668,7 @@ class AstroCatMascot {
       };
     }
 
-    // 4. Russian Voice (standard Windows CIS fallback - reading phonetic Cyrillic)
-    // Produces an authentic, natural Central Asian / Uzbek accent without ANY English accent!
-    const ruVoice = this.voices.find(v => 
-      (v.lang && v.lang.toLowerCase().startsWith('ru')) ||
-      (v.name && (v.name.toLowerCase().includes('russian') || v.name.toLowerCase().includes('русск') || v.name.toLowerCase().includes('irina')))
-    );
-    if (ruVoice) {
-      return {
-        voice: ruVoice,
-        langCode: 'ru-RU',
-        textToSpeak: this.uzLatinToPhoneticCyrillic(rawText)
-      };
-    }
-
-    // 5. Spanish / Italian Voice (pure Latin vowels, avoids English diphthongs)
+    // 4. Spanish / Italian Voice (pure Latin vowels, avoids English diphthongs)
     const latinVoice = this.voices.find(v => 
       (v.lang && (v.lang.toLowerCase().startsWith('es') || v.lang.toLowerCase().startsWith('it')))
     );
@@ -634,10 +690,15 @@ class AstroCatMascot {
   }
 
   speak(text) {
-    if (!this.speechSynth || this.audio.isMuted) return;
+    if (this.audio.isMuted) return;
     try {
-      this.speechSynth.cancel(); // Stop prior speech
       const lang = this.getLang();
+      if (lang === 'uz' && window.uzbekSpeech) {
+        window.uzbekSpeech.speak(text, { pitch: 1.25, rate: 1.0 });
+        return;
+      }
+      if (!this.speechSynth) return;
+      this.speechSynth.cancel(); // Stop prior speech
       const { voice, langCode, textToSpeak } = this.resolveVoiceAndText(text, lang);
 
       if (!textToSpeak) return;

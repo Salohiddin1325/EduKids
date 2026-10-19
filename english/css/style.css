@@ -845,6 +845,106 @@ body {
   color: var(--coral);
 }
 
+/* PRO LOCKED CARD STYLES */
+.word-card.card-pro-locked {
+  border-style: dashed;
+}
+
+.word-card.card-pro-locked:hover {
+  border-color: #F59E0B;
+}
+
+.card-lock-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #FFFFFF;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+}
+
+.word-card.card-pro-locked .speaker-circle-btn {
+  background: #FEF3C7;
+  border-color: #FCD34D;
+  color: #D97706;
+}
+
+/* VOCABULARY PAGINATION CONTROLS */
+.vocab-pagination-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 40px 0 20px;
+}
+
+.vocab-pagination-info {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 2px solid var(--border-color);
+}
+
+.vocab-pagination-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vocab-page-btn {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  font-family: inherit;
+  border: 2px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 3px 0 var(--border-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vocab-page-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--coral);
+  box-shadow: 0 5px 0 var(--coral-shadow);
+  color: var(--coral);
+}
+
+.vocab-page-btn.active {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  color: #FFFFFF;
+  border-color: #4338CA;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.vocab-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
 /* GRAMMAR LESSONS SECTION */
 .grammar-grid {
   display: flex;

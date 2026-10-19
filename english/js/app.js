@@ -15,6 +15,8 @@ class AppState {
     this.activeTab = 'vocab';
     this.activeCategory = 'all';
     this.searchQuery = '';
+    this.vocabPage = 1;
+    this.vocabPageSize = 24;
     this.unlockedBadges = JSON.parse(localStorage.getItem('kiddo_badges') || '["first-word", "streak-star"]');
     this.wordsListened = new Set(JSON.parse(localStorage.getItem('kiddo_words_listened') || '[]'));
   }
@@ -450,12 +452,13 @@ function initVocabSection() {
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       window.appState.searchQuery = e.target.value.toLowerCase().trim();
+      window.appState.vocabPage = 1;
       renderVocabGrid();
     });
   }
 
   const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
-  const freeCategories = ['all', 'animals', 'fruits', 'colors'];
+  const freeCategories = ['all', 'animals', 'fruits'];
 
   filterPills.forEach(pill => {
     const cat = pill.dataset.category;
@@ -469,14 +472,11 @@ function initVocabSection() {
 
     pill.addEventListener('click', () => {
       const selectedCat = pill.dataset.category;
-      if (window.subscriptionManager && !window.subscriptionManager.canAccessCategory(selectedCat)) {
-        return; // Soft paywall modal triggered!
-      }
-
       window.soundEngine.playPop();
       filterPills.forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       window.appState.activeCategory = selectedCat;
+      window.appState.vocabPage = 1;
       renderVocabGrid();
     });
   });
@@ -491,6 +491,7 @@ function renderVocabGrid() {
   const query = window.appState.searchQuery;
   const cat = window.appState.activeCategory;
   const lang = window.appState ? window.appState.lang : 'uz';
+  const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
 
   const filteredWords = VOCABULARY_DATA.filter(item => {
     const matchesCat = cat === 'all' || item.category === cat;
@@ -501,89 +502,220 @@ function renderVocabGrid() {
     return matchesCat && matchesQuery;
   });
 
+  const paginationContainer = document.getElementById('vocab-pagination-controls');
+
   if (filteredWords.length === 0) {
     grid.innerHTML = lang === 'ru' ? `
-      <div class="empty-vocab-notice">
-        <span class="empty-emoji">🔍</span>
+      <div class="empty-vocab-notice" style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
+        <span class="empty-emoji" style="font-size: 3.5rem; display: block; margin-bottom: 12px;">🔍</span>
         <h3>Ничего не найдено / No words found</h3>
         <p>Попробуйте поискать другое слово или категорию!</p>
       </div>
     ` : `
-      <div class="empty-vocab-notice">
-        <span class="empty-emoji">🔍</span>
+      <div class="empty-vocab-notice" style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
+        <span class="empty-emoji" style="font-size: 3.5rem; display: block; margin-bottom: 12px;">🔍</span>
         <h3>Hech narsa topilmadi / No words found</h3>
         <p>Boshqa so‘z yoki boshqa toifani qidirib ko‘ring!</p>
+      </div>
+    `;
+    if (paginationContainer) paginationContainer.innerHTML = '';
+    return;
+  }
+
+  // Pagination calculation
+  const totalItems = filteredWords.length;
+  const pageSize = window.appState.vocabPageSize || 24;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  if (window.appState.vocabPage > totalPages) window.appState.vocabPage = totalPages;
+  if (window.appState.vocabPage < 1) window.appState.vocabPage = 1;
+  const currentPage = window.appState.vocabPage;
+  const startIndex = (currentPage - 1) * pageSize;
+  const pageWords = filteredWords.slice(startIndex, startIndex + pageSize);
+
+  const tapHint = lang === 'ru' ? 'Подробнее ➜' : 'Batafsil ➜';
+
+  grid.innerHTML = pageWords.map(word => {
+    const globalIndex = VOCABULARY_DATA.indexOf(word);
+    const isLocked = !isPro && globalIndex >= 50;
+
+    const clickAction = isLocked 
+      ? `openVocabPaywall('${word.id}')`
+      : `openWordModal('${word.id}')`;
+
+    const speechAction = isLocked
+      ? `event.stopPropagation(); openVocabPaywall('${word.id}')`
+      : `event.stopPropagation(); playWordSpeech('${word.id}', '${word.word}')`;
+
+    const lockBadge = isLocked
+      ? `<span class="card-lock-badge">🔒 Pro ($2/oy)</span>`
+      : '';
+
+    return `
+      <div class="word-card ${isLocked ? 'card-pro-locked' : ''}" id="card-${word.id}" style="--accent-color: ${word.color};" onclick="${clickAction}">
+        <div class="card-visual-header" style="background: linear-gradient(135deg, ${word.color}22, ${word.color}55);">
+          ${lockBadge}
+          <span class="card-emoji-visual">${word.emoji}</span>
+          <button class="speaker-circle-btn" onclick="${speechAction}" title="${isLocked ? 'Pro A‘zolik ($2/oy)' : 'Listen / Eshitish'}">
+            ${isLocked ? '🔒' : '🔊'}
+          </button>
+        </div>
+
+        <div class="card-body">
+          <div class="card-main-title">
+            <h3 class="card-english-word">${word.word}</h3>
+            <span class="card-phonetic">${word.phonetic}</span>
+          </div>
+
+          <p class="card-definition-en">${word.definitionEn}</p>
+
+          <div class="card-translations-box">
+            <div class="trans-item">
+              <span class="trans-flag">🇺🇿</span>
+              <span class="trans-text uz-trans">${word.uzbek}</span>
+            </div>
+            <div class="trans-item">
+              <span class="trans-flag">🇷🇺</span>
+              <span class="trans-text ru-trans">${word.russian}</span>
+            </div>
+          </div>
+
+          <div class="card-footer-action">
+            <span class="card-pill-tag">${getCategoryName(word.category)}</span>
+            <span class="tap-detail-hint">${isLocked ? '🔒 Pro ($2/oy)' : tapHint}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  renderVocabPagination(totalPages, totalItems, currentPage, lang);
+}
+
+function renderVocabPagination(totalPages, totalItems, currentPage, lang) {
+  const container = document.getElementById('vocab-pagination-controls');
+  if (!container) return;
+
+  if (totalPages <= 1) {
+    container.innerHTML = `
+      <div class="vocab-pagination-info">
+        ${lang === 'ru' ? `Показаны все ${totalItems} слов` : `Barcha ${totalItems} ta so‘z ko‘rsatilmoqda`}
       </div>
     `;
     return;
   }
 
-  const tapHint = lang === 'ru' ? 'Подробнее ➜' : 'Batafsil ➜';
+  const prevText = lang === 'ru' ? '◀ Назад' : '◀ Oldingi';
+  const nextText = lang === 'ru' ? 'Вперёд ▶' : 'Keyingi ▶';
+  const infoText = lang === 'ru'
+    ? `Страница ${currentPage} из ${totalPages} (Всего ${totalItems} слов)`
+    : `Sahifa ${currentPage} / ${totalPages} (Jami ${totalItems} ta so‘z)`;
 
-  grid.innerHTML = filteredWords.map(word => `
-    <div class="word-card" id="card-${word.id}" style="--accent-color: ${word.color};" onclick="openWordModal('${word.id}')">
-      <div class="card-visual-header" style="background: linear-gradient(135deg, ${word.color}22, ${word.color}55);">
-        <span class="card-emoji-visual">${word.emoji}</span>
-        <button class="speaker-circle-btn" onclick="event.stopPropagation(); playWordSpeech('${word.id}', '${word.word}')" title="Listen / Eshitish">
-          🔊
-        </button>
-      </div>
+  // Smart page numbers
+  let pages = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    if (currentPage > 3) pages.push('...');
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (currentPage < totalPages - 2) pages.push('...');
+    pages.push(totalPages);
+  }
 
-      <div class="card-body">
-        <div class="card-main-title">
-          <h3 class="card-english-word">${word.word}</h3>
-          <span class="card-phonetic">${word.phonetic}</span>
-        </div>
+  const buttonsHtml = pages.map(p => {
+    if (p === '...') {
+      return `<span style="padding: 0 6px; font-weight: 800; color: #94A3B8;">...</span>`;
+    }
+    const isActive = p === currentPage;
+    return `
+      <button class="vocab-page-btn ${isActive ? 'active' : ''}" onclick="goToVocabPage(${p})">
+        ${p}
+      </button>
+    `;
+  }).join('');
 
-        <p class="card-definition-en">${word.definitionEn}</p>
-
-        <div class="card-translations-box">
-          <div class="trans-item">
-            <span class="trans-flag">🇺🇿</span>
-            <span class="trans-text uz-trans">${word.uzbek}</span>
-          </div>
-          <div class="trans-item">
-            <span class="trans-flag">🇷🇺</span>
-            <span class="trans-text ru-trans">${word.russian}</span>
-          </div>
-        </div>
-
-        <div class="card-footer-action">
-          <span class="card-pill-tag">${getCategoryName(word.category)}</span>
-          <span class="tap-detail-hint">${tapHint}</span>
-        </div>
-      </div>
+  container.innerHTML = `
+    <div class="vocab-pagination-info">${infoText}</div>
+    <div class="vocab-pagination-nav">
+      <button class="vocab-page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToVocabPage(${currentPage - 1})">
+        ${prevText}
+      </button>
+      ${buttonsHtml}
+      <button class="vocab-page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToVocabPage(${currentPage + 1})">
+        ${nextText}
+      </button>
     </div>
-  `).join('');
+  `;
 }
+
+window.goToVocabPage = function(page) {
+  if (page < 1) return;
+  window.appState.vocabPage = page;
+  if (window.soundEngine && window.soundEngine.playPop) window.soundEngine.playPop();
+  renderVocabGrid();
+  const sec = document.getElementById('section-vocab');
+  if (sec) {
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+window.openVocabPaywall = function(wordId) {
+  const word = VOCABULARY_DATA.find(w => w.id === wordId);
+  if (window.soundEngine && window.soundEngine.playBoing) window.soundEngine.playBoing();
+  if (window.subscriptionManager) {
+    window.subscriptionManager.openVocabPaywallModal(word);
+  }
+};
 
 function getCategoryName(categoryKey) {
   const lang = window.appState ? window.appState.lang : (localStorage.getItem('kiddo_language') || 'uz');
   const uzMap = {
     all: '✨ Barchasi',
     animals: '🦁 Hayvonlar',
-    fruits: '🍎 Mevalar & Ovqat',
-    colors: '🎨 Rang & Shakllar',
-    family: '👨‍👩‍👧 Oila & Odamlar',
-    nature: '🌲 Tabiat & Ob-havo',
-    body: '🖐️ Tana a‘zolari',
-    school: '📚 Maktab & Uy',
-    actions: '🏃‍♂️ Harakatlar',
-    clothes: '🧸 Kiyim & O‘yinchoq',
-    space: '🚀 Koinot & Vaqt'
+    fruits: '🍎 Mevalar',
+    space: '🚀 Koinot',
+    vehicles: '🚗 Transport',
+    emotions: '😊 Hissiyotlar',
+    school: '📚 Maktab',
+    jobs: '👨‍⚕️ Kasblar',
+    nature: '🌲 Tabiat',
+    body: '🖐️ Tana',
+    colors: '🎨 Ranglar',
+    shapes: '📐 Shakllar',
+    house: '🏠 Uy jihozlari',
+    actions: '🏃 Harakatlar (Fe‘llar)',
+    adjectives: '✨ Sifatlar',
+    weather: '⛅ Ob-havo',
+    food: '🍕 Ovqatlar',
+    sports: '⚽ Sport',
+    clothes: '👕 Kiyimlar',
+    family: '👨‍👩‍👧 Oila',
+    time: '⏰ Vaqt'
   };
   const ruMap = {
     all: '✨ Все',
     animals: '🦁 Животные',
-    fruits: '🍎 Фрукты и еда',
-    colors: '🎨 Цвета и формы',
-    family: '👨‍👩‍👧 Семья и люди',
-    nature: '🌲 Природа и погода',
+    fruits: '🍎 Фрукты',
+    space: '🚀 Космос',
+    vehicles: '🚗 Транспорт',
+    emotions: '😊 Эмоции',
+    school: '📚 Школа',
+    jobs: '👨‍⚕️ Профессии',
+    nature: '🌲 Природа',
     body: '🖐️ Части тела',
-    school: '📚 Школа и дом',
-    actions: '🏃‍♂️ Действия',
-    clothes: '🧸 Одежда и игрушки',
-    space: '🚀 Космос и время'
+    colors: '🎨 Цвета',
+    shapes: '📐 Формы',
+    house: '🏠 Дом и уют',
+    actions: '🏃 Действия (Глаголы)',
+    adjectives: '✨ Прилагательные',
+    weather: '⛅ Погода',
+    food: '🍕 Еда',
+    sports: '⚽ Спорт',
+    clothes: '👕 Одежда',
+    family: '👨‍👩‍👧 Семья',
+    time: '⏰ Время'
   };
   const map = lang === 'ru' ? ruMap : uzMap;
   return map[categoryKey] || categoryKey;
@@ -636,8 +768,8 @@ function openWordModal(wordId) {
           <span class="badge-mini en">English</span>
           <p>${word.definitionEn}</p>
         </div>
-        <div class="def-block uz-def">
-          <span class="badge-mini uz">O‘zbekcha</span>
+        <div class="def-block uz-def" style="cursor: pointer;" onclick="if(window.uzbekSpeech) window.uzbekSpeech.speak('${word.uzbek}. ${word.definitionUz.replace(/'/g, "\\'")}')" title="O‘zbekcha talaffuzni eshitish">
+          <span class="badge-mini uz">O‘zbekcha 🔊</span>
           <p><strong>${word.uzbek}:</strong> ${word.definitionUz}</p>
         </div>
         <div class="def-block ru-def">
@@ -652,7 +784,7 @@ function openWordModal(wordId) {
           <p>"${word.exampleEn}"</p>
           <button class="speaker-btn mini-speaker" onclick="window.soundEngine.speak('${word.exampleEn.replace(/'/g, "\\'")}')">🔊</button>
         </div>
-        <p class="example-sub-sentence">🇺🇿 ${word.exampleUz}</p>
+        <p class="example-sub-sentence" style="cursor: pointer;" onclick="if(window.uzbekSpeech) window.uzbekSpeech.speak('${word.exampleUz.replace(/'/g, "\\'")}')" title="O‘zbekcha jumla talaffuzi">🇺🇿 ${word.exampleUz} 🔊</p>
         <p class="example-sub-sentence">🇷🇺 ${word.exampleRu}</p>
       </div>
     </div>

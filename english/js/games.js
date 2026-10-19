@@ -1,35 +1,74 @@
 /**
- * KiddoLingo - Mini-Games Engine
- * Game 1: Balloon Pop Word Catcher
- * Game 2: Magic Memory Card Matching
+ * KiddoLingo - Mini-Games Engine with 50+ Progressive Levels & World Map
+ * Game 1: Balloon Pop Word Catcher (50 Levels)
+ * Game 2: Magic Memory Card Matching (50 Levels)
  */
 
 class MiniGamesManager {
   constructor() {
+    // Progression & Level State
+    this.currentBalloonLevel = 1;
+    this.currentMemoryLevel = 1;
+
     // Balloon Game State
     this.balloonGameActive = false;
     this.balloonScore = 0;
     this.balloonPopsCount = 0;
+    this.balloonErrors = 0;
+    this.targetPopsToWin = 5;
     this.balloonTarget = null;
     this.balloonSpawnTimer = null;
     this.balloonAnimFrame = null;
     this.activeBalloons = [];
+    this.balloonSpeedMultiplier = 1.0;
 
     // Memory Game State
     this.memoryCards = [];
     this.flippedCards = [];
     this.matchedPairsCount = 0;
+    this.pairsToMatch = 6;
     this.memoryMoves = 0;
     this.memoryTimer = 0;
     this.memoryTimerInterval = null;
   }
 
+  getLang() {
+    return window.appState ? window.appState.lang : (localStorage.getItem('kiddo_language') || 'uz');
+  }
+
   // ==========================================
-  // GAME 1: BALLOON POP WORD CATCHER
+  // GAME 1: BALLOON POP WORD CATCHER (50 Levels)
   // ==========================================
-  initBalloonGame() {
+  initBalloonGame(forcedLevel = null) {
     const arena = document.getElementById('balloon-arena');
     if (!arena) return;
+
+    if (forcedLevel) {
+      this.currentBalloonLevel = forcedLevel;
+    } else if (window.levelProgressionSystem) {
+      this.currentBalloonLevel = window.levelProgressionSystem.getCurrentLevel('english_balloon');
+    }
+
+    // Configure difficulty scaling
+    const cfg = window.levelProgressionSystem 
+      ? window.levelProgressionSystem.getLevelConfig('english_balloon', this.currentBalloonLevel)
+      : { speedMultiplier: 1.0, tier: { nameUz: 'Oson', nameRu: 'Легкий' } };
+
+    this.balloonSpeedMultiplier = cfg.speedMultiplier;
+    this.targetPopsToWin = Math.min(15, 3 + Math.floor(this.currentBalloonLevel / 4));
+    this.balloonErrors = 0;
+    this.balloonPopsCount = 0;
+
+    // Update level display
+    const lvlEl = document.getElementById('balloon-level-display');
+    if (lvlEl) {
+      const isRu = this.getLang() === 'ru';
+      lvlEl.textContent = `${this.currentBalloonLevel} (${isRu ? cfg.tier.nameRu : cfg.tier.nameUz})`;
+    }
+
+    // Hide win banner if open
+    const winBanner = document.getElementById('balloon-win-banner');
+    if (winBanner) winBanner.style.display = 'none';
 
     this.stopBalloonGame();
     arena.innerHTML = '';
@@ -42,28 +81,34 @@ class MiniGamesManager {
 
     this.balloonGameActive = true;
     this.activeBalloons = [];
-    
-    // Spawn balloons periodically
+
+    // Spawn interval decreases slightly with level for higher density
+    const spawnInterval = Math.max(700, 1100 - (this.currentBalloonLevel * 7));
+
     this.balloonSpawnTimer = setInterval(() => {
-      if (this.balloonGameActive && this.activeBalloons.length < 7) {
+      if (this.balloonGameActive && this.activeBalloons.length < (5 + Math.floor(this.currentBalloonLevel / 10))) {
         this.spawnBalloon(arena);
       }
-    }, 1100);
+    }, spawnInterval);
 
     // Initial batch of balloons
     for (let i = 0; i < 4; i++) {
       setTimeout(() => {
         if (this.balloonGameActive) this.spawnBalloon(arena);
-      }, i * 400);
+      }, i * 350);
     }
   }
 
-  getLang() {
-    return window.appState ? window.appState.lang : (localStorage.getItem('kiddo_language') || 'uz');
-  }
-
   pickNewBalloonTarget() {
-    const randomWord = VOCABULARY_DATA[Math.floor(Math.random() * VOCABULARY_DATA.length)];
+    // Select vocabulary pool based on level tier
+    let vocabPool = VOCABULARY_DATA;
+    if (this.currentBalloonLevel <= 10) {
+      vocabPool = VOCABULARY_DATA.slice(0, 50); // Starter words
+    } else if (this.currentBalloonLevel <= 25) {
+      vocabPool = VOCABULARY_DATA.slice(0, 200); // Explorer words
+    }
+
+    const randomWord = vocabPool[Math.floor(Math.random() * vocabPool.length)];
     this.balloonTarget = randomWord;
 
     const targetWordEl = document.getElementById('balloon-target-word');
@@ -75,8 +120,8 @@ class MiniGamesManager {
     }
     if (targetHintEl) {
       targetHintEl.textContent = isRu 
-        ? `Значение: ${randomWord.russian} (${randomWord.uzbek})` 
-        : `Ma’nosi: ${randomWord.uzbek} (${randomWord.russian})`;
+        ? `Значение: ${randomWord.russian} (${randomWord.uzbek}) • Цель: ${this.balloonPopsCount}/${this.targetPopsToWin}` 
+        : `Ma’nosi: ${randomWord.uzbek} (${randomWord.russian}) • Maqsad: ${this.balloonPopsCount}/${this.targetPopsToWin}`;
     }
 
     // Pronounce target word for the child!
@@ -91,8 +136,9 @@ class MiniGamesManager {
     let wordObj = this.balloonTarget;
 
     if (!isTarget) {
-      const distractors = VOCABULARY_DATA.filter(w => w.word !== this.balloonTarget.word);
-      wordObj = distractors[Math.floor(Math.random() * distractors.length)];
+      let pool = VOCABULARY_DATA.filter(w => w.word !== this.balloonTarget.word);
+      if (this.currentBalloonLevel <= 10) pool = pool.slice(0, 50);
+      wordObj = pool[Math.floor(Math.random() * pool.length)];
     }
 
     const balloonColors = ['#FF477E', '#FFB703', '#06D6A0', '#48CAE4', '#845EC2', '#FF9671'];
@@ -118,7 +164,7 @@ class MiniGamesManager {
       el: balloonEl,
       isTarget: wordObj.word === this.balloonTarget.word,
       word: wordObj.word,
-      speed: Math.random() * 1.5 + 1.2,
+      speed: (Math.random() * 1.4 + 1.2) * (this.balloonSpeedMultiplier || 1.0),
       wobbleSpeed: Math.random() * 0.05 + 0.02,
       wobbleAngle: Math.random() * Math.PI,
       currentY: -130,
@@ -129,7 +175,6 @@ class MiniGamesManager {
       this.popBalloon(balloonData, arena);
     });
 
-    // Touch support for tablets/phones
     balloonEl.addEventListener('touchstart', (e) => {
       e.preventDefault();
       this.popBalloon(balloonData, arena);
@@ -144,35 +189,36 @@ class MiniGamesManager {
   }
 
   animateBalloons(arena) {
-    if (!this.balloonGameActive) return;
+    const arenaHeight = arena.clientHeight || 450;
 
-    const arenaHeight = arena.clientHeight || 480;
+    const loop = () => {
+      if (!this.balloonGameActive) return;
 
-    for (let i = this.activeBalloons.length - 1; i >= 0; i--) {
-      const b = this.activeBalloons[i];
-      b.currentY += b.speed;
-      b.wobbleAngle += b.wobbleSpeed;
-      const wobbleX = b.baseX + Math.sin(b.wobbleAngle) * 20;
+      for (let i = this.activeBalloons.length - 1; i >= 0; i--) {
+        const b = this.activeBalloons[i];
+        b.currentY += b.speed;
+        b.wobbleAngle += b.wobbleSpeed;
+        const wobbleX = Math.sin(b.wobbleAngle) * 14;
 
-      b.el.style.bottom = `${b.currentY}px`;
-      b.el.style.left = `${wobbleX}px`;
+        b.el.style.bottom = `${b.currentY}px`;
+        b.el.style.left = `${b.baseX + wobbleX}px`;
 
-      // Escaped off top of arena
-      if (b.currentY > arenaHeight + 40) {
-        if (b.el.parentNode) b.el.parentNode.removeChild(b.el);
-        this.activeBalloons.splice(i, 1);
+        // If balloon escaped out of screen top
+        if (b.currentY > arenaHeight + 60) {
+          if (b.el.parentNode) b.el.parentNode.removeChild(b.el);
+          this.activeBalloons.splice(i, 1);
+        }
       }
-    }
 
-    this.balloonAnimFrame = requestAnimationFrame(() => this.animateBalloons(arena));
+      this.balloonAnimFrame = requestAnimationFrame(loop);
+    };
+
+    this.balloonAnimFrame = requestAnimationFrame(loop);
   }
 
   popBalloon(balloonData, arena) {
     if (!this.balloonGameActive) return;
 
-    window.soundEngine.playPop();
-
-    // Create particle pop effect at balloon center
     const rect = balloonData.el.getBoundingClientRect();
     const arenaRect = arena.getBoundingClientRect();
     const relativeX = rect.left - arenaRect.left + rect.width / 2;
@@ -196,24 +242,99 @@ class MiniGamesManager {
       window.soundEngine.playSuccess();
       window.appState.addStars(1);
 
-      if (this.balloonPopsCount >= 5) {
-        window.appState.unlockBadge('balloon-popper');
-        if (!this.level1Reached) {
-          this.level1Reached = true;
-          if (window.subscriptionManager && !window.subscriptionManager.canPlayGameLevel('balloon', 2)) {
-            this.stopBalloonGame();
-            return;
-          }
-        }
+      this.updateBalloonScoreUI();
+
+      if (this.balloonPopsCount >= this.targetPopsToWin) {
+        this.handleBalloonWin();
+        return;
       }
 
-      this.updateBalloonScoreUI();
       this.pickNewBalloonTarget();
     } else {
       // Wrong balloon popped
+      this.balloonErrors++;
       window.soundEngine.playError();
       this.balloonScore = Math.max(0, this.balloonScore - 2);
       this.updateBalloonScoreUI();
+    }
+  }
+
+  handleBalloonWin() {
+    this.stopBalloonGame();
+    window.soundEngine.playFanfare();
+    if (window.confettiEngine) window.confettiEngine.launch(100, 0.5, 0.5);
+
+    // Calculate stars
+    const stars = this.balloonErrors === 0 ? 3 : (this.balloonErrors <= 2 ? 2 : 1);
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.recordLevelCompletion('english_balloon', this.currentBalloonLevel, stars);
+    }
+
+    window.appState.unlockBadge('balloon-popper');
+    window.appState.addGems(3);
+
+    const isRu = this.getLang() === 'ru';
+    const starsStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+    const title = isRu 
+      ? `🎉 Уровень ${this.currentBalloonLevel} пройден!` 
+      : `🎉 ${this.currentBalloonLevel}-Bosqich Yakunlandi!`;
+    const stats = isRu 
+      ? `Очки: <strong>${this.balloonScore}</strong> | Ошибок: <strong>${this.balloonErrors}</strong>` 
+      : `To‘plangan ball: <strong>${this.balloonScore}</strong> | Xatolar: <strong>${this.balloonErrors} ta</strong>`;
+
+    const nextLevel = this.currentBalloonLevel + 1;
+    const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+    const nextBtnText = isRu 
+      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 1) ? '• 👑 PRO' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 1) ? '• 👑 PRO' : ''}`;
+
+    const winBanner = document.getElementById('balloon-win-banner');
+    if (winBanner) {
+      winBanner.innerHTML = `
+        <div class="win-stars" style="font-size: 2.2rem; margin-bottom: 6px;">${starsStr}</div>
+        <h3>${title}</h3>
+        <p>${stats}</p>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;">
+          <button class="btn btn-secondary" onclick="window.miniGamesManager.initBalloonGame(${this.currentBalloonLevel})">
+            🔄 ${isRu ? 'Сыграть снова' : 'Qaytadan o‘ynash'}
+          </button>
+          <button class="btn btn-primary" onclick="window.miniGamesManager.tryNextBalloonLevel()">
+            ${nextBtnText}
+          </button>
+          <button class="game-level-map-btn" onclick="window.miniGamesManager.openBalloonMap()">
+            🗺️ ${isRu ? 'Карта 50+ уровней' : '50+ Bosqichlar Xaritasi'}
+          </button>
+        </div>
+      `;
+      winBanner.style.display = 'block';
+    }
+  }
+
+  tryNextBalloonLevel() {
+    const nextLevel = this.currentBalloonLevel + 1;
+    if (window.levelProgressionSystem && !window.levelProgressionSystem.canAccessLevel('english_balloon', nextLevel)) {
+      if (window.subscriptionManager) {
+        window.subscriptionManager.openGamePaywallModal('english_balloon', nextLevel);
+      }
+      return;
+    }
+
+    const winBanner = document.getElementById('balloon-win-banner');
+    if (winBanner) winBanner.style.display = 'none';
+
+    this.currentBalloonLevel = nextLevel;
+    this.initBalloonGame(nextLevel);
+  }
+
+  openBalloonMap() {
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.openMapModal(
+        'english_balloon', 
+        this.getLang() === 'ru' ? 'Шарики (Balloon Pop)' : 'Havo Sharlarini Portlat (Balloon Pop)',
+        (lvl) => {
+          this.initBalloonGame(lvl);
+        }
+      );
     }
   }
 
@@ -256,18 +377,6 @@ class MiniGamesManager {
     if (startBtn) startBtn.textContent = this.getLang() === 'ru' ? '▶️ Начать игру / Start Game' : '▶️ O‘yinni boshlash / Start Game';
   }
 
-  updateBalloonHintForLang() {
-    if (this.balloonTarget) {
-      const targetHintEl = document.getElementById('balloon-target-hint');
-      const isRu = this.getLang() === 'ru';
-      if (targetHintEl) {
-        targetHintEl.textContent = isRu 
-          ? `Значение: ${this.balloonTarget.russian} (${this.balloonTarget.uzbek})` 
-          : `Ma’nosi: ${this.balloonTarget.uzbek} (${this.balloonTarget.russian})`;
-      }
-    }
-  }
-
   toggleBalloonGame() {
     if (this.balloonGameActive) {
       this.stopBalloonGame();
@@ -277,11 +386,34 @@ class MiniGamesManager {
   }
 
   // ==========================================
-  // GAME 2: MAGIC MEMORY CARD MATCHING
+  // GAME 2: MAGIC MEMORY CARD MATCHING (50 Levels)
   // ==========================================
-  initMemoryGame() {
+  initMemoryGame(forcedLevel = null) {
     const grid = document.getElementById('memory-grid');
     if (!grid) return;
+
+    if (forcedLevel) {
+      this.currentMemoryLevel = forcedLevel;
+    } else if (window.levelProgressionSystem) {
+      this.currentMemoryLevel = window.levelProgressionSystem.getCurrentLevel('english_memory');
+    }
+
+    // Number of pairs scaling with level:
+    // Levels 1–10: 4 pairs (8 cards - Starter)
+    // Levels 11–25: 6 pairs (12 cards - Explorer)
+    // Levels 26–50: 8 pairs (16 cards - Master)
+    if (this.currentMemoryLevel <= 10) {
+      this.pairsToMatch = 4;
+    } else if (this.currentMemoryLevel <= 25) {
+      this.pairsToMatch = 6;
+    } else {
+      this.pairsToMatch = 8;
+    }
+
+    const lvlEl = document.getElementById('memory-level-display');
+    if (lvlEl) {
+      lvlEl.textContent = `${this.currentMemoryLevel}`;
+    }
 
     clearInterval(this.memoryTimerInterval);
     this.matchedPairsCount = 0;
@@ -295,11 +427,18 @@ class MiniGamesManager {
       this.updateMemoryStatsUI();
     }, 1000);
 
-    // Pick 6 random words from dataset
-    const shuffledVocab = [...VOCABULARY_DATA].sort(() => Math.random() - 0.5).slice(0, 6);
+    // Pick words based on level tier
+    let vocabPool = VOCABULARY_DATA;
+    if (this.currentMemoryLevel <= 10) {
+      vocabPool = VOCABULARY_DATA.slice(0, 50);
+    } else if (this.currentMemoryLevel <= 25) {
+      vocabPool = VOCABULARY_DATA.slice(0, 200);
+    }
+
+    const shuffledVocab = [...vocabPool].sort(() => Math.random() - 0.5).slice(0, this.pairsToMatch);
     const isRu = this.getLang() === 'ru';
     
-    // Create pair items: Card A (English Word) & Card B (Visual Emoji + Target Language name)
+    // Create pair items
     const deck = [];
     shuffledVocab.forEach((item, index) => {
       deck.push({
@@ -320,11 +459,11 @@ class MiniGamesManager {
       });
     });
 
-    // Shuffle the deck
+    // Shuffle deck
     this.memoryCards = deck.sort(() => Math.random() - 0.5);
 
-    grid.innerHTML = this.memoryCards.map((card, idx) => `
-      <div class="memory-card" data-index="${idx}" onclick="window.miniGamesManager.flipMemoryCard(${idx})">
+    grid.innerHTML = this.memoryCards.map((card, index) => `
+      <div class="memory-card" data-index="${index}" onclick="window.miniGamesManager.flipMemoryCard(${index})">
         <div class="memory-card-inner">
           <div class="memory-card-front">
             <span class="card-back-pattern">⭐</span>
@@ -343,7 +482,7 @@ class MiniGamesManager {
   }
 
   flipMemoryCard(index) {
-    if (this.flippedCards.length >= 2) return; // Prevent clicking more than 2
+    if (this.flippedCards.length >= 2) return;
     const cardEl = document.querySelector(`.memory-card[data-index="${index}"]`);
     if (!cardEl || cardEl.classList.contains('is-flipped') || cardEl.classList.contains('is-matched')) return;
 
@@ -351,7 +490,6 @@ class MiniGamesManager {
     cardEl.classList.add('is-flipped');
     this.flippedCards.push({ index, data: this.memoryCards[index], el: cardEl });
 
-    // Speak the English word if it's a word or subtext
     const wordToSpeak = this.memoryCards[index].type === 'word' 
       ? this.memoryCards[index].content 
       : this.memoryCards[index].subtext;
@@ -368,7 +506,6 @@ class MiniGamesManager {
     const [c1, c2] = this.flippedCards;
 
     if (c1.data.pairId === c2.data.pairId) {
-      // Success match!
       setTimeout(() => {
         window.soundEngine.playSuccess();
         c1.el.classList.add('is-matched');
@@ -376,15 +513,13 @@ class MiniGamesManager {
         this.matchedPairsCount++;
         window.appState.addStars(1);
 
-        if (this.matchedPairsCount === 6) {
-          // Win game!
+        if (this.matchedPairsCount === this.pairsToMatch) {
           this.handleMemoryWin();
         }
 
         this.flippedCards = [];
       }, 500);
     } else {
-      // Mismatch
       setTimeout(() => {
         window.soundEngine.playError();
         c1.el.classList.add('card-shake');
@@ -403,29 +538,44 @@ class MiniGamesManager {
     clearInterval(this.memoryTimerInterval);
     window.soundEngine.playFanfare();
     if (window.confettiEngine) window.confettiEngine.launch(100, 0.5, 0.5);
+
+    // Calculate stars
+    const stars = this.memoryMoves <= this.pairsToMatch * 2.2 ? 3 : (this.memoryMoves <= this.pairsToMatch * 3.2 ? 2 : 1);
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.recordLevelCompletion('english_memory', this.currentMemoryLevel, stars);
+    }
+
     window.appState.unlockBadge('memory-master');
     window.appState.addGems(3);
 
     const isRu = this.getLang() === 'ru';
-    const title = isRu ? '🎉 Поздравляем! Ты победил!' : '🎉 Tabriklaymiz! Siz yutdingiz!';
+    const starsStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+    const title = isRu ? `🎉 Уровень ${this.currentMemoryLevel} пройден!` : `🎉 ${this.currentMemoryLevel}-Bosqich Yakunlandi!`;
     const stats = isRu 
       ? `Время: <strong>${this.memoryTimer} сек</strong> | Попыток: <strong>${this.memoryMoves}</strong>` 
       : `Vaqt: <strong>${this.memoryTimer} soniya</strong> | Urinishlar: <strong>${this.memoryMoves} ta</strong>`;
-    const btnReplay = isRu ? '🔄 Сыграть снова (Уровень 1)' : '🔄 Qaytadan o‘ynash (1-daraja)';
-    const btnNext = isRu ? '🚀 Уровень 2 • 👑 Pro' : '🚀 Keyingi Daraja (2-daraja • 👑 Pro)';
+
+    const nextLevel = this.currentMemoryLevel + 1;
+    const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+    const btnNext = isRu 
+      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}`;
 
     const winBanner = document.getElementById('memory-win-banner');
     if (winBanner) {
       winBanner.innerHTML = `
-        <div class="win-stars">⭐⭐⭐</div>
+        <div class="win-stars" style="font-size: 2.2rem; margin-bottom: 6px;">${starsStr}</div>
         <h3>${title}</h3>
         <p>${stats}</p>
         <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
-          <button class="btn btn-secondary" onclick="window.miniGamesManager.initMemoryGame()">
-            ${btnReplay}
+          <button class="btn btn-secondary" onclick="window.miniGamesManager.initMemoryGame(${this.currentMemoryLevel})">
+            🔄 ${isRu ? 'Сыграть снова' : 'Qaytadan o‘ynash'}
           </button>
           <button class="btn btn-primary" onclick="window.miniGamesManager.tryNextMemoryLevel()">
             ${btnNext}
+          </button>
+          <button class="game-level-map-btn" onclick="window.miniGamesManager.openMemoryMap()">
+            🗺️ ${isRu ? 'Карта 50+ уровней' : '50+ Bosqichlar Xaritasi'}
           </button>
         </div>
       `;
@@ -434,12 +584,31 @@ class MiniGamesManager {
   }
 
   tryNextMemoryLevel() {
-    if (window.subscriptionManager && !window.subscriptionManager.canPlayGameLevel('memory', 2)) {
+    const nextLevel = this.currentMemoryLevel + 1;
+    if (window.levelProgressionSystem && !window.levelProgressionSystem.canAccessLevel('english_memory', nextLevel)) {
+      if (window.subscriptionManager) {
+        window.subscriptionManager.openGamePaywallModal('english_memory', nextLevel);
+      }
       return;
     }
+
     const winBanner = document.getElementById('memory-win-banner');
     if (winBanner) winBanner.style.display = 'none';
-    this.initMemoryGame();
+
+    this.currentMemoryLevel = nextLevel;
+    this.initMemoryGame(nextLevel);
+  }
+
+  openMemoryMap() {
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.openMapModal(
+        'english_memory',
+        this.getLang() === 'ru' ? 'Карточки памяти (Memory Match)' : 'Sehrli Kartalar (Memory Match)',
+        (lvl) => {
+          this.initMemoryGame(lvl);
+        }
+      );
+    }
   }
 
   updateMemoryStatsUI() {

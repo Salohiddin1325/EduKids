@@ -98,10 +98,13 @@ const MATH_UI_TRANSLATIONS = {
     cosmoSpeech: "Keling, raqamlar sehrini birga kashf qilamiz! Narsalarni sanang, misollarni yeching va raketangiz bilan asteroidlarni portlating!",
     cosmoClickHint: "Menga bosing! 👆",
     tabLessons: "Qoidalar & Ko‘rgazmalar",
+    tabMultiplication: "Karra Jadvali",
     tabPractice: "Mashqlar & Misollar",
     tabFractions: "Pitsa Kasrlar",
     tabGame: "Raketa O‘yini (Mini-Game)",
     tabBadges: "Yutuqlar & Nishonlar",
+    secMultTitle: "Interaktiv Karra Jadvali ✖️",
+    secMultDesc: "Istalgan katakchani bosing, vizual mevali savatchalar orqali hisoblang va talaffuzini tinglang!",
     secLessonsTitle: "Matematika Qoidalari va Jonli Hisoblagichlar 🍎",
     secLessonsDesc: "Qo‘shish, ayrish, ko‘paytirish va bo‘lishni vizual mevalar va yulduzlar orqali o‘rganing!",
     secPracticeTitle: "Misollar Generatori va Mashqlar 🎯",
@@ -144,10 +147,13 @@ const MATH_UI_TRANSLATIONS = {
     cosmoSpeech: "Давай вместе откроем магию чисел! Считай предметы, решай примеры и взрывай астероиды своей ракетой!",
     cosmoClickHint: "Нажми на меня! 👆",
     tabLessons: "Правила и Наглядности",
+    tabMultiplication: "Таблица Умножения",
     tabPractice: "Упражнения и Примеры",
     tabFractions: "Дроби с Пиццей",
     tabGame: "Игра Ракета (Мини-игра)",
     tabBadges: "Достижения и Значки",
+    secMultTitle: "Интерактивная Таблица Умножения ✖️",
+    secMultDesc: "Нажимайте на ячейки, считайте с наглядными фруктами и слушайте произношение!",
     secLessonsTitle: "Правила Математики и Живые Счетчики 🍎",
     secLessonsDesc: "Изучайте сложение, вычитание, умножение и деление с наглядными фруктами и звездами!",
     secPracticeTitle: "Генератор Примеров и Упражнения 🎯",
@@ -243,6 +249,8 @@ class MathApp {
     // Update Nav Tabs
     const tabL = document.getElementById('tab-txt-lessons');
     if (tabL) tabL.textContent = t.tabLessons;
+    const tabM = document.getElementById('tab-txt-multiplication');
+    if (tabM) tabM.textContent = t.tabMultiplication;
     const tabP = document.getElementById('tab-txt-practice');
     if (tabP) tabP.textContent = t.tabPractice;
     const tabF = document.getElementById('tab-txt-fractions');
@@ -251,6 +259,12 @@ class MathApp {
     if (tabG) tabG.textContent = t.tabGame;
     const tabB = document.getElementById('tab-txt-badges');
     if (tabB) tabB.textContent = t.tabBadges;
+
+    // Update Section 0.5 (Karra Jadvali)
+    const secMTitle = document.getElementById('sec-mult-title');
+    if (secMTitle) secMTitle.textContent = t.secMultTitle;
+    const secMDesc = document.getElementById('sec-mult-desc');
+    if (secMDesc) secMDesc.textContent = t.secMultDesc;
 
     // Update Section 1
     const secLTitle = document.getElementById('sec-lessons-title');
@@ -437,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.whiteboard) window.whiteboard.init();
   if (window.mathRocketGame) window.mathRocketGame.init();
   if (window.fractionSandbox) window.fractionSandbox.init();
+  if (window.mathMultiplication) window.mathMultiplication.init();
 });
 
 function initNavTabs() {
@@ -459,6 +474,10 @@ function initNavTabs() {
         window.mathRocketGame.resize();
       } else {
         window.mathRocketGame.stop();
+      }
+
+      if (target === 'sec-multiplication' && window.mathMultiplication) {
+        window.mathMultiplication.init();
       }
     });
   });

@@ -2352,6 +2352,21 @@ Rules & Persona:
 
       try {
         const lang = this.detectLanguage(rawText);
+
+        if (lang === 'uz' && window.uzbekSpeech) {
+          if (btnElement) btnElement.classList.add('is-speaking');
+          window.uzbekSpeech.speak(rawText, {
+            onStart: () => {
+              if (btnElement) btnElement.classList.add('is-speaking');
+            },
+            onEnd: () => {
+              if (btnElement) btnElement.classList.remove('is-speaking');
+              this.activeUtterance = null;
+            }
+          });
+          return;
+        }
+
         const { voice, langCode, cleanText } = this.resolveTTSVoice(rawText, lang);
 
         if (!cleanText) return;
@@ -2412,23 +2427,28 @@ Rules & Persona:
         return { voice: enVoice, langCode: 'en-US', cleanText: plain };
       }
 
-      // Uzbek - Native or Phonetic Bridge
-      const uzVoice = voices.find(v => v.lang.startsWith('uz') || v.lang.startsWith('UZ'));
+      // Uzbek - Native or Turkic Phonetic Bridge (Never Russian voice!)
+      const uzVoice = voices.find(v => v.lang && (v.lang.startsWith('uz') || v.lang.startsWith('UZ')));
       if (uzVoice) {
         return { voice: uzVoice, langCode: 'uz-UZ', cleanText: plain };
       }
 
-      const ruVoice = voices.find(v => v.lang.startsWith('ru'));
-      if (ruVoice) {
-        return { voice: ruVoice, langCode: 'ru-RU', cleanText: this.uzToPhoneticCyrillic(plain) };
-      }
-
-      const trVoice = voices.find(v => v.lang.startsWith('tr'));
+      const trVoice = voices.find(v => v.lang && (v.lang.startsWith('tr') || v.lang.startsWith('TR')));
       if (trVoice) {
         return { voice: trVoice, langCode: 'tr-TR', cleanText: this.uzToTurkish(plain) };
       }
 
-      return { voice: null, langCode: 'uz-UZ', cleanText: plain };
+      const azKkVoice = voices.find(v => v.lang && (v.lang.startsWith('az') || v.lang.startsWith('kk')));
+      if (azKkVoice) {
+        return { voice: azKkVoice, langCode: azKkVoice.lang, cleanText: this.uzToTurkish(plain) };
+      }
+
+      const latinVoice = voices.find(v => v.lang && (v.lang.startsWith('it') || v.lang.startsWith('es')));
+      if (latinVoice) {
+        return { voice: latinVoice, langCode: latinVoice.lang, cleanText: plain };
+      }
+
+      return { voice: null, langCode: 'tr-TR', cleanText: this.uzToTurkish(plain) };
     }
 
     uzToPhoneticCyrillic(text) {
