@@ -139,6 +139,7 @@ body {
   font-weight: 700;
   background: linear-gradient(135deg, var(--purple-light), var(--cyan));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1.1;
 }
@@ -174,6 +175,7 @@ body {
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   border: 1px solid transparent;
+  -webkit-user-select: none;
   user-select: none;
   white-space: nowrap;
 }
@@ -826,6 +828,56 @@ body {
   position: relative;
   overflow: hidden;
   margin-bottom: 20px;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.gravity-tower-arena.env-earth {
+  background: linear-gradient(180deg, #BAE6FD 0%, #E0F2FE 80%, #F0F9FF 100%);
+  border-color: #38BDF8;
+}
+.gravity-tower-arena.env-earth .gravity-ground {
+  background: linear-gradient(90deg, #10B981, #059669);
+  border-top: 3px solid #047857;
+}
+
+.gravity-tower-arena.env-moon {
+  background: linear-gradient(180deg, #0F172A 0%, #1E293B 70%, #334155 100%);
+  border-color: #94A3B8;
+}
+.gravity-tower-arena.env-moon .gravity-ground {
+  background: linear-gradient(90deg, #64748B, #475569);
+  border-top: 3px solid #334155;
+}
+
+.gravity-tower-arena.env-jupiter {
+  background: linear-gradient(180deg, #7C2D12 0%, #C2410C 50%, #EA580C 100%);
+  border-color: #F97316;
+}
+.gravity-tower-arena.env-jupiter .gravity-ground {
+  background: linear-gradient(90deg, #9A3412, #7C2D12);
+  border-top: 3px solid #431407;
+}
+
+.gravity-tower-arena.env-zerog {
+  background: radial-gradient(circle at 50% 30%, #312E81 0%, #1E1B4B 55%, #0F172A 100%);
+  border-color: #8B5CF6;
+}
+.gravity-tower-arena.env-zerog .gravity-ground {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.4), rgba(139, 92, 246, 0.4));
+  border-top: 2px dashed var(--cyan);
+}
+
+.gravity-tower-arena.tower-shake {
+  animation: towerImpactShake 0.35s ease-in-out;
+}
+
+@keyframes towerImpactShake {
+  0% { transform: translateY(0); }
+  20% { transform: translateY(6px); }
+  40% { transform: translateY(-4px); }
+  60% { transform: translateY(3px); }
+  80% { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
 }
 
 .tower-ruler {
@@ -1617,4 +1669,430 @@ body {
   color: var(--text-main);
   line-height: 1.45;
 }
+
+/* =========================================================================
+   EXPERIMENT 4: ELECTRIC CIRCUIT & NEON LIGHTBULB SIMULATION
+   ========================================================================= */
+
+.circuit-multimeter-hud {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.circuit-schematic-arena {
+  width: 100%;
+  min-height: 400px;
+  background: radial-gradient(ellipse at 50% 50%, #0F172A 0%, #020617 100%);
+  border: 3px solid #334155;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.circuit-electrons-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.circuit-component {
+  position: absolute;
+  z-index: 5;
+}
+
+/* Battery Unit (Left) */
+.battery-unit {
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 74px;
+  height: 140px;
+  background: linear-gradient(135deg, #1E293B, #0F172A);
+  border: 3px solid #38BDF8;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.25);
+  padding: 8px 4px;
+}
+
+.battery-terminal {
+  width: 32px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.85rem;
+  border-radius: 4px;
+}
+
+.terminal-pos {
+  background: #EF4444;
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  margin-top: -14px;
+}
+
+.terminal-neg {
+  background: #475569;
+  color: #E2E8F0;
+  margin-bottom: -14px;
+}
+
+.battery-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.battery-brand {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #38BDF8;
+}
+
+.battery-volts {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FEF08A;
+  text-shadow: 0 0 8px rgba(254, 240, 138, 0.4);
+}
+
+/* 3D Knife Switch (Top Right) */
+.switch-unit {
+  right: 45px;
+  top: 36px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.15s ease;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.switch-unit:hover {
+  transform: scale(1.04);
+}
+
+.switch-unit:active {
+  transform: scale(0.96);
+}
+
+.switch-base {
+  width: 100px;
+  height: 38px;
+  background: linear-gradient(180deg, #475569, #1E293B);
+  border: 2px solid #64748B;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 4px 0 #0F172A, 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.switch-post {
+  position: absolute;
+  width: 14px;
+  height: 18px;
+  background: linear-gradient(180deg, #D97706, #92400E);
+  border-radius: 3px;
+  top: 10px;
+}
+
+.post-left {
+  left: 14px;
+}
+
+.post-right {
+  right: 14px;
+}
+
+.switch-blade-pivot {
+  position: absolute;
+  left: 20px;
+  top: 12px;
+}
+
+.switch-blade {
+  width: 60px;
+  height: 8px;
+  background: linear-gradient(90deg, #F59E0B, #D97706);
+  border-radius: 4px;
+  transform-origin: 4px center;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.switch-unit.closed .switch-blade {
+  transform: rotate(0deg);
+}
+
+.switch-unit.open .switch-blade {
+  transform: rotate(-38deg);
+}
+
+.switch-handle {
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  background: #EF4444;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.switch-spark {
+  position: absolute;
+  top: -18px;
+  left: -4px;
+  font-size: 1.2rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.switch-spark.sparkle-anim {
+  opacity: 1;
+  animation: sparkPulse 0.35s ease-out;
+}
+
+@keyframes sparkPulse {
+  0% { transform: scale(0.6) rotate(-20deg); opacity: 1; filter: drop-shadow(0 0 10px #FEF08A); }
+  50% { transform: scale(1.4) rotate(20deg); opacity: 1; filter: drop-shadow(0 0 18px #F59E0B); }
+  100% { transform: scale(1.8) rotate(0deg); opacity: 0; }
+}
+
+.switch-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #CBD5E1;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid #334155;
+}
+
+/* Center Neon Lightbulb */
+.neon-bulb-unit {
+  left: 50%;
+  top: 30px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90px;
+}
+
+.bulb-glow-halo {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  top: -70px;
+  left: -65px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.45) 0%, rgba(245, 158, 11, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: 1;
+}
+
+.neon-bulb-unit.lit .bulb-glow-halo {
+  opacity: 1;
+}
+
+.bulb-dome {
+  width: 72px;
+  height: 72px;
+  border-radius: 50% 50% 40% 40%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2.5px solid rgba(255, 255, 255, 0.18);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 3;
+}
+
+.bulb-reflection {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 14px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(-30deg);
+  pointer-events: none;
+}
+
+.bulb-filament {
+  width: 26px;
+  height: 24px;
+  border-top: 3px solid #475569;
+  border-left: 2.5px solid #475569;
+  border-right: 2.5px solid #475569;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.bulb-screw-base {
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -2px;
+  z-index: 2;
+}
+
+.screw-thread {
+  width: 30px;
+  height: 6px;
+  background: linear-gradient(90deg, #64748B, #94A3B8, #475569);
+  border-radius: 2px;
+  margin-bottom: 2px;
+}
+
+.screw-contact {
+  width: 14px;
+  height: 6px;
+  background: #334155;
+  border-radius: 0 0 4px 4px;
+}
+
+.bulb-status-caption {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #CBD5E1;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 3px 12px;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  margin-top: 6px;
+  white-space: nowrap;
+}
+
+/* Neon Glow States per DESIGN.md */
+.neon-bulb-unit.lit .bulb-dome {
+  background: radial-gradient(circle at 50% 40%, #FEF08A 0%, #F59E0B 65%, rgba(245, 158, 11, 0.35) 100%);
+  border-color: #FEF08A;
+  box-shadow: 0 0 30px #F59E0B, 0 0 65px rgba(245, 158, 11, 0.7), 0 0 110px rgba(245, 158, 11, 0.4);
+}
+
+.neon-bulb-unit.lit .bulb-filament {
+  border-color: #FFFFFF;
+  box-shadow: 0 0 12px #FEF08A, 0 0 20px #F59E0B;
+}
+
+/* Voltage-scaled glow intensity */
+.neon-bulb-unit.lit[data-power="low"] .bulb-dome {
+  box-shadow: 0 0 18px #F59E0B, 0 0 36px rgba(245, 158, 11, 0.45);
+}
+
+.neon-bulb-unit.lit[data-power="med"] .bulb-dome {
+  box-shadow: 0 0 32px #F59E0B, 0 0 70px rgba(245, 158, 11, 0.7), 0 0 120px rgba(245, 158, 11, 0.4);
+}
+
+.neon-bulb-unit.lit[data-power="high"] .bulb-dome {
+  box-shadow: 0 0 45px #FEF08A, 0 0 95px rgba(245, 158, 11, 0.9), 0 0 160px rgba(245, 158, 11, 0.6);
+  animation: bulbHighPulse 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes bulbHighPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.05); filter: brightness(1.2); }
+}
+
+/* Test Material Clamp Unit (Bottom Center) */
+.material-clamp-unit {
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clamp-jaw {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.test-specimen-holder {
+  display: flex;
+  align-items: center;
+}
+
+.specimen-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.specimen-item.conductor {
+  background: rgba(16, 185, 129, 0.18);
+  border: 2.5px solid #10B981;
+  color: #6EE7B7;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+}
+
+.specimen-item.insulator {
+  background: rgba(239, 68, 68, 0.18);
+  border: 2.5px solid #EF4444;
+  color: #FCA5A5;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
+}
+
+.specimen-icon {
+  font-size: 1.3rem;
+}
+
+/* Responsive adjustments for mobile and tablets */
+@media (max-width: 768px) {
+  .circuit-schematic-arena {
+    min-height: 380px;
+  }
+  .battery-unit {
+    left: 14px;
+    width: 62px;
+    height: 120px;
+  }
+  .switch-unit {
+    right: 18px;
+    top: 26px;
+  }
+  .neon-bulb-unit {
+    top: 24px;
+  }
+  .material-clamp-unit {
+    bottom: 16px;
+  }
+}
+
 

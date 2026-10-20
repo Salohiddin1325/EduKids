@@ -324,7 +324,11 @@ class FractionPizzaSandbox {
 
     if (isCorrect) {
       this.streakOrders += 1;
-      if (window.kiddoAudio) window.kiddoAudio.playChime();
+      if (window.mathAudio) window.mathAudio.playCorrect();
+      else if (window.kiddoAudio) window.kiddoAudio.playChime();
+      if (window.mathConfetti) window.mathConfetti.launch(50, 0.5, 0.5);
+      if (window.mathApp) window.mathApp.addStars(2);
+
       if (window.astroCat) {
         window.astroCat.cheer('correct');
       }
@@ -333,6 +337,10 @@ class FractionPizzaSandbox {
         window.gamificationHub.addXP(25, 'math-fractions');
         window.gamificationHub.addStars(2);
         window.gamificationHub.recordActivity('math', true);
+      }
+
+      if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+        window.ScreenVFX.floatingXP('+25 XP', window.innerWidth / 2, window.innerHeight / 2 - 60);
       }
 
       if (feedbackEl) {

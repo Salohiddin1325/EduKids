@@ -596,6 +596,11 @@ class MagnetMazeGame {
       window.physicsApp.unlockBadge('maze-champ');
     }
 
+    if (window.gamificationHub) {
+      window.gamificationHub.recordActivity('physics', true);
+      window.gamificationHub.addXP(25, 'physics_maze');
+    }
+
     const stars = 3;
     if (window.levelProgressionSystem) {
       window.levelProgressionSystem.recordLevelCompletion('physics_maze', this.currentLevel, stars);
@@ -616,8 +621,8 @@ class MagnetMazeGame {
     const nextLevel = this.currentLevel + 1;
     const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
     const btnNext = isRu 
-      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 1) ? '• 👑 Pro ($13)' : ''}` 
-      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 1) ? '• 👑 Pro ($13)' : ''}`;
+      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 10) ? '• 👑 Pro ($13)' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 10) ? '• 👑 Pro ($13)' : ''}`;
 
     const winBanner = document.getElementById('maze-win-banner');
     if (winBanner) {

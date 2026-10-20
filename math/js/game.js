@@ -131,32 +131,118 @@ class MathRocketGame {
   }
 
   generateNewTarget() {
-    let ops = ['+', '-'];
-    if (this.currentLevel >= 11) ops.push('×');
-    if (this.currentLevel >= 26) ops.push('÷');
+    let a, b, op, ans;
 
-    const op = ops[Math.floor(Math.random() * ops.length)];
-    let a, b, ans;
-
-    if (op === '+') {
-      const maxVal = this.currentLevel <= 10 ? 10 + this.currentLevel : (this.currentLevel <= 25 ? 50 : 100);
-      a = Math.floor(Math.random() * maxVal) + 2;
-      b = Math.floor(Math.random() * maxVal) + 2;
+    if (this.currentLevel === 1) {
+      // Level 1: Starter addition up to 5
+      op = '+';
+      a = Math.floor(Math.random() * 3) + 1; // 1..3
+      b = Math.floor(Math.random() * 2) + 1; // 1..2
       ans = a + b;
-    } else if (op === '-') {
-      const maxVal = this.currentLevel <= 10 ? 12 : (this.currentLevel <= 25 ? 50 : 100);
-      b = Math.floor(Math.random() * maxVal) + 2;
-      a = b + Math.floor(Math.random() * maxVal) + 1;
+    } else if (this.currentLevel === 2) {
+      // Level 2: Addition within 10
+      op = '+';
+      a = Math.floor(Math.random() * 5) + 1;
+      b = Math.floor(Math.random() * 5) + 1;
+      ans = a + b;
+    } else if (this.currentLevel === 3) {
+      // Level 3: Simple subtraction within 6
+      op = '-';
+      b = Math.floor(Math.random() * 3) + 1;
+      a = b + Math.floor(Math.random() * 3) + 1;
       ans = a - b;
-    } else if (op === '×') {
-      const maxFactor = this.currentLevel <= 25 ? 6 : 12;
-      a = Math.floor(Math.random() * maxFactor) + 2;
-      b = Math.floor(Math.random() * maxFactor) + 2;
-      ans = a * b;
-    } else { // Division
-      b = Math.floor(Math.random() * 9) + 2;
-      ans = Math.floor(Math.random() * 10) + 1;
-      a = b * ans;
+    } else if (this.currentLevel === 4) {
+      // Level 4: Subtraction within 10
+      op = '-';
+      b = Math.floor(Math.random() * 5) + 1;
+      a = b + Math.floor(Math.random() * 5) + 1;
+      ans = a - b;
+    } else if (this.currentLevel === 5) {
+      // Level 5: Mixed addition and subtraction within 10
+      op = Math.random() > 0.5 ? '+' : '-';
+      if (op === '+') {
+        a = Math.floor(Math.random() * 5) + 1;
+        b = Math.floor(Math.random() * 5) + 1;
+        ans = a + b;
+      } else {
+        b = Math.floor(Math.random() * 5) + 1;
+        a = b + Math.floor(Math.random() * 5) + 1;
+        ans = a - b;
+      }
+    } else if (this.currentLevel === 6) {
+      // Level 6: Addition with carry up to 15
+      op = '+';
+      a = Math.floor(Math.random() * 5) + 5;
+      b = Math.floor(Math.random() * 5) + 3;
+      ans = a + b;
+    } else if (this.currentLevel === 7) {
+      // Level 7: Subtraction up to 18
+      op = '-';
+      b = Math.floor(Math.random() * 6) + 3;
+      ans = Math.floor(Math.random() * 6) + 3;
+      a = b + ans;
+    } else if (this.currentLevel === 8) {
+      // Level 8: Tens and round additions within 25
+      op = Math.random() > 0.5 ? '+' : '-';
+      if (op === '+') {
+        a = 10 + Math.floor(Math.random() * 5);
+        b = Math.floor(Math.random() * 7) + 2;
+        ans = a + b;
+      } else {
+        a = 20 - Math.floor(Math.random() * 5);
+        b = Math.floor(Math.random() * 6) + 2;
+        ans = a - b;
+      }
+    } else if (this.currentLevel <= 10) {
+      // Levels 9-10: Starter Champion Boss Levels (Addition/Subtraction within 30)
+      op = Math.random() > 0.5 ? '+' : '-';
+      if (op === '+') {
+        a = Math.floor(Math.random() * 12) + 4;
+        b = Math.floor(Math.random() * 12) + 4;
+        ans = a + b;
+      } else {
+        b = Math.floor(Math.random() * 10) + 3;
+        a = b + Math.floor(Math.random() * 12) + 3;
+        ans = a - b;
+      }
+    } else if (this.currentLevel <= 25) {
+      // Levels 11-25: Explorer (Addition, Subtraction, Multiplication up to 6x6)
+      const ops = ['+', '-', '×'];
+      op = ops[Math.floor(Math.random() * ops.length)];
+      if (op === '×') {
+        a = Math.floor(Math.random() * 5) + 2;
+        b = Math.floor(Math.random() * 5) + 2;
+        ans = a * b;
+      } else if (op === '+') {
+        a = Math.floor(Math.random() * 25) + 5;
+        b = Math.floor(Math.random() * 25) + 5;
+        ans = a + b;
+      } else {
+        b = Math.floor(Math.random() * 20) + 5;
+        a = b + Math.floor(Math.random() * 20) + 5;
+        ans = a - b;
+      }
+    } else {
+      // Levels 26-50+: Master (All 4 operations)
+      const ops = ['+', '-', '×', '÷'];
+      op = ops[Math.floor(Math.random() * ops.length)];
+      if (op === '×') {
+        a = Math.floor(Math.random() * 9) + 2;
+        b = Math.floor(Math.random() * 9) + 2;
+        ans = a * b;
+      } else if (op === '÷') {
+        b = Math.floor(Math.random() * 8) + 2;
+        ans = Math.floor(Math.random() * 9) + 2;
+        a = b * ans;
+      } else if (op === '+') {
+        a = Math.floor(Math.random() * 45) + 10;
+        b = Math.floor(Math.random() * 45) + 10;
+        ans = a + b;
+      } else {
+        b = Math.floor(Math.random() * 40) + 10;
+        a = b + Math.floor(Math.random() * 40) + 10;
+        ans = a - b;
+      }
     }
 
     this.targetProblem = { a, b, op, ans };
@@ -231,6 +317,12 @@ class MathRocketGame {
         this.combo++;
         window.mathApp.addStars(1);
 
+        // Immediate XP sync
+        if (window.gamificationHub) {
+          window.gamificationHub.addXP(10 * this.combo, 'Math Rocket');
+          window.gamificationHub.addStars(1);
+        }
+
         this.updateStatsUI();
 
         // Check if level completed!
@@ -271,7 +363,20 @@ class MathRocketGame {
       window.levelProgressionSystem.recordLevelCompletion('math_rocket', this.currentLevel, stars);
     }
 
-    window.mathApp.unlockBadge('rocket-master');
+    // Award XP and Stars immediately
+    const xpBonus = stars * 20 + 20;
+    if (window.mathApp) {
+      window.mathApp.addStars(stars);
+      window.mathApp.unlockBadge('rocket-master');
+    }
+    if (window.gamificationHub) {
+      window.gamificationHub.addXP(xpBonus, `Math Rocket Lvl ${this.currentLevel}`);
+      window.gamificationHub.addStars(stars);
+      window.gamificationHub.recordActivity('math', true);
+    }
+    if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+      window.ScreenVFX.floatingXP(`+${xpBonus} XP`, window.innerWidth / 2, window.innerHeight / 2 - 80);
+    }
 
     const isRu = this.getLang() === 'ru';
     const starsStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
@@ -285,8 +390,8 @@ class MathRocketGame {
     const nextLevel = this.currentLevel + 1;
     const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
     const btnNext = isRu 
-      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}` 
-      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}`;
+      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 10) ? '• 👑 Pro' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 10) ? '• 👑 Pro' : ''}`;
 
     const banner = document.getElementById('rocket-game-over-banner');
     if (banner) {

@@ -334,62 +334,10 @@ class AstroCatMascot {
           <!-- Layer 1: Equipped Outfit -->
           <div class="mascot-item-outfit" id="mascot-layer-outfit"></div>
 
-          <!-- Layer 2: Base Astro Cat SVG -->
-          <svg class="mascot-base-avatar" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="catHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#FFD166" />
-                <stop offset="100%" stop-color="#F4A261" />
-              </linearGradient>
-              <linearGradient id="catHelmetGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.8" />
-                <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.3" />
-              </linearGradient>
-            </defs>
-
-            <!-- Helmet Glass Backing -->
-            <circle cx="50" cy="50" r="44" fill="url(#catHelmetGlow)" stroke="#38BDF8" stroke-width="2.5" />
-
-            <!-- Left Ear -->
-            <polygon points="26,38 33,14 44,28" fill="#F4A261" stroke="#E76F51" stroke-width="2" stroke-linejoin="round" />
-            <polygon points="29,35 34,20 41,28" fill="#FFB5A7" />
-
-            <!-- Right Ear -->
-            <polygon points="74,38 67,14 56,28" fill="#F4A261" stroke="#E76F51" stroke-width="2" stroke-linejoin="round" />
-            <polygon points="71,35 66,20 59,28" fill="#FFB5A7" />
-
-            <!-- Cat Head Round -->
-            <circle cx="50" cy="52" r="32" fill="url(#catHeadGrad)" stroke="#E76F51" stroke-width="2.5" />
-
-            <!-- Cheeks Blush -->
-            <circle cx="34" cy="58" r="5" fill="#FF8FA3" opacity="0.6" />
-            <circle cx="66" cy="58" r="5" fill="#FF8FA3" opacity="0.6" />
-
-            <!-- Left Eye (Big Sparkling Cartoon) -->
-            <circle cx="38" cy="48" r="6" fill="#1E293B" />
-            <circle cx="36" cy="46" r="2.2" fill="#FFFFFF" />
-            <circle cx="40" cy="50" r="1.1" fill="#FFFFFF" />
-
-            <!-- Right Eye -->
-            <circle cx="62" cy="48" r="6" fill="#1E293B" />
-            <circle cx="60" cy="46" r="2.2" fill="#FFFFFF" />
-            <circle cx="64" cy="50" r="1.1" fill="#FFFFFF" />
-
-            <!-- Triangle Nose -->
-            <polygon points="50,56 46,53 54,53" fill="#E76F51" />
-
-            <!-- Cute Cat Mouth :3 -->
-            <path d="M46 56 Q50 60 50 58 Q50 60 54 56" stroke="#8D3B1B" stroke-width="2" stroke-linecap="round" fill="none" />
-
-            <!-- Whiskers -->
-            <line x1="22" y1="52" x2="32" y2="54" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
-            <line x1="22" y1="58" x2="32" y2="57" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
-            <line x1="78" y1="52" x2="68" y2="54" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
-            <line x1="78" y1="58" x2="68" y2="57" stroke="#8D3B1B" stroke-width="1.5" stroke-linecap="round" />
-
-            <!-- Helmet Visor Reflection -->
-            <path d="M22 34 Q50 18 78 34" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
-          </svg>
+          <!-- Layer 2: Base Avatar Slot (Astro Cat SVG or Custom Avatar) -->
+          <div class="mascot-base-avatar-slot" id="mascot-base-avatar-slot">
+            ${this.getBaseAvatarHTML(this.getActiveAvatarId())}
+          </div>
 
           <!-- Layer 3: Equipped Glasses / Mask -->
           <div class="mascot-item-acc" id="mascot-layer-acc"></div>
@@ -401,7 +349,37 @@ class AstroCatMascot {
     `;
 
     document.body.appendChild(dock);
+
+    // Cross-page & avatar updates listener
+    window.addEventListener('kiddo_avatar_updated', () => {
+      this.updateEquippedVisuals();
+    });
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'kiddo_active_avatar' || e.key === 'kiddo_equipped') {
+        this.updateEquippedVisuals();
+      }
+    });
+
     this.updateEquippedVisuals();
+  }
+
+  getActiveAvatarId() {
+    return (window.gamificationHub && window.gamificationHub.activeAvatar) || localStorage.getItem('kiddo_active_avatar') || 'avatar_cat';
+  }
+
+  getBaseAvatarHTML(avatarId) {
+    if (!avatarId || avatarId === 'avatar_cat') {
+      return this.getBaseSVG();
+    }
+    const items = typeof STORE_ITEMS !== 'undefined' ? STORE_ITEMS : [];
+    const avatarObj = items.find(i => i.id === avatarId) || { emoji: '🐱', nameUz: 'Qahramon' };
+
+    return `
+      <div class="mascot-custom-avatar-wrap" title="${avatarObj.nameUz}">
+        <div class="mascot-avatar-cosmic-ring"></div>
+        <div class="mascot-avatar-center-emoji">${avatarObj.emoji}</div>
+      </div>
+    `;
   }
 
   getBaseSVG() {
@@ -449,12 +427,15 @@ class AstroCatMascot {
     const accItem = equipped.acc ? items.find(i => i.id === equipped.acc) : null;
     const outfitItem = equipped.outfit ? items.find(i => i.id === equipped.outfit) : null;
     const petItem = equipped.pet ? items.find(i => i.id === equipped.pet) : null;
+    const activeAvatarId = this.getActiveAvatarId();
 
     return `
       <div class="mascot-svg-wrap" style="position: relative; width: 110px; height: 110px;">
         <div class="mascot-item-pet" style="position: absolute; top: 10px; right: -24px; font-size: 2.1rem; z-index: 12;">${petItem ? petItem.emoji : ''}</div>
         <div class="mascot-item-outfit" style="position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); font-size: 1.9rem; z-index: 9;">${outfitItem ? outfitItem.emoji : ''}</div>
-        ${this.getBaseSVG()}
+        <div class="mascot-base-avatar-slot" style="width: 100%; height: 100%;">
+          ${this.getBaseAvatarHTML(activeAvatarId)}
+        </div>
         <div class="mascot-item-acc" style="position: absolute; top: 26px; left: 50%; transform: translateX(-50%); font-size: 1.85rem; z-index: 11;">${accItem ? accItem.emoji : ''}</div>
         <div class="mascot-item-hat" style="position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 2.4rem; z-index: 10;">${hatItem ? hatItem.emoji : ''}</div>
       </div>
@@ -464,6 +445,12 @@ class AstroCatMascot {
   updateEquippedVisuals() {
     if (!window.gamificationHub) return;
     const equipped = window.gamificationHub.equipped;
+    const activeAvatarId = this.getActiveAvatarId();
+
+    const slot = document.getElementById('mascot-base-avatar-slot');
+    if (slot) {
+      slot.innerHTML = this.getBaseAvatarHTML(activeAvatarId);
+    }
 
     const hatEl = document.getElementById('mascot-layer-hat');
     const accEl = document.getElementById('mascot-layer-acc');
@@ -757,8 +744,27 @@ class AstroCatMascot {
   onCatClick() {
     this.audio.playPop();
     const lang = this.getLang();
-    const list = this.phrases.greetings[lang] || this.phrases.greetings.uz;
-    const phrase = list[Math.floor(Math.random() * list.length)];
+    const activeAvatarId = this.getActiveAvatarId();
+
+    let phrase = '';
+    if (activeAvatarId === 'avatar_astronaut') {
+      phrase = lang === 'ru' ? 'Космонавт готов к полету к звездам! 👨‍🚀🚀' : 'Astronavt yangi yulduzli sarguzashtlarga tayyor! 👨‍🚀🚀';
+    } else if (activeAvatarId === 'avatar_dino') {
+      phrase = lang === 'ru' ? 'Ррр! Гениальный динозавр знает все ответы! 🦖💡' : 'Rrr! Daho Dinozavr barcha savollarga javob topadi! 🦖💡';
+    } else if (activeAvatarId === 'avatar_wizard') {
+      phrase = lang === 'ru' ? 'Абракадабра! Наука — это настоящая магия! 🧙‍♂️✨' : 'Abrakadabra! Haqiqiy sehr bu — ilm va bilim! 🧙‍♂️✨';
+    } else if (activeAvatarId === 'avatar_robot') {
+      phrase = lang === 'ru' ? 'Бип-буп! Все системы готовы к уроку на 100%! 🤖⚡' : 'Bip-bup! Super intellekt hisoblashga 100% shay! 🤖⚡';
+    } else if (activeAvatarId === 'avatar_fox') {
+      phrase = lang === 'ru' ? 'Хитрый лисёнок спешит за новыми знаниями! 🦊🌟' : 'Epchil tulkichangiz yangi bilimlar sari intilmoqda! 🦊🌟';
+    } else if (activeAvatarId === 'avatar_owl') {
+      phrase = lang === 'ru' ? 'Ух-ух! Мудрая сова читает все книги на свете! 🦉📚' : 'Uh-uh! Dono boyqush barcha bilimlarni saralaydi! 🦉📚';
+    } else if (activeAvatarId === 'avatar_alien') {
+      phrase = lang === 'ru' ? 'Привет с далёкой галактики! Ты супер-ученик! 👽🛸' : 'Olis galaktikalardan salom! Sen eng zo‘r bilimdonsan! 👽🛸';
+    } else {
+      const list = this.phrases.greetings[lang] || this.phrases.greetings.uz;
+      phrase = list[Math.floor(Math.random() * list.length)];
+    }
 
     const card = document.getElementById('mascot-character-card');
     if (card) {

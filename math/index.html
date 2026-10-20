@@ -5,9 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MathKids - Yosh Bolalar Uchun Matematika | Математика для детей</title>
   <meta name="description" content="Yosh bolalar uchun qiziqarli va interaktiv matematika olami. Qo‘shish, ayrish, ko‘paytirish, bo‘lish, qoralama doska va kosmik raketa o‘yini!">
-  
-  <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+  <!-- Content Security Policy (CYBERSECURITY.md Section 5) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; img-src 'self' data: https: blob:; media-src 'self' blob:;">
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#2563EB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="EduKids">
+  <meta name="application-name" content="EduKids">
+  <meta name="msapplication-TileColor" content="#2563EB">
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
   
   <link rel="stylesheet" href="../shared/shared.css">
   <link rel="stylesheet" href="../shared/subscription.css">
@@ -41,7 +54,7 @@
         </a>
         <span class="subject-nav-item active-subject" title="Hozirgi fan: Matematika">
           <span class="subject-icon">🚀</span>
-          <span class="subject-label">Matematika</span>
+          <span class="subject-label" id="link-txt-math">Matematika</span>
         </span>
         <a href="../physics/index.html" class="subject-nav-item" title="Fizika darsiga o‘tish">
           <span class="subject-icon">⚛️</span>
@@ -66,6 +79,12 @@
             <span id="stat-gems-count">5</span>
           </div>
         </div>
+
+        <!-- 3D Tactile PWA Install Button -->
+        <button class="btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
+          <span class="pwa-icon">📲</span>
+          <span id="txt-pwa-install">Ilovani O‘rnatish</span>
+        </button>
 
         <!-- Language Switcher Pill -->
         <div class="lang-switcher-pill" role="group" aria-label="Tilni tanlash / Выбор языка">
@@ -313,6 +332,7 @@
       <button class="chalk-color-btn" style="background: #00E676;" data-color="#00E676" title="Yashil bo‘r"></button>
       <button class="chalk-color-btn" style="background: #38BDF8;" data-color="#38BDF8" title="Moviy bo‘r"></button>
       <button class="chalk-color-btn" style="background: #FF5E13;" data-color="#FF5E13" title="Olovrang bo‘r"></button>
+      <button class="chalk-color-btn" style="background: #EC4899;" data-color="#EC4899" title="Pushti bo‘r"></button>
       <button class="chalk-color-btn" style="background: #FFFFFF;" data-color="#FFFFFF" title="Oq bo‘r"></button>
 
       <!-- Eraser & Tools -->
@@ -320,8 +340,13 @@
       <button class="wb-tool-btn" id="whiteboard-clear-btn" title="Tozalash">🗑️ <span id="wb-clear-txt">Tozalash</span></button>
       <button class="wb-tool-btn" id="whiteboard-grid-btn" title="Katak / Nuqta">📐 <span id="wb-grid-txt">Katak</span></button>
       
-      <!-- Brush Size Slider -->
-      <input type="range" id="whiteboard-size" min="2" max="15" value="5" title="Chiziq qalinligi" style="width: 60px;">
+      <!-- Quick Brush Sizes -->
+      <div class="wb-sizes-group" style="display: inline-flex; align-items: center; gap: 4px;">
+        <button class="wb-size-btn" data-size="3" title="Yupqa (3px)">✏️</button>
+        <button class="wb-size-btn active" data-size="6" title="O‘rtacha (6px)">🖍️</button>
+        <button class="wb-size-btn" data-size="12" title="Qalin (12px)">🖌️</button>
+      </div>
+      <input type="range" id="whiteboard-size" min="2" max="15" value="6" title="Chiziq qalinligi" style="width: 50px;">
     </div>
 
     <div class="scratchpad-canvas-wrap">
@@ -337,7 +362,9 @@
   </footer>
 
   <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/pwa-register.js"></script>
   <script src="../shared/uzbek-speech.js"></script>
+  <script src="../shared/audio.js"></script>
   <script src="../shared/subscription.js"></script>
   <script src="../shared/screen-vfx.js"></script>
   <script src="../shared/gamification.js"></script>

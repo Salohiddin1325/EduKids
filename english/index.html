@@ -7,10 +7,23 @@
   <title>KiddoLingo - Yosh Bolalar Uchun Ingliz Tili | Английский язык для детей</title>
   <meta name="description"
     content="Yosh bolalar uchun zamonaviy, rang-barang va qiziqarli ingliz tili o‘rganish platformasi. Lug‘at, ovozli talaffuz, grammatika, viktorinalar va mini-o‘yinlar!">
+  <!-- Content Security Policy (CYBERSECURITY.md Section 5) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; img-src 'self' data: https: blob:; media-src 'self' blob:;">
 
-  <!-- Favicon Emoji -->
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦁</text></svg>">
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#2563EB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="EduKids">
+  <meta name="application-name" content="EduKids">
+  <meta name="msapplication-TileColor" content="#2563EB">
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
 
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="../shared/shared.css">
@@ -45,7 +58,7 @@
       <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
         <span class="subject-nav-item active-subject" title="Hozirgi fan: Ingliz Tili">
           <span class="subject-icon">🦁</span>
-          <span class="subject-label">English</span>
+          <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
         </span>
         <a href="../math/index.html" class="subject-nav-item" title="Matematika darsiga o‘tish">
           <span class="subject-icon">🚀</span>
@@ -74,6 +87,12 @@
             <span id="stat-gems-count">3</span>
           </div>
         </div>
+
+        <!-- 3D Tactile PWA Install Button -->
+        <button class="btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
+          <span class="pwa-icon">📲</span>
+          <span id="txt-pwa-install">Ilovani O‘rnatish</span>
+        </button>
 
         <!-- Language Switcher Pill -->
         <div class="lang-switcher-pill" role="group" aria-label="Tilni tanlash / Выбор языка">
@@ -170,6 +189,31 @@
         <h2 id="sec-vocab-title">Sehrli So‘zlar Olami 🌈</h2>
         <p id="sec-vocab-desc">Har bir kartochkani bosing, inglizcha talaffuzini eshiting va tarjimasini bilib oling!
         </p>
+      </div>
+
+      <!-- 26 Letters Alphabet & Phonics Zone -->
+      <div class="phonics-container-box" id="phonics-container-box">
+        <div class="phonics-header">
+          <div class="phonics-title-wrap">
+            <span class="phonics-icon-badge">🔤 A–Z</span>
+            <div>
+              <h3 class="phonics-main-title" id="phonics-header-title">Sehrli Harflar va Fonika (26 Harf)</h3>
+              <p class="phonics-sub-title" id="phonics-header-desc">Har bir harfni bosing, fonetik talaffuzini eshiting va ushbu harf bilan boshlanadigan so‘zlarni ko‘ring!</p>
+            </div>
+          </div>
+          <button class="btn btn-ctrl phonics-reset-btn active" id="btn-phonics-all" onclick="window.appState.setLetterFilter(null)">
+            ✨ <span id="phonics-txt-all">Barchasi (All)</span>
+          </button>
+        </div>
+
+        <div class="phonics-letters-grid" id="phonics-letters-grid">
+          <!-- 26 Letter Tactile 3D Buttons Injected by JavaScript -->
+        </div>
+
+        <!-- Phonics Active Spotlight / Listening Card -->
+        <div class="phonics-spotlight-card" id="phonics-spotlight-card" style="display: none;">
+          <!-- Dynamically displayed when a letter is clicked -->
+        </div>
       </div>
 
       <!-- Search & Category Filters -->
@@ -294,6 +338,9 @@
         <button class="sub-tab-btn game-tab-btn" data-target="panel-balloon">
           <span id="subtab-balloon">🎈 Havo Sharlarini Portlat (Balloon Pop)</span>
         </button>
+        <button class="sub-tab-btn game-tab-btn" data-target="panel-wordbuilder">
+          <span id="subtab-builder">🔤 So‘z Yig‘uvchi (Word Builder)</span>
+        </button>
       </div>
 
       <!-- Game 1: Magic Memory Cards -->
@@ -360,6 +407,60 @@
           <div id="balloon-win-banner" class="memory-win-banner" style="display: none;"></div>
         </div>
       </div>
+
+      <!-- Game 3: Word Builder & Scramble -->
+      <div class="game-panel" id="panel-wordbuilder">
+        <div class="wordbuilder-game-box">
+          <div class="wordbuilder-top-panel">
+            <div class="memory-stats-bar">
+              <div class="memory-stat-pill">
+                <span>⭐ Ball: </span><strong id="builder-score-display">0</strong>
+              </div>
+              <div class="memory-stat-pill">
+                <span>📝 So‘zlar: </span><strong id="builder-words-count-display">0/3</strong>
+              </div>
+              <div class="memory-stat-pill" style="border-color: #F59E0B; background: #FFFBEB;">
+                <span>🎯 Daraja: </span><strong id="builder-level-display" style="color: #D97706;">1</strong>
+              </div>
+              <button class="game-level-map-btn" onclick="window.miniGamesManager.openBuilderMap()">
+                🗺️ 50+ Daraja
+              </button>
+              <button class="btn btn-ctrl" onclick="window.miniGamesManager.resetCurrentBuilderWord()">
+                🔄 Tozalash
+              </button>
+            </div>
+
+            <!-- Clue Card -->
+            <div class="builder-clue-card">
+              <span class="builder-clue-emoji" id="builder-clue-emoji">🐱</span>
+              <div class="builder-clue-text">
+                <span class="builder-clue-label" id="builder-clue-label">Topilishi kerak bo‘lgan so‘z:</span>
+                <div class="builder-clue-meaning" id="builder-clue-meaning">Mushuk (Кошка) • [kæt]</div>
+              </div>
+              <button class="speaker-circle-btn" onclick="if(window.miniGamesManager.currentWordObj) window.soundEngine.speak(window.miniGamesManager.currentWordObj.word)" title="Listen / Eshitish">
+                🔊
+              </button>
+            </div>
+          </div>
+
+          <!-- Letter Slots (Target Drop / Placeholders) -->
+          <div class="builder-slots-container">
+            <div class="builder-slots-row" id="builder-slots-row">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Letter Bank (Scrambled Clickable Tiles) -->
+          <div class="builder-bank-container">
+            <div class="builder-bank-title" id="builder-bank-hint">👇 Harflarni to‘g‘ri tartibda bosing:</div>
+            <div class="builder-letter-bank" id="builder-letter-bank">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <div id="builder-win-banner" class="memory-win-banner" style="display: none;"></div>
+        </div>
+      </div>
     </section>
 
     <!-- =========================================================================
@@ -396,7 +497,9 @@
       qilmasdan ham ravon ishlaydi!</p>
   </footer>
 
+  <script src="../shared/pwa-register.js"></script>
   <script src="../shared/uzbek-speech.js"></script>
+  <script src="../shared/audio.js"></script>
   <script src="../shared/subscription.js"></script>
   <script src="../shared/screen-vfx.js"></script>
   <script src="../shared/gamification.js"></script>

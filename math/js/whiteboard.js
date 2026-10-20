@@ -191,11 +191,27 @@ class Whiteboard {
       });
     }
 
-    // Brush Size
+    // Quick Brush Size Buttons
+    const sizeBtns = document.querySelectorAll('.wb-size-btn');
+    sizeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        window.mathAudio.playPop();
+        sizeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.brushSize = parseInt(btn.dataset.size, 10);
+        const slider = document.getElementById('whiteboard-size');
+        if (slider) slider.value = this.brushSize;
+      });
+    });
+
+    // Brush Size Slider
     const sizeSelect = document.getElementById('whiteboard-size');
     if (sizeSelect) {
       sizeSelect.addEventListener('input', (e) => {
         this.brushSize = parseInt(e.target.value, 10);
+        sizeBtns.forEach(b => {
+          b.classList.toggle('active', parseInt(b.dataset.size, 10) === this.brushSize);
+        });
       });
     }
 
@@ -203,7 +219,6 @@ class Whiteboard {
     const clearBtn = document.getElementById('whiteboard-clear-btn');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
-        window.mathAudio.playPop();
         this.clear();
       });
     }
@@ -255,7 +270,17 @@ class Whiteboard {
   }
 
   clear() {
+    window.mathAudio.playWhoosh();
+    const wrap = this.canvas ? this.canvas.parentElement : null;
+    if (wrap) {
+      wrap.classList.add('canvas-wipe');
+      setTimeout(() => wrap.classList.remove('canvas-wipe'), 350);
+    }
     this.drawBackgroundPattern();
+    if (window.mathApp && typeof window.mathApp.showToast === 'function') {
+      const isRu = window.mathApp.lang === 'ru';
+      window.mathApp.showToast(isRu ? '🧹 Доска очищена!' : '🧹 Doska tozalandi!');
+    }
   }
 }
 

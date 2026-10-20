@@ -179,8 +179,9 @@ class LevelProgressionSystem {
     const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
     if (isPro) return true;
 
-    // Free user: Level 1 is free! Level 2+ requires Pro ($2/month)
-    return level === 1;
+    // Free user: Barcha 10 ta Boshlang'ich (Tier 1: Starter) daraja bepul!
+    // Explorer (11-25) va Master (26-50+) Pro rejada
+    return level <= 10;
   }
 
   handleLevelClick(gameId, level, onSelect) {
@@ -189,8 +190,8 @@ class LevelProgressionSystem {
     const maxUnlocked = this.getMaxUnlockedLevel(gameId);
     const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
 
-    // Check if user is trying to access a locked Pro level
-    if (level > 1 && !isPro) {
+    // Check if user is trying to access a locked Pro level (> 10)
+    if (level > 10 && !isPro) {
       if (window.subscriptionManager) {
         window.subscriptionManager.openGamePaywallModal(gameId, level);
       }

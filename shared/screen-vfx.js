@@ -470,7 +470,194 @@
         if (hud) hud.remove();
       }
     }
+
+    // -------------------------------------------------------------
+    // UNIFIED CANVAS CONFETTI & CELEBRATION ENGINE
+    // -------------------------------------------------------------
+    initConfettiCanvas() {
+      if (this.confettiCanvas) return;
+      this.confettiCanvas = document.createElement('canvas');
+      this.confettiCanvas.id = 'kiddo-unified-confetti-canvas';
+      this.confettiCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999;';
+      document.body.appendChild(this.confettiCanvas);
+      this.confettiCtx = this.confettiCanvas.getContext('2d');
+      this.confettiParticles = [];
+      this.confettiAnimFrame = null;
+      this.resizeConfetti();
+      window.addEventListener('resize', () => this.resizeConfetti());
+    }
+
+    resizeConfetti() {
+      if (!this.confettiCanvas) return;
+      this.confettiCanvas.width = window.innerWidth * (window.devicePixelRatio || 1);
+      this.confettiCanvas.height = window.innerHeight * (window.devicePixelRatio || 1);
+      if (this.confettiCtx) {
+        this.confettiCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+      }
+    }
+
+    launchConfetti(count = 70, ox = 0.5, oy = 0.5, customSymbols = null, customColors = null) {
+      this.initConfettiCanvas();
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const sx = ox * w;
+      const sy = oy * h;
+
+      const defaultColors = ['#FF5E7E', '#FFB703', '#06D6A0', '#48CAE4', '#8B5CF6', '#FF9671', '#10B981', '#F59E0B'];
+      const defaultSymbols = ['★', '●', '▲', '✨', '🎈', '🌟'];
+
+      const colors = customColors || defaultColors;
+      const symbols = customSymbols || defaultSymbols;
+
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 14 + 5;
+        this.confettiParticles.push({
+          x: sx,
+          y: sy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 6,
+          size: Math.random() * 14 + 10,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          symbol: symbols[Math.floor(Math.random() * symbols.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 12,
+          gravity: 0.35,
+          drag: 0.94,
+          life: 1
+        });
+      }
+
+      if (!this.confettiAnimFrame) {
+        this.animateConfetti();
+      }
+    }
+
+    animateConfetti() {
+      if (!this.confettiCtx) return;
+      this.confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+      for (let i = this.confettiParticles.length - 1; i >= 0; i--) {
+        const p = this.confettiParticles[i];
+        p.vx *= p.drag;
+        p.vy *= p.drag;
+        p.vy += p.gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotationSpeed;
+        p.life -= 0.012;
+
+        if (p.life <= 0 || p.y > window.innerHeight + 50) {
+          this.confettiParticles.splice(i, 1);
+          continue;
+        }
+
+        this.confettiCtx.save();
+        this.confettiCtx.translate(p.x, p.y);
+        this.confettiCtx.rotate((p.rotation * Math.PI) / 180);
+        this.confettiCtx.globalAlpha = Math.max(0, p.life);
+
+        if (p.symbol && p.symbol.length === 1 && !['●', '▲', '■'].includes(p.symbol)) {
+          this.confettiCtx.font = `bold ${p.size}px 'Fredoka', sans-serif`;
+          this.confettiCtx.fillStyle = p.color;
+          this.confettiCtx.textAlign = 'center';
+          this.confettiCtx.textBaseline = 'middle';
+          this.confettiCtx.fillText(p.symbol, 0, 0);
+        } else if (p.symbol === '●') {
+          this.confettiCtx.beginPath();
+          this.confettiCtx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          this.confettiCtx.fillStyle = p.color;
+          this.confettiCtx.fill();
+        } else if (p.symbol === '▲') {
+          this.confettiCtx.beginPath();
+          this.confettiCtx.moveTo(0, -p.size / 2);
+          this.confettiCtx.lineTo(p.size / 2, p.size / 2);
+          this.confettiCtx.lineTo(-p.size / 2, p.size / 2);
+          this.confettiCtx.closePath();
+          this.confettiCtx.fillStyle = p.color;
+          this.confettiCtx.fill();
+        } else {
+          this.confettiCtx.fillStyle = p.color;
+          this.confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        }
+
+        this.confettiCtx.restore();
+      }
+
+      if (this.confettiParticles.length > 0) {
+        this.confettiAnimFrame = requestAnimationFrame(() => this.animateConfetti());
+      } else {
+        this.confettiAnimFrame = null;
+        this.confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // SCREEN SHAKE & FLOATING XP PARTICLES
+    // -------------------------------------------------------------
+    screenShake(intensity = 6, duration = 300) {
+      document.body.style.transition = 'transform 0.05s ease';
+      const startTime = Date.now();
+      const interval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        if (elapsed >= duration) {
+          clearInterval(interval);
+          document.body.style.transform = '';
+          return;
+        }
+        const dx = (Math.random() - 0.5) * intensity;
+        const dy = (Math.random() - 0.5) * intensity;
+        document.body.style.transform = `translate(${dx}px, ${dy}px)`;
+      }, 50);
+    }
+
+    floatingXP(x, y, text = "+10 XP") {
+      const el = document.createElement('div');
+      el.className = 'floating-xp-particle';
+      el.textContent = text;
+      el.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y}px;
+        color: #F59E0B;
+        font-family: 'Fredoka', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 800;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        animation: floatUpFade 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1250);
+    }
   }
 
-  window.screenVFXEngine = new ScreenVFXEngine();
+  const engine = new ScreenVFXEngine();
+  window.screenVFXEngine = engine;
+  window.ScreenVFX = engine;
+
+  // Universal Confetti Adapters
+  window.mathConfetti = {
+    launch: (count = 70, ox = 0.5, oy = 0.5) => {
+      engine.launchConfetti(count, ox, oy, ['+', '-', '×', '÷', '=', '★', '●', '▲'], ['#FF5E13', '#10B981', '#2563EB', '#FFD166', '#7C3AED', '#00E676']);
+    }
+  };
+
+  window.confettiEngine = {
+    launch: (count = 70, ox = 0.5, oy = 0.5) => {
+      engine.launchConfetti(count, ox, oy, ['★', '●', '▲', '🎈', '✨'], ['#FF477E', '#FFB703', '#06D6A0', '#48CAE4', '#845EC2', '#FF9671', '#FFE66D']);
+    }
+  };
+
+  window.physicsConfetti = {
+    launch: (count = 70, ox = 0.5, oy = 0.5) => {
+      engine.launchConfetti(count, ox, oy, ['⚛️', '⚡', '💡', '🧲', '🌟', '●', '▲'], ['#8B5CF6', '#06B6D4', '#F59E0B', '#10B981', '#EC4899', '#3B82F6']);
+    }
+  };
+
+  window.confetti = (opts) => {
+    engine.launchConfetti(opts?.particleCount || 70, opts?.origin?.x || 0.5, opts?.origin?.y || 0.5);
+  };
 })();

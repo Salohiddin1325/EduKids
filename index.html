@@ -5,7 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yoshlar Akademiyasi - Bolalar Uchun Ta'lim Portali | Детский Образовательный Портал</title>
   <meta name="description" content="Yosh bolalar uchun ingliz tili, matematika va fizika fanlarini o‘rgatuvchi zamonaviy interaktiv platformalar!">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌟</text></svg>">
+  <!-- Content Security Policy (CYBERSECURITY.md Section 5) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; img-src 'self' data: https: blob:; media-src 'self' blob:;">
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#2563EB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="EduKids">
+  <meta name="application-name" content="EduKids">
+  <meta name="msapplication-TileColor" content="#2563EB">
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,6 +63,7 @@
       display: inline-flex;
       align-items: center;
       background: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
       padding: 4px;
       border-radius: 999px;
@@ -105,6 +121,7 @@
       font-weight: 700;
       background: linear-gradient(135deg, #FF5E7E, #2563EB);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 8px;
     }
@@ -289,7 +306,8 @@
   <div class="hub-top-bar" style="justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
       <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
-        <span class="level-icon-badge" id="hud-level-icon">🌱</span>
+        <span class="avatar-header-badge" id="hud-user-avatar" title="Sizning Qahramoningiz">🐱</span>
+        <span class="level-icon-badge" id="hud-level-icon" style="display:none;">🌱</span>
         <div class="level-info-text">
           <span class="level-title-tag" id="hud-level-title-tag">LEVEL</span>
           <span class="level-number-name" id="hud-level-name">Lvl 1: Boshlang‘ich Sayyoh</span>
@@ -315,7 +333,28 @@
       </div>
     </div>
 
+    <!-- Center: Subject Quick Switcher Pill Strip -->
+    <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
+      <a href="./english/index.html" class="subject-nav-item" title="Ingliz tili darsiga o‘tish">
+        <span class="subject-icon">🦁</span>
+        <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
+      </a>
+      <a href="./math/index.html" class="subject-nav-item" title="Matematika darsiga o‘tish">
+        <span class="subject-icon">🚀</span>
+        <span class="subject-label" id="link-txt-math">Matematika</span>
+      </a>
+      <a href="./physics/index.html" class="subject-nav-item" title="Fizika darsiga o‘tish">
+        <span class="subject-icon">⚛️</span>
+        <span class="subject-label" id="link-txt-physics">Fizika</span>
+      </a>
+    </nav>
+
     <div style="display: flex; align-items: center; gap: 8px;">
+      <!-- 3D Tactile PWA Install Button -->
+      <button class="btn btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
+        <span class="pwa-icon">📲</span> <span id="txt-pwa-install">Ilovani O‘rnatish</span>
+      </button>
+
       <button class="btn btn-ctrl btn-pro-upgrade" id="btn-hub-pro-upgrade" onclick="window.subscriptionManager && window.subscriptionManager.openPricingModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 2px solid #F59E0B; color: #92400E; font-weight: 800;" title="Pro Plan ($13/oy)">
         <span>👑</span> <span id="txt-hub-pro">PRO ($13/oy)</span>
       </button>
@@ -424,7 +463,9 @@
   </footer>
 
   <!-- Shared Engine Scripts -->
+  <script src="shared/pwa-register.js"></script>
   <script src="shared/uzbek-speech.js"></script>
+  <script src="shared/audio.js"></script>
   <script src="shared/subscription.js"></script>
   <script src="shared/screen-vfx.js"></script>
   <script src="shared/gamification.js"></script>
@@ -618,6 +659,14 @@
       const physBtn = document.getElementById('phys-btn-text');
       if (physBtn) physBtn.textContent = t.physBtn;
 
+      // Update Subject Switcher links
+      const linkEn = document.getElementById('link-txt-english');
+      if (linkEn) linkEn.textContent = isRu ? 'Английский' : 'Ingliz Tili';
+      const linkMath = document.getElementById('link-txt-math');
+      if (linkMath) linkMath.textContent = isRu ? 'Математика' : 'Matematika';
+      const linkPh = document.getElementById('link-txt-physics');
+      if (linkPh) linkPh.textContent = isRu ? 'Физика' : 'Fizika';
+
       // Update Footer
       const footerText = document.getElementById('hub-footer-text');
       if (footerText) footerText.textContent = t.footer;
@@ -648,6 +697,10 @@
 
       if (window.astroBot) {
         window.astroBot.setLanguage(activeLang);
+      }
+
+      if (window.EduKidsPWA) {
+        window.EduKidsPWA.setLanguage(activeLang);
       }
     }
 

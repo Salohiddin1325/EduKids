@@ -360,6 +360,14 @@ class LessonsManager {
       window.mathAudio.playCorrect();
       if (window.mathConfetti) window.mathConfetti.launch(35, 0.5, 0.6);
       window.mathApp.addStars(2);
+      if (window.gamificationHub) {
+        window.gamificationHub.addXP(20, `Math Lesson ${lessonId}`);
+        window.gamificationHub.addStars(2);
+        window.gamificationHub.recordActivity('math', true);
+      }
+      if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+        window.ScreenVFX.floatingXP('+20 XP', window.innerWidth / 2, window.innerHeight / 2 - 50);
+      }
 
       feedback.className = 'challenge-feedback success-box bounce-in';
       const msg = isRu ? "🎉 Правильный ответ!" : "🎉 To‘g‘ri javob!";

@@ -18,6 +18,16 @@ const KIDDO_LEVELS = [
 ];
 
 const STORE_ITEMS = [
+  // 0. AVATARS (Qahramonlar / Qahramon Avatarlar)
+  { id: 'avatar_cat', category: 'avatar', nameUz: 'Astro Mushukcha', nameRu: 'Астро Котик', emoji: '🐱', price: 0, descUz: 'Sodiq va aqlli koinot do‘sti', descRu: 'Верный и умный космический друг' }, // Free starter!
+  { id: 'avatar_astronaut', category: 'avatar', nameUz: 'Astronavt Sayyoh', nameRu: 'Космонавт Исследователь', emoji: '👨‍🚀', price: 30, descUz: 'Jasur koinot fathchisi', descRu: 'Смелый покоритель космоса' },
+  { id: 'avatar_dino', category: 'avatar', nameUz: 'Daho Dinozavr', nameRu: 'Гениальный Динозавр', emoji: '🦖', price: 35, descUz: 'Qadimgi davr dahosi', descRu: 'Гений древних эпох' },
+  { id: 'avatar_wizard', category: 'avatar', nameUz: 'Sehrgar Master', nameRu: 'Мастер Волшебник', emoji: '🧙‍♂️', price: 40, descUz: 'Bilim va sehr ustasi', descRu: 'Мастер науки и магии' },
+  { id: 'avatar_robot', category: 'avatar', nameUz: 'Kiber Robot Bob', nameRu: 'Кибер Робот Боб', emoji: '🤖', price: 45, descUz: 'Kelajak super intellekti', descRu: 'Суперинтеллект будущего' },
+  { id: 'avatar_fox', category: 'avatar', nameUz: 'Epchil Tulki', nameRu: 'Умный Лисёнок', emoji: '🦊', price: 25, descUz: 'Tezkor va topqir do‘st', descRu: 'Быстрый и находчивый друг' },
+  { id: 'avatar_owl', category: 'avatar', nameUz: 'Dono Boyqush', nameRu: 'Мудрая Сова', emoji: '🦉', price: 25, descUz: 'Kutubxona posboni', descRu: 'Хранительница мудрости' },
+  { id: 'avatar_alien', category: 'avatar', nameUz: 'Galaktika Mehmoni', nameRu: 'Пришелец Зигги', emoji: '👽', price: 0, isProOnly: true, descUz: 'Uzoq yulduzlar elchisi', descRu: 'Посланник далёких звёзд' },
+
   // 1. HATS (Bosh kiyimlar)
   { id: 'hat_party', category: 'hat', nameUz: 'Bayram Qalpog‘i', nameRu: 'Праздничный Колпак', emoji: '🎉', price: 0 }, // Free starter!
   { id: 'hat_wizard', category: 'hat', nameUz: 'Sehrgar Qalpog‘i', nameRu: 'Шляпа Волшебника', emoji: '🎩', price: 10 },
@@ -54,21 +64,56 @@ const STORE_ITEMS = [
 
 class GamificationHub {
   constructor() {
-    this.xp = parseInt(localStorage.getItem('kiddo_xp') || '60', 10);
-    this.stars = parseInt(localStorage.getItem('kiddo_stars') || '35', 10);
-    this.gems = parseInt(localStorage.getItem('kiddo_gems') || '8', 10);
-    this.streak = parseInt(localStorage.getItem('kiddo_streak') || '1', 10);
-    this.inventory = JSON.parse(localStorage.getItem('kiddo_inventory') || '["hat_party"]');
-    this.equipped = JSON.parse(localStorage.getItem('kiddo_equipped') || '{"hat":"hat_party","acc":null,"outfit":null,"pet":null}');
-    this.parentStats = JSON.parse(localStorage.getItem('kiddo_parent_stats') || JSON.stringify({
-      secondsLearned: 540,
-      wordsMastered: 18,
-      mathSolved: 24,
-      physicsExplored: 8,
-      totalQuizzes: 32,
-      correctQuizzes: 29,
-      date: new Date().toISOString().split('T')[0]
-    }));
+    // 🛡️ CYBERSECURITY: Resilient, bounded LocalStorage loading with fallback
+    try {
+      this.xp = Math.max(0, Math.min(1000000, parseInt(localStorage.getItem('kiddo_xp') || '60', 10) || 60));
+      this.stars = Math.max(0, Math.min(50000, parseInt(localStorage.getItem('kiddo_stars') || '35', 10) || 35));
+      this.gems = Math.max(0, Math.min(10000, parseInt(localStorage.getItem('kiddo_gems') || '8', 10) || 8));
+      this.streak = Math.max(0, Math.min(365, parseInt(localStorage.getItem('kiddo_streak') || '1', 10) || 1));
+      this.activeAvatar = localStorage.getItem('kiddo_active_avatar') || 'avatar_cat';
+      
+      const rawInv = localStorage.getItem('kiddo_inventory');
+      this.inventory = rawInv ? JSON.parse(rawInv) : ["hat_party", "avatar_cat"];
+      if (!Array.isArray(this.inventory)) this.inventory = ["hat_party", "avatar_cat"];
+      if (!this.inventory.includes('avatar_cat')) {
+        this.inventory.push('avatar_cat');
+      }
+
+      const rawEq = localStorage.getItem('kiddo_equipped');
+      this.equipped = rawEq ? JSON.parse(rawEq) : {"hat":"hat_party","acc":null,"outfit":null,"pet":null};
+      if (typeof this.equipped !== 'object' || this.equipped === null) {
+        this.equipped = {"hat":"hat_party","acc":null,"outfit":null,"pet":null};
+      }
+
+      const rawStats = localStorage.getItem('kiddo_parent_stats');
+      this.parentStats = rawStats ? JSON.parse(rawStats) : {
+        secondsLearned: 540,
+        wordsMastered: 18,
+        mathSolved: 24,
+        physicsExplored: 8,
+        totalQuizzes: 32,
+        correctQuizzes: 29,
+        date: new Date().toISOString().split('T')[0]
+      };
+    } catch (e) {
+      console.warn('Storage ma’lumotlari shikastlangan, xavfsiz holat tiklandi.', e);
+      this.xp = 60;
+      this.stars = 35;
+      this.gems = 8;
+      this.streak = 1;
+      this.activeAvatar = 'avatar_cat';
+      this.inventory = ["hat_party", "avatar_cat"];
+      this.equipped = {"hat":"hat_party","acc":null,"outfit":null,"pet":null};
+      this.parentStats = {
+        secondsLearned: 540,
+        wordsMastered: 18,
+        mathSolved: 24,
+        physicsExplored: 8,
+        totalQuizzes: 32,
+        correctQuizzes: 29,
+        date: new Date().toISOString().split('T')[0]
+      };
+    }
 
     this.activeStoreTab = 'all';
     this.pendingOtpCode = null;
@@ -79,6 +124,25 @@ class GamificationHub {
     this.checkDailyStreak();
     this.startSessionTimer();
     this.checkScreenTimeEnforcement();
+
+    // Cross-tab / cross-page synchronization
+    window.addEventListener('storage', (e) => {
+      if (['kiddo_active_avatar', 'kiddo_stars', 'kiddo_xp', 'kiddo_inventory', 'kiddo_equipped'].includes(e.key)) {
+        try {
+          this.activeAvatar = localStorage.getItem('kiddo_active_avatar') || 'avatar_cat';
+          this.stars = Math.max(0, Math.min(50000, parseInt(localStorage.getItem('kiddo_stars') || '35', 10) || 35));
+          this.xp = Math.max(0, Math.min(1000000, parseInt(localStorage.getItem('kiddo_xp') || '60', 10) || 60));
+          const rawInv = localStorage.getItem('kiddo_inventory');
+          this.inventory = rawInv ? JSON.parse(rawInv) : ["hat_party", "avatar_cat"];
+          const rawEq = localStorage.getItem('kiddo_equipped');
+          this.equipped = rawEq ? JSON.parse(rawEq) : {"hat":"hat_party","acc":null,"outfit":null,"pet":null};
+          this.updateAllUI();
+          if (window.astroCat) {
+            window.astroCat.updateEquippedVisuals();
+          }
+        } catch (err) {}
+      }
+    });
 
     // Sync Screen VFX on startup
     setTimeout(() => {
@@ -97,6 +161,7 @@ class GamificationHub {
     localStorage.setItem('kiddo_stars', this.stars);
     localStorage.setItem('kiddo_gems', this.gems);
     localStorage.setItem('kiddo_streak', this.streak);
+    localStorage.setItem('kiddo_active_avatar', this.activeAvatar);
     localStorage.setItem('kiddo_inventory', JSON.stringify(this.inventory));
     localStorage.setItem('kiddo_equipped', JSON.stringify(this.equipped));
     localStorage.setItem('kiddo_parent_stats', JSON.stringify(this.parentStats));
@@ -308,6 +373,28 @@ class GamificationHub {
       el.textContent = isRu ? `${this.streak} дн.` : `${this.streak} kun`;
     });
 
+    const activeAvatarItem = STORE_ITEMS.find(i => i.id === this.activeAvatar) || STORE_ITEMS.find(i => i.id === 'avatar_cat');
+    const avatarEmoji = activeAvatarItem ? activeAvatarItem.emoji : '🐱';
+
+    // 🎭 Ensure and update Avatar Badge in Header Level Pill
+    const levelPill = document.getElementById('hud-level-pill');
+    if (levelPill) {
+      let avatarBadge = document.getElementById('hud-user-avatar');
+      if (!avatarBadge) {
+        avatarBadge = document.createElement('span');
+        avatarBadge.id = 'hud-user-avatar';
+        avatarBadge.className = 'avatar-header-badge';
+        levelPill.prepend(avatarBadge);
+      }
+      avatarBadge.textContent = avatarEmoji;
+      avatarBadge.title = isRu ? `Герой: ${activeAvatarItem ? activeAvatarItem.nameRu : ''}` : `Qahramon: ${activeAvatarItem ? activeAvatarItem.nameUz : ''}`;
+    }
+
+    document.querySelectorAll('#hud-user-avatar, .header-user-avatar-badge').forEach(el => {
+      el.textContent = avatarEmoji;
+      el.title = isRu ? `Герой: ${activeAvatarItem ? activeAvatarItem.nameRu : ''}` : `Qahramon: ${activeAvatarItem ? activeAvatarItem.nameUz : ''}`;
+    });
+
     if (window.astroCat) {
       window.astroCat.updateEquippedVisuals();
     }
@@ -358,11 +445,73 @@ class GamificationHub {
 
     if (this.spendStars(item.price)) {
       this.inventory.push(itemId);
+      if (item.category === 'avatar') {
+        this.activeAvatar = itemId;
+        localStorage.setItem('kiddo_active_avatar', itemId);
+      }
       this.equipStoreItem(itemId);
       this.triggerMysteryChestUnboxing(item);
     } else {
-      alert(this.getLang() === 'ru' ? 'Вам не хватает звёздочек! Решайте задачи, чтобы заработать ⭐!' : 'Yulduzchalaringiz yetarli emas! Misol va darslarni bajarib ko‘proq ⭐ to‘plang!');
+      this.showInsufficientStarsModal(item);
     }
+  }
+
+  showInsufficientStarsModal(item) {
+    const isRu = this.getLang() === 'ru';
+    const needed = Math.max(1, item.price - this.stars);
+    const name = isRu ? item.nameRu : item.nameUz;
+
+    if (window.kiddoAudio && typeof window.kiddoAudio.playBoing === 'function') {
+      window.kiddoAudio.playBoing();
+    }
+
+    const existing = document.getElementById('kiddo-stars-insufficient-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'kiddo-stars-insufficient-modal';
+    modal.className = 'sub-modal-backdrop open';
+
+    modal.innerHTML = `
+      <div class="sub-modal-card bounce-in" style="max-width: 500px; text-align: center; padding: 32px 24px;">
+        <button class="sub-modal-close" onclick="document.getElementById('kiddo-stars-insufficient-modal').remove()">✕</button>
+
+        <div style="font-size: 3.8rem; margin-bottom: 12px; animation: gentleWiggle 1.8s ease-in-out infinite;">⭐ 💫 🚀</div>
+        
+        <h3 style="font-size: 1.6rem; font-weight: 800; color: #1E293B; margin-bottom: 8px;">
+          ${isRu ? 'Ой! Немного не хватает звёздочек! ⭐' : 'Ozgina Yulduzcha Yetmadi! ⭐'}
+        </h3>
+
+        <p style="color: #64748B; font-size: 1rem; line-height: 1.5; margin-bottom: 20px;">
+          ${isRu 
+            ? `Чтобы открыть <strong>${item.emoji} ${name}</strong>, нужно <strong>${item.price} ⭐</strong>.<br>У тебя сейчас <strong>${this.stars} ⭐</strong> (не хватает ещё <strong>${needed} ⭐</strong>).`
+            : `<strong>${item.emoji} ${name}</strong> qahramonini ochish uchun <strong>${item.price} ⭐</strong> kerak.<br>Hozir sizda <strong>${this.stars} ⭐</strong> bor (yana <strong>${needed} ⭐</strong> kerak).`
+          }
+        </p>
+
+        <div style="background: #FFFBEB; border: 2px dashed #F59E0B; border-radius: 18px; padding: 14px 18px; margin-bottom: 22px; text-align: left;">
+          <div style="font-weight: 800; color: #B45309; font-size: 0.92rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span>💡</span> <span>${isRu ? 'Как быстро заработать звёздочки:' : 'Yulduzchalarni qanday to‘plash mumkin:'}</span>
+          </div>
+          <ul style="margin: 0; padding-left: 20px; font-size: 0.88rem; color: #78350F; line-height: 1.5;">
+            <li>${isRu ? 'Решай примеры в математике (+1-3 ⭐)' : 'Matematikada misollarni to‘g‘ri yeching (+1-3 ⭐)'}</li>
+            <li>${isRu ? 'Учи новые слова в английском (+1 ⭐)' : 'Ingliz tilida yangi so‘zlarni tinglang (+1 ⭐)'}</li>
+            <li>${isRu ? 'Проходи уровни игр и открывай Sandiq (+5-35 ⭐)' : 'O‘yin bosqichlarini o‘ting va Kunlik Sandiqni oching (+5-35 ⭐)'}</li>
+          </ul>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-ctrl" onclick="document.getElementById('kiddo-stars-insufficient-modal').remove()" style="padding: 10px 22px; border-radius: 999px;">
+            ${isRu ? 'Понятно ⭐' : 'Tushundim ⭐'}
+          </button>
+          <button class="btn btn-primary" onclick="document.getElementById('kiddo-stars-insufficient-modal').remove(); window.gamificationHub.closeStoreModal();" style="background: linear-gradient(135deg, #2563EB, #1D4ED8); padding: 10px 24px; border-radius: 999px; font-weight: 800;">
+            ${isRu ? '🚀 Пойти учиться!' : '🚀 Mashq qilishga borish!'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
   }
 
   equipStoreItem(itemId) {
@@ -377,10 +526,18 @@ class GamificationHub {
       return;
     }
 
-    if (this.equipped[item.category] === itemId) {
-      this.equipped[item.category] = null;
+    if (item.category === 'avatar') {
+      this.activeAvatar = itemId;
+      localStorage.setItem('kiddo_active_avatar', itemId);
+      const isRu = this.getLang() === 'ru';
+      this.showXPToast(isRu ? `Выбран герой: ${item.emoji} ${item.nameRu}!` : `Yangi qahramon tanlandi: ${item.emoji} ${item.nameUz}!`);
+      window.dispatchEvent(new CustomEvent('kiddo_avatar_updated', { detail: { avatar: itemId, item } }));
     } else {
-      this.equipped[item.category] = itemId;
+      if (this.equipped[item.category] === itemId) {
+        this.equipped[item.category] = null;
+      } else {
+        this.equipped[item.category] = itemId;
+      }
     }
     this.save();
     this.renderStoreUI();
@@ -546,8 +703,13 @@ class GamificationHub {
             </div>
 
             <div style="display: flex; gap: 16px; align-items: center; z-index: 2;">
-              <strong style="color: #FFF; font-size: 1.15rem; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">Astro Cat 🐱🚀</strong>
-              <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 4px 14px; color: #FFD166; font-weight: 800;">
+              <strong style="color: #FFF; font-size: 1.15rem; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
+                ${(() => {
+                  const av = STORE_ITEMS.find(i => i.id === this.activeAvatar) || STORE_ITEMS.find(i => i.id === 'avatar_cat');
+                  return (isRu ? av.nameRu : av.nameUz) + ' ' + av.emoji;
+                })()}
+              </strong>
+              <div style="background: rgba(255, 255, 255, 0.15); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 4px 14px; color: #FFD166; font-weight: 800;">
                 ⭐ Balans: ${this.stars}
               </div>
             </div>
@@ -557,6 +719,9 @@ class GamificationHub {
           <div class="store-category-tabs">
             <button class="store-cat-btn ${this.activeStoreTab === 'all' ? 'active' : ''}" onclick="window.gamificationHub.setStoreCategory('all')">
               ✨ ${isRu ? 'Все' : 'Barchasi'}
+            </button>
+            <button class="store-cat-btn ${this.activeStoreTab === 'avatar' ? 'active' : ''}" onclick="window.gamificationHub.setStoreCategory('avatar')">
+              🎭 ${isRu ? 'Герои' : 'Qahramonlar'}
             </button>
             <button class="store-cat-btn ${this.activeStoreTab === 'hat' ? 'active' : ''}" onclick="window.gamificationHub.setStoreCategory('hat')">
               🎩 ${isRu ? 'Шляпы' : 'Bosh Kiyimlar'}
@@ -575,24 +740,30 @@ class GamificationHub {
           <!-- 4. Items Grid -->
           <div class="store-items-grid">
             ${filteredItems.map(item => {
+              const isAvatar = item.category === 'avatar';
               const owned = this.inventory.includes(item.id) || (item.isProOnly && isPro);
-              const isEquipped = this.equipped[item.category] === item.id;
+              const isEquipped = isAvatar ? (this.activeAvatar === item.id) : (this.equipped[item.category] === item.id);
               const name = isRu ? item.nameRu : item.nameUz;
+              const desc = isRu ? item.descRu : item.descUz;
               const vfxBadge = this.getItemVFXBadge(item);
 
               return `
-                <div class="store-card ${item.isProOnly ? 'store-card-pro-exclusive' : ''}" style="${item.isProOnly ? 'border: 2px solid #F59E0B; background: #FFFDF7;' : ''}">
+                <div class="store-card ${isAvatar ? 'store-card-avatar' : ''} ${item.isProOnly ? 'store-card-pro-exclusive' : ''}" style="${item.isProOnly ? 'border: 2px solid #F59E0B; background: #FFFDF7;' : ''}">
                   ${item.isProOnly ? `<span style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #FFF; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-bottom: 4px;">👑 PRO EXCLUSIVE</span>` : ''}
-                  <div class="store-card-icon">${item.emoji}</div>
+                  ${isAvatar ? `<span style="background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: #FFF; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-bottom: 4px;">🎭 ${isRu ? 'ГЕРОЙ' : 'QAHRAMON'}</span>` : ''}
+                  <div class="store-card-icon" style="${isAvatar ? 'font-size: 3rem; margin: 4px 0;' : ''}">${item.emoji}</div>
                   <span class="store-card-name">${name}</span>
+                  ${desc ? `<span style="font-size: 0.74rem; color: #64748B; margin-bottom: 4px; display: block; line-height: 1.3;">${desc}</span>` : ''}
                   ${vfxBadge ? `<span class="store-card-vfx-badge">${vfxBadge}</span>` : ''}
                   <span class="store-card-price">
                     ${owned ? '✅ Ochiq' : (item.isProOnly ? '👑 Pro Obuna' : `⭐ ${item.price}`)}
                   </span>
                   
                   ${owned ? `
-                    <button class="store-card-btn ${isEquipped ? 'btn-equipped' : 'btn-equip'}" onclick="window.gamificationHub.equipStoreItem('${item.id}')">
-                      ${isEquipped ? 'Yechish ✖️' : 'Kiyish ✨'}
+                    <button class="store-card-btn ${isEquipped ? 'btn-equipped' : 'btn-equip'}" onclick="window.gamificationHub.equipStoreItem('${item.id}')" ${isAvatar && isEquipped ? 'disabled style="background: #10B981; color: #FFF; cursor: default;"' : ''}>
+                      ${isAvatar 
+                        ? (isEquipped ? (isRu ? 'Выбран ✓' : 'Tanlangan ✓') : (isRu ? 'Выбрать ➜' : 'Tanlash ➜'))
+                        : (isEquipped ? (isRu ? 'Снять ✖️' : 'Yechish ✖️') : (isRu ? 'Надеть ✨' : 'Kiyish ✨'))}
                     </button>
                   ` : (item.isProOnly ? `
                     <button class="store-card-btn" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #FFF;" onclick="window.subscriptionManager.openPricingModal()">
@@ -600,7 +771,7 @@ class GamificationHub {
                     </button>
                   ` : `
                     <button class="store-card-btn btn-buy" onclick="window.gamificationHub.buyStoreItem('${item.id}')">
-                      Sotib olish 🛒
+                      ${isRu ? 'Купить ⭐ ' + item.price : 'Sotib olish ⭐ ' + item.price}
                     </button>
                   `)}
                 </div>
@@ -996,7 +1167,7 @@ class GamificationHub {
 
           <!-- Bottom Actions -->
           <div class="parent-actions-row">
-            <button class="btn btn-ctrl" style="color: #EF4444;" onclick="if(confirm('Barcha dars va yutuqlarni tozalashni xohlaysizmi?')) { localStorage.clear(); location.reload(); }">
+            <button class="btn btn-ctrl" style="color: #EF4444;" onclick="window.gamificationHub.confirmResetProgress()">
               🗑️ Natijalarni qayta boshlash
             </button>
             
@@ -1007,6 +1178,26 @@ class GamificationHub {
         </div>
       </div>
     `;
+  }
+
+  confirmResetProgress() {
+    const doReset = () => {
+      const isRu = (localStorage.getItem('kiddo_language') || 'uz') === 'ru';
+      const promptText = isRu 
+        ? 'Внимание! Вы действительно хотите удалить все результаты, звёзды и достижения? Это действие нельзя отменить.'
+        : 'Diqqat! Haqiqatdan ham barcha dars natijalari, to‘plangan yulduzlar va yutuqlarni butunlay tozalashni xohlaysizmi? Bu amalni ortga qaytarib bo‘lmaydi.';
+      
+      if (confirm(promptText)) {
+        localStorage.clear();
+        location.reload();
+      }
+    };
+
+    if (window.subscriptionManager && typeof window.subscriptionManager.verifyParentGate === 'function') {
+      window.subscriptionManager.verifyParentGate(doReset, 'reset_progress');
+    } else {
+      doReset();
+    }
   }
 
   setScreenLimit(minutes) {
@@ -1034,10 +1225,13 @@ document.addEventListener('DOMContentLoaded', () => {
       levelPill.className = 'header-level-pill';
       levelPill.title = isRu ? 'Ваш уровень и опыт (Нажмите)' : 'Darajangiz va tajribangiz (Bosing)';
       levelPill.onclick = () => window.gamificationHub.openStoreModal();
+      const activeAvatarItem = STORE_ITEMS.find(i => i.id === window.gamificationHub.activeAvatar) || STORE_ITEMS.find(i => i.id === 'avatar_cat');
+      const avatarEmoji = activeAvatarItem ? activeAvatarItem.emoji : '🐱';
+
       levelPill.innerHTML = `
-        <span class="level-icon-badge" id="hud-level-icon">${curLevel.icon}</span>
+        <span class="avatar-header-badge" id="hud-user-avatar" title="${isRu ? 'Ваш Герой' : 'Sizning Qahramoningiz'}">${avatarEmoji}</span>
         <div class="level-info-text">
-          <span class="level-title-tag">LEVEL</span>
+          <span class="level-title-tag" id="hud-level-title-tag">${isRu ? 'УРОВЕНЬ' : 'DARAJA'}</span>
           <span class="level-number-name" id="hud-level-name">Lvl ${curLevel.level}: ${levelTitle}</span>
           <div class="xp-bar-wrap">
             <div class="xp-bar-fill" id="hud-level-progress" style="width: 30%;"></div>

@@ -28,6 +28,7 @@
       this.selectedBillingCycle = 'monthly'; // 'monthly' or 'annual'
       this.selectedPaymentMethod = 'click';  // 'click', 'payme', 'card'
       this.demoCertUnlocked = localStorage.getItem('kiddo_demo_cert_override') === 'true';
+      this.parentGateVerified = false;
 
       this.initHeaderBadge();
       this.initAds();
@@ -633,9 +634,184 @@
     }
 
     // -------------------------------------------------------------
+    // PARENT GATE (Ota-onalar Darvozasi - CYBERSECURITY & SAFETY)
+    // -------------------------------------------------------------
+    verifyParentGate(onSuccess, context = 'checkout') {
+      if (this.parentGateVerified && context !== 'reset_progress') {
+        if (typeof onSuccess === 'function') onSuccess();
+        return;
+      }
+
+      const existing = document.getElementById('kiddo-parent-gate-modal');
+      if (existing) existing.remove();
+
+      const isRu = this.getLang() === 'ru';
+
+      // 2 xonali arifmetik misol (15 dan 49 gacha)
+      let num1 = Math.floor(Math.random() * 30) + 18;
+      let num2 = Math.floor(Math.random() * 25) + 12;
+      const isAdd = Math.random() > 0.35;
+      let operator = '+';
+      let correctAnswer = num1 + num2;
+
+      if (!isAdd) {
+        operator = '−';
+        if (num1 < num2) [num1, num2] = [num2, num1];
+        correctAnswer = num1 - num2;
+      }
+
+      let attempts = 0;
+
+      const modal = document.createElement('div');
+      modal.id = 'kiddo-parent-gate-modal';
+      modal.className = 'sub-modal-backdrop open';
+
+      const titleText = isRu ? '👨‍👩‍👧 Вход для Родителей (Parent Gate)' : '👨‍👩‍👧 Ota-onalar Uchun Himoya (Parent Gate)';
+      const contextDesc = context === 'reset_progress'
+        ? (isRu ? 'Внимание! Для подтверждения сброса всех результатов решите этот математический пример:' : 'Diqqat! Barcha o‘yin va bilim natijalarini tozalash uchun quyidagi arifmetik misolni yeching:')
+        : (isRu ? 'Xavfsiz to‘lov tizimiga o‘tish va obunani rasmiylashtirish uchun quyidagi misolni yeching:' : 'Xavfsiz to‘lov tizimiga o‘tish va obunani rasmiylashtirish uchun quyidagi misolni yeching:');
+
+      modal.innerHTML = `
+        <div class="sub-modal-card parent-gate-modal-card">
+          <button class="sub-modal-close" id="btn-parent-gate-close" aria-label="Yopish">✕</button>
+
+          <div class="parent-gate-header">
+            <div class="parent-gate-icon-badge">🛡️ 👨‍👩‍👧</div>
+            <h3 class="parent-gate-title">${titleText}</h3>
+            <p class="parent-gate-desc">${contextDesc}</p>
+          </div>
+
+          <div class="parent-gate-body">
+            <div class="parent-gate-math-badge" id="parent-gate-question">
+              <span class="math-expr">${num1} ${operator} ${num2} = ?</span>
+            </div>
+
+            <form id="parent-gate-form" class="parent-gate-form-box" onsubmit="return false;">
+              <div class="form-group-custom">
+                <label for="parent-gate-input" class="parent-gate-label">
+                  ${isRu ? 'Правильный ответ:' : 'To‘g‘ri javobni kiriting:'}
+                </label>
+                <div class="parent-gate-input-wrapper">
+                  <input 
+                    type="number" 
+                    id="parent-gate-input" 
+                    class="form-input-custom parent-gate-input-field" 
+                    placeholder="${isRu ? 'Javob...' : 'Javob...'}" 
+                    autocomplete="off" 
+                    inputmode="numeric" 
+                  />
+                </div>
+                <div id="parent-gate-error-msg" class="parent-gate-error-text" style="display: none;"></div>
+              </div>
+
+              <div class="parent-gate-actions">
+                <button type="button" class="btn-parent-gate-cancel" id="btn-parent-gate-cancel">
+                  ${isRu ? 'Bekor qilish' : 'Bekor qilish'}
+                </button>
+                <button type="submit" class="btn-parent-gate-submit" id="btn-parent-gate-submit">
+                  <span>${isRu ? 'Tasdiqlash' : 'Tasdiqlash'}</span>
+                  <span>➜</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      const inputEl = document.getElementById('parent-gate-input');
+      const errorEl = document.getElementById('parent-gate-error-msg');
+      const formEl = document.getElementById('parent-gate-form');
+      const closeBtn = document.getElementById('btn-parent-gate-close');
+      const cancelBtn = document.getElementById('btn-parent-gate-cancel');
+
+      if (inputEl) {
+        setTimeout(() => inputEl.focus(), 150);
+      }
+
+      const closeModal = () => {
+        modal.remove();
+      };
+
+      if (closeBtn) closeBtn.onclick = closeModal;
+      if (cancelBtn) cancelBtn.onclick = closeModal;
+
+      const validateAnswer = () => {
+        const val = inputEl ? inputEl.value.trim() : '';
+        const userVal = parseInt(val, 10);
+
+        if (val === '' || isNaN(userVal)) {
+          if (errorEl) {
+            errorEl.textContent = isRu ? 'Пожалуйста, введите число!' : 'Iltimos, son kiriting!';
+            errorEl.style.display = 'block';
+          }
+          if (inputEl) {
+            inputEl.classList.add('input-error', 'shake-anim');
+            setTimeout(() => inputEl.classList.remove('shake-anim'), 500);
+          }
+          return;
+        }
+
+        if (userVal === correctAnswer) {
+          this.parentGateVerified = true;
+          if (window.kiddoAudio && typeof window.kiddoAudio.playChime === 'function') {
+            window.kiddoAudio.playChime();
+          }
+          closeModal();
+          if (typeof onSuccess === 'function') {
+            onSuccess();
+          }
+        } else {
+          attempts++;
+          if (window.kiddoAudio && typeof window.kiddoAudio.playBoing === 'function') {
+            window.kiddoAudio.playBoing();
+          }
+          if (inputEl) {
+            inputEl.classList.add('input-error', 'shake-anim');
+            setTimeout(() => inputEl.classList.remove('shake-anim'), 500);
+          }
+          if (errorEl) {
+            errorEl.textContent = isRu 
+              ? 'Неверно! Пожалуйста, проверьте вычисления.' 
+              : 'Noto‘g‘ri javob! Iltimos, hisob-kitobni qayta tekshiring.';
+            errorEl.style.display = 'block';
+          }
+          if (inputEl) inputEl.value = '';
+
+          if (attempts >= 2) {
+            num1 = Math.floor(Math.random() * 30) + 18;
+            num2 = Math.floor(Math.random() * 25) + 12;
+            operator = '+';
+            correctAnswer = num1 + num2;
+            const qEl = document.getElementById('parent-gate-question');
+            if (qEl) {
+              qEl.innerHTML = `<span class="math-expr">${num1} ${operator} ${num2} = ?</span>`;
+            }
+            attempts = 0;
+          }
+          if (inputEl) inputEl.focus();
+        }
+      };
+
+      if (formEl) {
+        formEl.onsubmit = (e) => {
+          e.preventDefault();
+          validateAnswer();
+        };
+      }
+    }
+
+    // -------------------------------------------------------------
     // CHECKOUT FLOW & PAYMENT METHODS
     // -------------------------------------------------------------
     openCheckoutView() {
+      // Enforce Parent Gate before allowing checkout
+      if (!this.parentGateVerified) {
+        this.verifyParentGate(() => this.openCheckoutView(), 'checkout');
+        return;
+      }
+
       const modal = document.getElementById('kiddo-subscription-modal');
       if (!modal) return;
 
@@ -659,22 +835,29 @@
               </div>
             </div>
 
-            <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 6px;">O‘zbekiston Mahalliy To‘lov Tizimlari</h3>
-            <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 20px;">O‘zingizga qulay to‘lov usulini tanlang (Click, Payme yoki Milliy/Xalqaro kartalar):</p>
+            <div class="checkout-header-badge-row">
+              <span class="parent-gate-passed-tag">🛡️ Ota-onalar Nazoratidan O‘tildi</span>
+              <span class="security-chip-pill">🔒 256-bit Shifrlangan</span>
+            </div>
 
-            <!-- Payment Methods Grid -->
-            <div class="payment-methods-grid">
-              <button class="payment-tab-btn ${this.selectedPaymentMethod === 'click' ? 'active' : ''}" id="tab-pay-click">
+            <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 6px;">O‘zbekiston Mahalliy To‘lov Tizimlari</h3>
+            <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 20px;">O‘zingizga qulay 3D taktil to‘lov usulini tanlang (Click, Payme yoki Milliy/Xalqaro kartalar):</p>
+
+            <!-- Payment Methods 3D Grid -->
+            <div class="payment-methods-grid payment-methods-3d-grid">
+              <button class="payment-tab-btn payment-card-3d-tab tab-click ${this.selectedPaymentMethod === 'click' ? 'active' : ''}" id="tab-pay-click">
                 <div class="pay-logo-badge"><span class="pay-logo-custom-click">CLICK</span></div>
                 <span class="pay-method-name">Click Pass / Click.uz</span>
+                <span class="pay-method-sub">Tezkor to‘lov so‘rovi</span>
               </button>
 
-              <button class="payment-tab-btn ${this.selectedPaymentMethod === 'payme' ? 'active' : ''}" id="tab-pay-payme">
+              <button class="payment-tab-btn payment-card-3d-tab tab-payme ${this.selectedPaymentMethod === 'payme' ? 'active' : ''}" id="tab-pay-payme">
                 <div class="pay-logo-badge"><span class="pay-logo-custom-payme">payme</span></div>
                 <span class="pay-method-name">Payme.uz</span>
+                <span class="pay-method-sub">Hisob yoki telefon</span>
               </button>
 
-              <button class="payment-tab-btn ${this.selectedPaymentMethod === 'card' ? 'active' : ''}" id="tab-pay-card">
+              <button class="payment-tab-btn payment-card-3d-tab tab-card ${this.selectedPaymentMethod === 'card' ? 'active' : ''}" id="tab-pay-card">
                 <div class="pay-logo-badge">
                   <div class="pay-logo-custom-cards">
                     <span class="card-mini-chip chip-uzcard">Uzcard</span>
@@ -683,7 +866,8 @@
                     <span class="card-mini-chip chip-master" style="background: #EB001B; color: white;">MC</span>
                   </div>
                 </div>
-                <span class="pay-method-name">Uzcard / Humo / Visa / MC</span>
+                <span class="pay-method-name">Bank Kartalari</span>
+                <span class="pay-method-sub">Jonli 3D Virtual Karta</span>
               </button>
             </div>
 
@@ -694,9 +878,9 @@
 
             <!-- Security Assurance -->
             <div class="security-assurance-bar">
-              <span>🔒 256-bit Shifrlangan Xavfsiz To‘lov</span>
-              <span>⚡ Bir zumda faollashtirish</span>
-              <span>🔄 Istalgan vaqtda bekor qilish</span>
+              <span>🔒 256-bit SSL Shifrlash</span>
+              <span>⚡ Bir zumda faollashadi</span>
+              <span>🔄 Istalgan payt bekor qilish</span>
             </div>
           </div>
         </div>
@@ -710,16 +894,20 @@
 
       if (this.selectedPaymentMethod === 'click') {
         return `
-          <div class="payment-form-box">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-              <span class="pay-logo-custom-click" style="font-size: 0.9rem;">CLICK</span>
-              <div>
-                <strong style="display: block; font-size: 1.05rem;">Click Evolution / Click Pass</strong>
-                <small style="color: #64748B;">Telefon raqamingizga to‘lov so‘rovi yuboriladi</small>
+          <div class="payment-form-box payment-form-3d-box">
+            <!-- 3D Tactical Click Card Header -->
+            <div class="tactical-brand-card click-brand-3d-card">
+              <div class="t-card-top">
+                <span class="pay-logo-custom-click" style="font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">CLICK</span>
+                <span class="t-card-badge">🇺🇿 O‘zbekiston • Click Evolution</span>
+              </div>
+              <div class="t-card-desc">
+                <strong>Click Pass orqali tezkor to‘lov</strong>
+                <p>Telefoningizga bir zumda tasdiqlash xabarnomasi yoki USSD so‘rov yuboriladi.</p>
               </div>
             </div>
 
-            <div class="form-group-custom">
+            <div class="form-group-custom" style="margin-top: 18px;">
               <label for="click-phone-input">Telefon raqamingiz (+998 formati):</label>
               <div class="phone-input-wrapper">
                 <span class="phone-flag-icon">🇺🇿</span>
@@ -730,7 +918,7 @@
               </div>
             </div>
 
-            <button class="btn-submit-pay" id="btn-submit-click" style="background: linear-gradient(135deg, #0073FF, #0056BF);">
+            <button class="btn-submit-pay btn-submit-click-3d" id="btn-submit-click">
               <span>Click orqali to‘lash (${uzsAmount} UZS)</span>
               <span>➜</span>
             </button>
@@ -740,16 +928,20 @@
 
       if (this.selectedPaymentMethod === 'payme') {
         return `
-          <div class="payment-form-box">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-              <span class="pay-logo-custom-payme" style="font-size: 0.9rem;">payme</span>
-              <div>
-                <strong style="display: block; font-size: 1.05rem;">Payme.uz To‘lov Tizimi</strong>
-                <small style="color: #64748B;">Telefon raqamingiz orqali to‘lang</small>
+          <div class="payment-form-box payment-form-3d-box">
+            <!-- 3D Tactical Payme Card Header -->
+            <div class="tactical-brand-card payme-brand-3d-card">
+              <div class="t-card-top">
+                <span class="pay-logo-custom-payme" style="font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">payme</span>
+                <span class="t-card-badge">🛡️ Payme Xavfsiz To‘lov</span>
+              </div>
+              <div class="t-card-desc">
+                <strong>Payme.uz hisobi orqali to‘lash</strong>
+                <p>Payme profilingizga biriktirilgan telefon raqami orqali bir necha soniyada to‘lang.</p>
               </div>
             </div>
 
-            <div class="form-group-custom">
+            <div class="form-group-custom" style="margin-top: 18px;">
               <label for="payme-phone-input">Payme hisob raqami (Telefon):</label>
               <div class="phone-input-wrapper">
                 <span class="phone-flag-icon">🇺🇿</span>
@@ -760,7 +952,7 @@
               </div>
             </div>
 
-            <button class="btn-submit-pay" id="btn-submit-payme" style="background: linear-gradient(135deg, #14D8C8, #0E9F94); color: #0F172A;">
+            <button class="btn-submit-pay btn-submit-payme-3d" id="btn-submit-payme">
               <span>Payme orqali to‘lash (${uzsAmount} UZS)</span>
               <span>➜</span>
             </button>
@@ -768,12 +960,53 @@
         `;
       }
 
-      // Direct Card Payment (Uzcard, Humo, Visa, Mastercard)
+      // Direct Bank Card Payment (Uzcard, Humo, Visa, Mastercard) with Live 3D Virtual Plastic Card Preview
       return `
-        <div class="payment-form-box">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-            <strong style="font-size: 1.05rem;">Karta Ma'lumotlari:</strong>
-            <small style="color: #64748B;">Uzcard (8600), Humo (9860), Visa, Mastercard</small>
+        <div class="payment-form-box payment-form-3d-box">
+          <!-- 3D Virtual Plastic Card Stage -->
+          <div class="virtual-card-stage">
+            <div class="virtual-card-3d card-theme-uzcard" id="virtual-card-preview">
+              <div class="card-shimmer-glare"></div>
+              
+              <div class="vcard-top">
+                <div class="vcard-chip-box">
+                  <div class="vcard-chip-pattern">
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+                <div class="vcard-contactless" title="Contactless Payment">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M8.5 16.5a5 5 0 0 1 0-9"/>
+                    <path d="M12 19a8.5 8.5 0 0 0 0-14"/>
+                    <path d="M15.5 21.5a12 12 0 0 0 0-19"/>
+                  </svg>
+                </div>
+                <div class="vcard-brand-badge" id="preview-brand-logo">UZCARD</div>
+              </div>
+              
+              <div class="vcard-number-display" id="preview-card-num">8600 •••• •••• ••••</div>
+              
+              <div class="vcard-bottom">
+                <div class="vcard-col">
+                  <span class="vcard-label">KARTA EGASI / HOLDER</span>
+                  <span class="vcard-text">OTA-ONA (VALIY)</span>
+                </div>
+                <div class="vcard-col vcard-col-right">
+                  <span class="vcard-label">MUDDATI</span>
+                  <span class="vcard-text" id="preview-card-exp">MM/YY</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 18px 0 14px;">
+            <strong style="font-size: 1.05rem;">Karta Rekvizitlari:</strong>
+            <div class="accepted-cards-pill-list">
+              <span class="pill-badge pill-uzcard">Uzcard</span>
+              <span class="pill-badge pill-humo">Humo</span>
+              <span class="pill-badge pill-visa">Visa</span>
+              <span class="pill-badge pill-mc">Mastercard</span>
+            </div>
           </div>
 
           <div class="form-group-custom input-with-icon-wrap">
@@ -802,7 +1035,7 @@
             </div>
           </div>
 
-          <button class="btn-submit-pay" id="btn-submit-card" style="margin-top: 14px;">
+          <button class="btn-submit-pay btn-submit-card-3d" id="btn-submit-card" style="margin-top: 14px;">
             <span>Kartadan to‘lash (${uzsAmount} UZS)</span>
             <span>➜</span>
           </button>
@@ -862,7 +1095,7 @@
         });
       }
 
-      // Card Fields strict validation
+      // Card Fields strict validation and 3D Virtual Card preview syncing
       const cardNum = document.getElementById('card-num-input');
       const cardBadge = document.getElementById('card-type-badge');
       const cardNumStatus = document.getElementById('card-num-status');
@@ -871,16 +1104,43 @@
       const cardCvc = document.getElementById('card-cvc-input');
       const cardCvcStatus = document.getElementById('card-cvc-status');
 
+      const vcardPreview = document.getElementById('virtual-card-preview');
+      const previewCardNum = document.getElementById('preview-card-num');
+      const previewCardExp = document.getElementById('preview-card-exp');
+      const previewBrandLogo = document.getElementById('preview-brand-logo');
+
       if (cardNum) {
         cardNum.addEventListener('input', (e) => {
           const res = SubscriptionManager.formatCardNumber(e.target.value);
           e.target.value = res.formatted;
+          
           if (cardBadge) {
             cardBadge.style.display = 'block';
             cardBadge.style.background = res.brandColor;
             cardBadge.style.color = '#FFF';
             cardBadge.textContent = res.brand;
           }
+
+          // Live 3D Virtual Card Sync
+          if (previewCardNum) {
+            previewCardNum.textContent = res.formatted || '8600 •••• •••• ••••';
+          }
+          if (previewBrandLogo) {
+            previewBrandLogo.textContent = res.brand;
+          }
+          if (vcardPreview) {
+            vcardPreview.className = 'virtual-card-3d';
+            if (res.brand === 'HUMO') {
+              vcardPreview.classList.add('card-theme-humo');
+            } else if (res.brand === 'VISA') {
+              vcardPreview.classList.add('card-theme-visa');
+            } else if (res.brand === 'MASTERCARD') {
+              vcardPreview.classList.add('card-theme-mastercard');
+            } else {
+              vcardPreview.classList.add('card-theme-uzcard');
+            }
+          }
+
           if (cardNumStatus) {
             if (res.isValid) {
               cardNumStatus.innerHTML = `<span style="color: #10B981; font-weight: 800;">✓ 16 xonali karta</span>`;
@@ -898,6 +1158,12 @@
         cardExp.addEventListener('input', (e) => {
           const res = SubscriptionManager.formatCardExp(e.target.value);
           e.target.value = res.formatted;
+          
+          // Live 3D Virtual Card Exp Sync
+          if (previewCardExp) {
+            previewCardExp.textContent = res.formatted || 'MM/YY';
+          }
+
           if (cardExpStatus) {
             if (res.isValid) {
               cardExpStatus.innerHTML = `<span style="color: #10B981; font-weight: 800;">✓ To‘g‘ri muddat</span>`;
@@ -1149,7 +1415,7 @@
 
           <div style="text-align: center; margin-bottom: 20px;">
             <span style="font-size: 2.4rem;">🏆</span>
-            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 4px; background: linear-gradient(135deg, #B45309, #D97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 4px; background: linear-gradient(135deg, #B45309, #D97706); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
               Rasmiy Grand Master Yutuq Sertifikati
             </h2>
             <p style="color: #64748B; font-size: 0.95rem;">
@@ -1708,6 +1974,10 @@
     }
 
     triggerConfetti() {
+      if (window.ScreenVFX && typeof window.ScreenVFX.launchConfetti === 'function') {
+        window.ScreenVFX.launchConfetti(80, 0.5, 0.5);
+        return;
+      }
       const colors = ['#FFD166', '#FF5E7E', '#06D6A0', '#48CAE4', '#845EC2', '#F59E0B'];
       for (let i = 0; i < 40; i++) {
         const p = document.createElement('div');

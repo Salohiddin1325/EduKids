@@ -93,6 +93,7 @@ const MATH_UI_TRANSLATIONS = {
     streakSuffix: "kun",
     scratchpadBtn: "Qoralama",
     linkEnglish: "Ingliz Tili",
+    linkMath: "Matematika",
     linkPhysics: "Fizika",
     cosmoTitle: "Bip-bop! Men Cosmo — Matematika Do‘stingizman! 🌟",
     cosmoSpeech: "Keling, raqamlar sehrini birga kashf qilamiz! Narsalarni sanang, misollarni yeching va raketangiz bilan asteroidlarni portlating!",
@@ -141,7 +142,8 @@ const MATH_UI_TRANSLATIONS = {
     brandTagline: "Математика — просто и весело! 🔢",
     streakSuffix: "дн.",
     scratchpadBtn: "Черновик",
-    linkEnglish: "Английский Язык",
+    linkEnglish: "Английский",
+    linkMath: "Математика",
     linkPhysics: "Физика",
     cosmoTitle: "Бип-боп! Я Космо — твой друг по математике! 🌟",
     cosmoSpeech: "Давай вместе откроем магию чисел! Считай предметы, решай примеры и взрывай астероиды своей ракетой!",
@@ -235,6 +237,8 @@ class MathApp {
     if (txtScratch) txtScratch.textContent = t.scratchpadBtn;
     const linkEn = document.getElementById('link-txt-english');
     if (linkEn) linkEn.textContent = t.linkEnglish;
+    const linkMath = document.getElementById('link-txt-math');
+    if (linkMath) linkMath.textContent = t.linkMath;
     const linkPh = document.getElementById('link-txt-physics');
     if (linkPh) linkPh.textContent = t.linkPhysics;
 
@@ -348,6 +352,7 @@ class MathApp {
     if (window.fractionSandbox) window.fractionSandbox.init();
     if (window.astroCat) window.astroCat.onLanguageChanged(lang);
     if (window.gamificationHub) window.gamificationHub.updateAllUI();
+    if (window.EduKidsPWA) window.EduKidsPWA.setLanguage(lang);
   }
 
   addStars(n = 1) {

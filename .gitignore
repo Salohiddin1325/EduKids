@@ -21,3 +21,7 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Temporary scratch scripts
+scratch/
+

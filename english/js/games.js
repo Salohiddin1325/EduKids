@@ -30,6 +30,16 @@ class MiniGamesManager {
     this.memoryMoves = 0;
     this.memoryTimer = 0;
     this.memoryTimerInterval = null;
+
+    // Word Builder (So'z Yig'uvchi) State
+    this.currentBuilderLevel = 1;
+    this.builderScore = 0;
+    this.builderWordsCompleted = 0;
+    this.targetBuilderWords = 3;
+    this.builderErrors = 0;
+    this.currentWordObj = null;
+    this.scrambledLetters = [];
+    this.userPlacedLetters = [];
   }
 
   getLang() {
@@ -126,6 +136,25 @@ class MiniGamesManager {
 
     // Pronounce target word for the child!
     window.soundEngine.speak(randomWord.word);
+  }
+
+  updateBalloonHintForLang() {
+    if (!this.balloonTarget) return;
+    const targetHintEl = document.getElementById('balloon-target-hint');
+    const isRu = this.getLang() === 'ru';
+    if (targetHintEl) {
+      targetHintEl.textContent = isRu 
+        ? `Значение: ${this.balloonTarget.russian} (${this.balloonTarget.uzbek}) • Цель: ${this.balloonPopsCount}/${this.targetPopsToWin}` 
+        : `Ma’nosi: ${this.balloonTarget.uzbek} (${this.balloonTarget.russian}) • Maqsad: ${this.balloonPopsCount}/${this.targetPopsToWin}`;
+    }
+    const startBtn = document.getElementById('balloon-start-btn');
+    if (startBtn) {
+      if (this.balloonGameActive) {
+        startBtn.textContent = isRu ? '⏸️ Приостановить' : '⏸️ O‘yinni to‘xtatish / Pause';
+      } else {
+        startBtn.textContent = isRu ? '▶️ Начать игру / Start Game' : '▶️ O‘yinni boshlash / Start Game';
+      }
+    }
   }
 
   spawnBalloon(arena) {
@@ -235,12 +264,30 @@ class MiniGamesManager {
       this.activeBalloons.splice(idx, 1);
     }
 
+    // Always play tactile pop sound
+    if (window.soundEngine && typeof window.soundEngine.playPop === 'function') {
+      window.soundEngine.playPop();
+    }
+
     if (balloonData.isTarget) {
       // Correct balloon popped!
       this.balloonScore += 10;
       this.balloonPopsCount++;
-      window.soundEngine.playSuccess();
+
+      if (window.soundEngine && typeof window.soundEngine.playDing === 'function') {
+        window.soundEngine.playDing();
+      } else if (window.soundEngine && typeof window.soundEngine.playSuccess === 'function') {
+        window.soundEngine.playSuccess();
+      }
+
       window.appState.addStars(1);
+
+      if (window.gamificationHub) {
+        window.gamificationHub.addXP(10, 'English Balloon Pop');
+      }
+      if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+        window.ScreenVFX.floatingXP(rect.left + rect.width / 2, Math.max(70, rect.top), '+10 XP');
+      }
 
       this.updateBalloonScoreUI();
 
@@ -253,7 +300,11 @@ class MiniGamesManager {
     } else {
       // Wrong balloon popped
       this.balloonErrors++;
-      window.soundEngine.playError();
+      if (window.soundEngine && typeof window.soundEngine.playWrong === 'function') {
+        window.soundEngine.playWrong();
+      } else if (window.soundEngine && typeof window.soundEngine.playError === 'function') {
+        window.soundEngine.playError();
+      }
       this.balloonScore = Math.max(0, this.balloonScore - 2);
       this.updateBalloonScoreUI();
     }
@@ -261,13 +312,23 @@ class MiniGamesManager {
 
   handleBalloonWin() {
     this.stopBalloonGame();
-    window.soundEngine.playFanfare();
+    if (window.soundEngine && typeof window.soundEngine.playFanfare === 'function') {
+      window.soundEngine.playFanfare();
+    }
     if (window.confettiEngine) window.confettiEngine.launch(100, 0.5, 0.5);
 
     // Calculate stars
     const stars = this.balloonErrors === 0 ? 3 : (this.balloonErrors <= 2 ? 2 : 1);
     if (window.levelProgressionSystem) {
       window.levelProgressionSystem.recordLevelCompletion('english_balloon', this.currentBalloonLevel, stars);
+    }
+
+    const earnedXP = stars * 15 + 20;
+    if (window.gamificationHub) {
+      window.gamificationHub.addXP(earnedXP, 'Balloon Pop Level Complete');
+    }
+    if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+      window.ScreenVFX.floatingXP(window.innerWidth / 2, window.innerHeight / 2 - 40, `+${earnedXP} XP`);
     }
 
     window.appState.unlockBadge('balloon-popper');
@@ -279,21 +340,22 @@ class MiniGamesManager {
       ? `🎉 Уровень ${this.currentBalloonLevel} пройден!` 
       : `🎉 ${this.currentBalloonLevel}-Bosqich Yakunlandi!`;
     const stats = isRu 
-      ? `Очки: <strong>${this.balloonScore}</strong> | Ошибок: <strong>${this.balloonErrors}</strong>` 
-      : `To‘plangan ball: <strong>${this.balloonScore}</strong> | Xatolar: <strong>${this.balloonErrors} ta</strong>`;
+      ? `Очки: <strong>${this.balloonScore}</strong> | Ошибок: <strong>${this.balloonErrors}</strong> | Награда: <strong>+${earnedXP} XP</strong>` 
+      : `To‘plangan ball: <strong>${this.balloonScore}</strong> | Xatolar: <strong>${this.balloonErrors} ta</strong> | Mukofot: <strong>+${earnedXP} XP</strong>`;
 
     const nextLevel = this.currentBalloonLevel + 1;
     const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+    const isLevelLocked = !isPro && nextLevel > 10;
     const nextBtnText = isRu 
-      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 1) ? '• 👑 PRO' : ''}` 
-      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 1) ? '• 👑 PRO' : ''}`;
+      ? `🚀 Уровень ${nextLevel} ${isLevelLocked ? '• 👑 PRO' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${isLevelLocked ? '• 👑 PRO' : ''}`;
 
     const winBanner = document.getElementById('balloon-win-banner');
     if (winBanner) {
       winBanner.innerHTML = `
-        <div class="win-stars" style="font-size: 2.2rem; margin-bottom: 6px;">${starsStr}</div>
-        <h3>${title}</h3>
-        <p>${stats}</p>
+        <div class="win-stars" style="font-size: 2.3rem; margin-bottom: 6px;">${starsStr}</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary);">${title}</h3>
+        <p style="font-size: 1.05rem; margin-bottom: 14px;">${stats}</p>
         <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;">
           <button class="btn btn-secondary" onclick="window.miniGamesManager.initBalloonGame(${this.currentBalloonLevel})">
             🔄 ${isRu ? 'Сыграть снова' : 'Qaytadan o‘ynash'}
@@ -536,13 +598,23 @@ class MiniGamesManager {
 
   handleMemoryWin() {
     clearInterval(this.memoryTimerInterval);
-    window.soundEngine.playFanfare();
+    if (window.soundEngine && typeof window.soundEngine.playFanfare === 'function') {
+      window.soundEngine.playFanfare();
+    }
     if (window.confettiEngine) window.confettiEngine.launch(100, 0.5, 0.5);
 
     // Calculate stars
     const stars = this.memoryMoves <= this.pairsToMatch * 2.2 ? 3 : (this.memoryMoves <= this.pairsToMatch * 3.2 ? 2 : 1);
     if (window.levelProgressionSystem) {
       window.levelProgressionSystem.recordLevelCompletion('english_memory', this.currentMemoryLevel, stars);
+    }
+
+    const earnedXP = stars * 15 + 20;
+    if (window.gamificationHub) {
+      window.gamificationHub.addXP(earnedXP, 'Memory Match Level Complete');
+    }
+    if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+      window.ScreenVFX.floatingXP(window.innerWidth / 2, window.innerHeight / 2 - 40, `+${earnedXP} XP`);
     }
 
     window.appState.unlockBadge('memory-master');
@@ -552,21 +624,22 @@ class MiniGamesManager {
     const starsStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
     const title = isRu ? `🎉 Уровень ${this.currentMemoryLevel} пройден!` : `🎉 ${this.currentMemoryLevel}-Bosqich Yakunlandi!`;
     const stats = isRu 
-      ? `Время: <strong>${this.memoryTimer} сек</strong> | Попыток: <strong>${this.memoryMoves}</strong>` 
-      : `Vaqt: <strong>${this.memoryTimer} soniya</strong> | Urinishlar: <strong>${this.memoryMoves} ta</strong>`;
+      ? `Время: <strong>${this.memoryTimer} сек</strong> | Попыток: <strong>${this.memoryMoves}</strong> | Награда: <strong>+${earnedXP} XP</strong>` 
+      : `Vaqt: <strong>${this.memoryTimer} soniya</strong> | Urinishlar: <strong>${this.memoryMoves} ta</strong> | Mukofot: <strong>+${earnedXP} XP</strong>`;
 
     const nextLevel = this.currentMemoryLevel + 1;
     const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+    const isLevelLocked = !isPro && nextLevel > 10;
     const btnNext = isRu 
-      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}` 
-      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 1) ? '• 👑 Pro' : ''}`;
+      ? `🚀 Уровень ${nextLevel} ${isLevelLocked ? '• 👑 Pro' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${isLevelLocked ? '• 👑 Pro' : ''}`;
 
     const winBanner = document.getElementById('memory-win-banner');
     if (winBanner) {
       winBanner.innerHTML = `
-        <div class="win-stars" style="font-size: 2.2rem; margin-bottom: 6px;">${starsStr}</div>
-        <h3>${title}</h3>
-        <p>${stats}</p>
+        <div class="win-stars" style="font-size: 2.3rem; margin-bottom: 6px;">${starsStr}</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary);">${title}</h3>
+        <p style="font-size: 1.05rem; margin-bottom: 14px;">${stats}</p>
         <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
           <button class="btn btn-secondary" onclick="window.miniGamesManager.initMemoryGame(${this.currentMemoryLevel})">
             🔄 ${isRu ? 'Сыграть снова' : 'Qaytadan o‘ynash'}
@@ -617,6 +690,326 @@ class MiniGamesManager {
     if (movesEl) movesEl.textContent = this.memoryMoves;
     if (timerEl) timerEl.textContent = `${this.memoryTimer}s`;
   }
+
+  // ==========================================
+  // GAME 3: WORD BUILDER & SCRAMBLE (50 Levels)
+  // ==========================================
+  initWordBuilderGame(forcedLevel = null) {
+    const container = document.getElementById('panel-wordbuilder');
+    if (!container) return;
+
+    if (forcedLevel) {
+      this.currentBuilderLevel = forcedLevel;
+    } else if (window.levelProgressionSystem) {
+      this.currentBuilderLevel = window.levelProgressionSystem.getCurrentLevel('english_builder');
+    }
+
+    this.builderScore = 0;
+    this.builderWordsCompleted = 0;
+    this.targetBuilderWords = 3;
+    this.builderErrors = 0;
+
+    const winBanner = document.getElementById('builder-win-banner');
+    if (winBanner) winBanner.style.display = 'none';
+
+    this.pickNewBuilderWord();
+    this.updateBuilderStatsUI();
+  }
+
+  pickNewBuilderWord() {
+    // Select vocabulary pool based on level tier
+    // Levels 1-10: 3-4 letters
+    // Levels 11-25: 4-6 letters
+    // Levels 26-50: 5-8 letters
+    let minLen = 3, maxLen = 4;
+    if (this.currentBuilderLevel > 25) {
+      minLen = 5; maxLen = 8;
+    } else if (this.currentBuilderLevel > 10) {
+      minLen = 4; maxLen = 6;
+    }
+
+    const eligible = VOCABULARY_DATA.filter(w => {
+      const len = w.word.trim().length;
+      return len >= minLen && len <= maxLen && !w.word.includes(' ');
+    });
+
+    const pool = eligible.length > 0 ? eligible : VOCABULARY_DATA.slice(0, 50);
+    this.currentWordObj = pool[Math.floor(Math.random() * pool.length)];
+
+    const rawLetters = this.currentWordObj.word.toUpperCase().split('');
+    // Scramble letters
+    let scrambled = [...rawLetters].sort(() => Math.random() - 0.5);
+    if (scrambled.join('') === rawLetters.join('') && rawLetters.length > 2) {
+      scrambled.reverse();
+    }
+
+    this.scrambledLetters = scrambled.map((char, index) => ({
+      id: index,
+      char,
+      used: false
+    }));
+
+    this.userPlacedLetters = [];
+    this.renderBuilderUI();
+
+    // Pronounce the word for the child!
+    if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+      window.soundEngine.speak(this.currentWordObj.word);
+    }
+  }
+
+  renderBuilderUI() {
+    if (!this.currentWordObj) return;
+    const isRu = this.getLang() === 'ru';
+
+    const wordLength = this.currentWordObj.word.length;
+    const clueEmoji = document.getElementById('builder-clue-emoji');
+    const clueMeaning = document.getElementById('builder-clue-meaning');
+    const slotsRow = document.getElementById('builder-slots-row');
+    const letterBank = document.getElementById('builder-letter-bank');
+    const lvlEl = document.getElementById('builder-level-display');
+
+    if (lvlEl) lvlEl.textContent = `${this.currentBuilderLevel}`;
+    if (clueEmoji) clueEmoji.textContent = this.currentWordObj.emoji;
+    if (clueMeaning) {
+      clueMeaning.textContent = isRu 
+        ? `${this.currentWordObj.russian} (${this.currentWordObj.uzbek}) • ${this.currentWordObj.phonetic}`
+        : `${this.currentWordObj.uzbek} (${this.currentWordObj.russian}) • ${this.currentWordObj.phonetic}`;
+    }
+
+    if (slotsRow) {
+      slotsRow.innerHTML = '';
+      for (let i = 0; i < wordLength; i++) {
+        const placed = this.userPlacedLetters[i];
+        const slot = document.createElement('button');
+        slot.type = 'button';
+        slot.className = `builder-slot ${placed ? 'filled' : 'empty'}`;
+        slot.setAttribute('aria-label', placed ? `Harf: ${placed.char}` : 'Bo‘sh katak');
+        slot.innerHTML = placed ? `<span class="slot-letter">${placed.char}</span>` : '<span class="slot-dash">_</span>';
+        if (placed) {
+          slot.onclick = () => this.undoBuilderSlot(i);
+        }
+        slotsRow.appendChild(slot);
+      }
+    }
+
+    if (letterBank) {
+      letterBank.innerHTML = this.scrambledLetters.map((item, idx) => `
+        <button type="button" class="builder-tile-btn ${item.used ? 'tile-used' : ''}" 
+          data-id="${item.id}"
+          onclick="window.miniGamesManager.handleBuilderLetterClick(${idx})"
+          ${item.used ? 'disabled' : ''}>
+          ${item.char}
+        </button>
+      `).join('');
+    }
+  }
+
+  handleBuilderLetterClick(scrambledIdx) {
+    const tile = this.scrambledLetters[scrambledIdx];
+    if (!tile || tile.used) return;
+
+    if (this.userPlacedLetters.length >= this.currentWordObj.word.length) return;
+
+    tile.used = true;
+    this.userPlacedLetters.push({
+      scrambledIdx,
+      char: tile.char
+    });
+
+    if (window.soundEngine && typeof window.soundEngine.playPop === 'function') {
+      window.soundEngine.playPop();
+    }
+    // Speak letter
+    if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+      window.soundEngine.speak(tile.char);
+    }
+
+    this.renderBuilderUI();
+
+    // Check if word is complete
+    if (this.userPlacedLetters.length === this.currentWordObj.word.length) {
+      this.checkBuilderWord();
+    }
+  }
+
+  undoBuilderSlot(slotIdx) {
+    if (slotIdx >= this.userPlacedLetters.length) return;
+    const removed = this.userPlacedLetters.splice(slotIdx, 1)[0];
+    if (removed && this.scrambledLetters[removed.scrambledIdx]) {
+      this.scrambledLetters[removed.scrambledIdx].used = false;
+    }
+
+    if (window.soundEngine && typeof window.soundEngine.playPop === 'function') {
+      window.soundEngine.playPop();
+    }
+
+    this.renderBuilderUI();
+  }
+
+  resetCurrentBuilderWord() {
+    this.scrambledLetters.forEach(t => t.used = false);
+    this.userPlacedLetters = [];
+    if (window.soundEngine && typeof window.soundEngine.playPop === 'function') {
+      window.soundEngine.playPop();
+    }
+    this.renderBuilderUI();
+  }
+
+  checkBuilderWord() {
+    const userWord = this.userPlacedLetters.map(p => p.char).join('');
+    const targetWord = this.currentWordObj.word.toUpperCase();
+
+    const slotsRow = document.getElementById('builder-slots-row');
+
+    if (userWord === targetWord) {
+      // CORRECT!
+      this.builderScore += 15;
+      this.builderWordsCompleted++;
+
+      if (slotsRow) slotsRow.classList.add('builder-slots-success');
+
+      if (window.soundEngine && typeof window.soundEngine.playDing === 'function') {
+        window.soundEngine.playDing();
+      } else if (window.soundEngine && typeof window.soundEngine.playSuccess === 'function') {
+        window.soundEngine.playSuccess();
+      }
+
+      if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+        window.soundEngine.speak(this.currentWordObj.word);
+      }
+      window.appState.addStars(1);
+
+      if (window.gamificationHub) {
+        window.gamificationHub.addXP(15, 'Word Builder Correct');
+      }
+      if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+        const rect = slotsRow ? slotsRow.getBoundingClientRect() : { left: window.innerWidth / 2, top: 200, width: 0 };
+        window.ScreenVFX.floatingXP(rect.left + rect.width / 2, Math.max(80, rect.top - 20), '+15 XP');
+      }
+
+      this.updateBuilderStatsUI();
+
+      if (this.builderWordsCompleted >= this.targetBuilderWords) {
+        setTimeout(() => this.handleBuilderWin(), 800);
+      } else {
+        setTimeout(() => {
+          if (slotsRow) slotsRow.classList.remove('builder-slots-success');
+          this.pickNewBuilderWord();
+        }, 900);
+      }
+    } else {
+      // WRONG!
+      this.builderErrors++;
+      if (slotsRow) slotsRow.classList.add('card-shake');
+      if (window.soundEngine && typeof window.soundEngine.playWrong === 'function') {
+        window.soundEngine.playWrong();
+      } else if (window.soundEngine && typeof window.soundEngine.playError === 'function') {
+        window.soundEngine.playError();
+      }
+
+      setTimeout(() => {
+        if (slotsRow) slotsRow.classList.remove('card-shake');
+        this.resetCurrentBuilderWord();
+      }, 700);
+    }
+  }
+
+  handleBuilderWin() {
+    if (window.soundEngine && typeof window.soundEngine.playFanfare === 'function') {
+      window.soundEngine.playFanfare();
+    }
+    if (window.confettiEngine) window.confettiEngine.launch(100, 0.5, 0.5);
+
+    const stars = this.builderErrors === 0 ? 3 : (this.builderErrors <= 2 ? 2 : 1);
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.recordLevelCompletion('english_builder', this.currentBuilderLevel, stars);
+    }
+
+    const earnedXP = stars * 15 + 20;
+    if (window.gamificationHub) {
+      window.gamificationHub.addXP(earnedXP, 'Word Builder Level Complete');
+    }
+    if (window.ScreenVFX && typeof window.ScreenVFX.floatingXP === 'function') {
+      window.ScreenVFX.floatingXP(window.innerWidth / 2, window.innerHeight / 2 - 40, `+${earnedXP} XP`);
+    }
+
+    window.appState.unlockBadge('word-builder-star');
+    window.appState.addGems(3);
+
+    const isRu = this.getLang() === 'ru';
+    const starsStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+    const title = isRu 
+      ? `🎉 Уровень ${this.currentBuilderLevel} пройден!` 
+      : `🎉 ${this.currentBuilderLevel}-Bosqich Yakunlandi!`;
+    const stats = isRu 
+      ? `Очки: <strong>${this.builderScore}</strong> | Ошибок: <strong>${this.builderErrors}</strong> | Награда: <strong>+${earnedXP} XP</strong>` 
+      : `To‘plangan ball: <strong>${this.builderScore}</strong> | Xatolar: <strong>${this.builderErrors} ta</strong> | Mukofot: <strong>+${earnedXP} XP</strong>`;
+
+    const nextLevel = this.currentBuilderLevel + 1;
+    const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+    const isLevelLocked = !isPro && nextLevel > 10;
+    const nextBtnText = isRu 
+      ? `🚀 Уровень ${nextLevel} ${isLevelLocked ? '• 👑 PRO' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${isLevelLocked ? '• 👑 PRO' : ''}`;
+
+    const winBanner = document.getElementById('builder-win-banner');
+    if (winBanner) {
+      winBanner.innerHTML = `
+        <div class="win-stars" style="font-size: 2.3rem; margin-bottom: 6px;">${starsStr}</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary);">${title}</h3>
+        <p style="font-size: 1.05rem; margin-bottom: 14px;">${stats}</p>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;">
+          <button class="btn btn-secondary" onclick="window.miniGamesManager.initWordBuilderGame(${this.currentBuilderLevel})">
+            🔄 ${isRu ? 'Сыграть снова' : 'Qaytadan o‘ynash'}
+          </button>
+          <button class="btn btn-primary" onclick="window.miniGamesManager.tryNextBuilderLevel()">
+            ${nextBtnText}
+          </button>
+          <button class="game-level-map-btn" onclick="window.miniGamesManager.openBuilderMap()">
+            🗺️ ${isRu ? 'Карта 50+ уровней' : '50+ Bosqichlar Xaritasi'}
+          </button>
+        </div>
+      `;
+      winBanner.style.display = 'block';
+    }
+  }
+
+  tryNextBuilderLevel() {
+    const nextLevel = this.currentBuilderLevel + 1;
+    if (window.levelProgressionSystem && !window.levelProgressionSystem.canAccessLevel('english_builder', nextLevel)) {
+      if (window.subscriptionManager) {
+        window.subscriptionManager.openGamePaywallModal('english_builder', nextLevel);
+      }
+      return;
+    }
+
+    const winBanner = document.getElementById('builder-win-banner');
+    if (winBanner) winBanner.style.display = 'none';
+
+    this.currentBuilderLevel = nextLevel;
+    this.initWordBuilderGame(nextLevel);
+  }
+
+  openBuilderMap() {
+    if (window.levelProgressionSystem) {
+      window.levelProgressionSystem.openMapModal(
+        'english_builder',
+        this.getLang() === 'ru' ? 'Собери слово (Word Builder)' : 'So‘z Yig‘uvchi (Word Builder)',
+        (lvl) => {
+          this.initWordBuilderGame(lvl);
+        }
+      );
+    }
+  }
+
+  updateBuilderStatsUI() {
+    const scoreEl = document.getElementById('builder-score-display');
+    const countEl = document.getElementById('builder-words-count-display');
+    if (scoreEl) scoreEl.textContent = this.builderScore;
+    if (countEl) countEl.textContent = `${this.builderWordsCompleted}/${this.targetBuilderWords}`;
+  }
 }
 
 window.miniGamesManager = new MiniGamesManager();
+

@@ -14,11 +14,26 @@ class AppState {
     this.lang = localStorage.getItem('kiddo_language') || 'uz';
     this.activeTab = 'vocab';
     this.activeCategory = 'all';
+    this.activeLetter = null;
     this.searchQuery = '';
     this.vocabPage = 1;
     this.vocabPageSize = 24;
     this.unlockedBadges = JSON.parse(localStorage.getItem('kiddo_badges') || '["first-word", "streak-star"]');
     this.wordsListened = new Set(JSON.parse(localStorage.getItem('kiddo_words_listened') || '[]'));
+  }
+
+  setLetterFilter(letter) {
+    if (this.activeLetter === letter) {
+      this.activeLetter = null;
+    } else {
+      this.activeLetter = letter;
+    }
+    this.vocabPage = 1;
+    if (window.soundEngine && typeof window.soundEngine.playPop === 'function') {
+      window.soundEngine.playPop();
+    }
+    updatePhonicsUI();
+    renderVocabGrid();
   }
 
   save() {
@@ -43,6 +58,9 @@ class AppState {
     }
     if (window.gamificationHub) {
       window.gamificationHub.updateAllUI();
+    }
+    if (window.EduKidsPWA) {
+      window.EduKidsPWA.setLanguage(lang);
     }
   }
 
@@ -133,11 +151,42 @@ const ZIPPY_QUOTES = {
   ]
 };
 
+// 26 Letters Alphabet & Phonics Dataset
+const ALPHABET_PHONICS_DATA = [
+  { letter: 'A', phonics: '/æ/', word: 'Apple', emoji: '🍎', uzbek: 'Olma', russian: 'Яблоко', speech: 'A is for Apple! /æ/ Apple!', color: '#EF4444' },
+  { letter: 'B', phonics: '/b/', word: 'Bear', emoji: '🐻', uzbek: 'Ayiq', russian: 'Медведь', speech: 'B is for Bear! /b/ Bear!', color: '#F97316' },
+  { letter: 'C', phonics: '/k/', word: 'Cat', emoji: '🐱', uzbek: 'Mushuk', russian: 'Кошка', speech: 'C is for Cat! /k/ Cat!', color: '#F59E0B' },
+  { letter: 'D', phonics: '/d/', word: 'Dog', emoji: '🐶', uzbek: 'Kuchuk', russian: 'Собака', speech: 'D is for Dog! /d/ Dog!', color: '#10B981' },
+  { letter: 'E', phonics: '/e/', word: 'Elephant', emoji: '🐘', uzbek: 'Fil', russian: 'Слон', speech: 'E is for Elephant! /e/ Elephant!', color: '#06B6D4' },
+  { letter: 'F', phonics: '/f/', word: 'Fish', emoji: '🐟', uzbek: 'Baliq', russian: 'Рыба', speech: 'F is for Fish! /f/ Fish!', color: '#3B82F6' },
+  { letter: 'G', phonics: '/ɡ/', word: 'Giraffe', emoji: '🦒', uzbek: 'Jirafa', russian: 'Жираф', speech: 'G is for Giraffe! /g/ Giraffe!', color: '#8B5CF6' },
+  { letter: 'H', phonics: '/h/', word: 'Hat', emoji: '🎩', uzbek: 'Shlyapa', russian: 'Шляпа', speech: 'H is for Hat! /h/ Hat!', color: '#EC4899' },
+  { letter: 'I', phonics: '/ɪ/', word: 'Igloo', emoji: '🧊', uzbek: 'Muz uy', russian: 'Иглу', speech: 'I is for Igloo! /ɪ/ Igloo!', color: '#06D6A0' },
+  { letter: 'J', phonics: '/dʒ/', word: 'Juice', emoji: '🧃', uzbek: 'Sharbat', russian: 'Сок', speech: 'J is for Juice! /dʒ/ Juice!', color: '#F59E0B' },
+  { letter: 'K', phonics: '/k/', word: 'Kite', emoji: '🪁', uzbek: 'Varrak', russian: 'Воздушный змей', speech: 'K is for Kite! /k/ Kite!', color: '#6366F1' },
+  { letter: 'L', phonics: '/l/', word: 'Lion', emoji: '🦁', uzbek: 'Sher', russian: 'Лев', speech: 'L is for Lion! /l/ Lion!', color: '#E11D48' },
+  { letter: 'M', phonics: '/m/', word: 'Monkey', emoji: '🐵', uzbek: 'Maymun', russian: 'Обезьяна', speech: 'M is for Monkey! /m/ Monkey!', color: '#845EC2' },
+  { letter: 'N', phonics: '/n/', word: 'Nest', emoji: '🪹', uzbek: 'Uya', russian: 'Гнездо', speech: 'N is for Nest! /n/ Nest!', color: '#10B981' },
+  { letter: 'O', phonics: '/ɒ/', word: 'Orange', emoji: '🍊', uzbek: 'Apelsin', russian: 'Апельсин', speech: 'O is for Orange! /ɒ/ Orange!', color: '#FF7B00' },
+  { letter: 'P', phonics: '/p/', word: 'Panda', emoji: '🐼', uzbek: 'Panda', russian: 'Панда', speech: 'P is for Panda! /p/ Panda!', color: '#334155' },
+  { letter: 'Q', phonics: '/kw/', word: 'Queen', emoji: '👑', uzbek: 'Malika', russian: 'Королева', speech: 'Q is for Queen! /kw/ Queen!', color: '#D97706' },
+  { letter: 'R', phonics: '/r/', word: 'Rabbit', emoji: '🐰', uzbek: 'Quyon', russian: 'Кролик', speech: 'R is for Rabbit! /r/ Rabbit!', color: '#FB7185' },
+  { letter: 'S', phonics: '/s/', word: 'Sun', emoji: '☀️', uzbek: 'Quyosh', russian: 'Солнце', speech: 'S is for Sun! /s/ Sun!', color: '#FBBF24' },
+  { letter: 'T', phonics: '/t/', word: 'Tiger', emoji: '🐯', uzbek: 'Yo‘lbars', russian: 'Тигр', speech: 'T is for Tiger! /t/ Tiger!', color: '#F97316' },
+  { letter: 'U', phonics: '/ʌ/', word: 'Umbrella', emoji: '☂️', uzbek: 'Soyabon', russian: 'Зонт', speech: 'U is for Umbrella! /ʌ/ Umbrella!', color: '#8B5CF6' },
+  { letter: 'V', phonics: '/v/', word: 'Violin', emoji: '🎻', uzbek: 'Skripka', russian: 'Скрипка', speech: 'V is for Violin! /v/ Violin!', color: '#9333EA' },
+  { letter: 'W', phonics: '/w/', word: 'Whale', emoji: '🐳', uzbek: 'Kit', russian: 'Кит', speech: 'W is for Whale! /w/ Whale!', color: '#0EA5E9' },
+  { letter: 'X', phonics: '/ks/', word: 'Xylophone', emoji: '🎹', uzbek: 'Ksilofon', russian: 'Ксилофон', speech: 'X is for Xylophone! /ks/ Xylophone!', color: '#14B8A6' },
+  { letter: 'Y', phonics: '/j/', word: 'Yo-yo', emoji: '🪀', uzbek: 'Yo-yo', russian: 'Йо-йо', speech: 'Y is for Yo-yo! /j/ Yo-yo!', color: '#EC4899' },
+  { letter: 'Z', phonics: '/z/', word: 'Zebra', emoji: '🦓', uzbek: 'Zebra', russian: 'Зебра', speech: 'Z is for Zebra! /z/ Zebra!', color: '#475569' }
+];
+
 const ENGLISH_UI_TRANSLATIONS = {
   uz: {
     'brand-tagline': 'Ingliz tili - Oson va Quvnoq! 🌟',
     'txt-turtle': 'Toshbaqa',
     'sound-text': 'Ovoz',
+    'link-txt-english': 'Ingliz Tili',
     'link-txt-math': 'Matematika',
     'link-txt-physics': 'Fizika',
     'mascot-click-hint': 'Menga bosing! 👆',
@@ -150,18 +199,31 @@ const ENGLISH_UI_TRANSLATIONS = {
     'tab-txt-badges': 'Yutuqlar / Badges',
     'sec-vocab-title': 'Sehrli So‘zlar Olami 🌈',
     'sec-vocab-desc': 'Har bir kartochkani bosing, inglizcha talaffuzini eshiting va tarjimasini bilib oling!',
+    'phonics-header-title': 'Sehrli Harflar va Fonika (26 Harf)',
+    'phonics-header-desc': 'Har bir harfni bosing, fonetik talaffuzini eshiting va ushbu harf bilan boshlanadigan so‘zlarni ko‘ring!',
+    'phonics-txt-all': 'Barchasi (All)',
     'vocab-search-placeholder': 'So‘z qidiring (masalan: Lion, Apple, Olma, Книга)...',
-    'cat-btn-all': '✨ Barchasi',
-    'cat-btn-animals': '🦁 Hayvonlar',
-    'cat-btn-fruits': '🍎 Mevalar & Ovqat',
-    'cat-btn-colors': '🎨 Rang & Shakllar',
-    'cat-btn-family': '👨‍👩‍👧 Oila & Odamlar',
-    'cat-btn-nature': '🌲 Tabiat & Ob-havo',
-    'cat-btn-body': '🖐️ Tana a‘zolari',
-    'cat-btn-school': '📚 Maktab & Uy',
-    'cat-btn-actions': '🏃‍♂️ Harakatlar',
-    'cat-btn-clothes': '🧸 Kiyim & O‘yinchoq',
-    'cat-btn-space': '🚀 Koinot & Vaqt',
+    'cat-btn-all': '✨ Barchasi (500)',
+    'cat-btn-animals': '🦁 Hayvonlar (25)',
+    'cat-btn-fruits': '🍎 Mevalar (25)',
+    'cat-btn-space': '🚀 Koinot (25)',
+    'cat-btn-vehicles': '🚗 Transport (25)',
+    'cat-btn-emotions': '😊 Hissiyotlar (25)',
+    'cat-btn-school': '📚 Maktab (25)',
+    'cat-btn-jobs': '👩‍⚕️ Kasblar (25)',
+    'cat-btn-nature': '🌲 Tabiat (25)',
+    'cat-btn-body': '🖐️ Tana a‘zolari (25)',
+    'cat-btn-colors': '🎨 Ranglar (25)',
+    'cat-btn-shapes': '🔺 Shakllar (25)',
+    'cat-btn-house': '🏠 Uy & Jihozlar (25)',
+    'cat-btn-verbs': '🏃 Harakatlar (25)',
+    'cat-btn-adjectives': '🌟 Sifatlar (25)',
+    'cat-btn-weather': '☀️ Ob-havo (25)',
+    'cat-btn-food': '🍕 Taomlar (25)',
+    'cat-btn-sports': '⚽ Sport (25)',
+    'cat-btn-clothing': '👕 Kiyimlar (25)',
+    'cat-btn-family': '👨‍👩‍👧 Oila (25)',
+    'cat-btn-time': '⏰ Vaqt & Fasllar (25)',
     'sec-grammar-title': 'Qiziqarli Grammatika ✏️',
     'sec-grammar-desc': 'Qoidalarni oson rasmlar orqali tushuning va darhol sinovdan o‘tkazing!',
     'sec-exercises-title': 'Mashqlar va Sinovlar 🎯',
@@ -173,12 +235,15 @@ const ENGLISH_UI_TRANSLATIONS = {
     'sec-games-desc': 'O‘ynab ingliz tilini yanada tezroq va qiziqroq o‘rganing!',
     'subtab-memory': '🧠 Sehrli Kartalar (Memory Match)',
     'subtab-balloon': '🎈 Havo Sharlarini Portlat (Balloon Pop)',
+    'subtab-builder': '🔤 So‘z Yig‘uvchi (Word Builder)',
     'lbl-memory-moves': 'Urinishlar: ',
     'lbl-memory-time': 'Vaqt: ',
     'btn-memory-refresh': '🔄 Yangilash',
     'lbl-balloon-target': 'Topilishi kerak bo‘lgan so‘z / Target Word:',
     'lbl-balloon-score': '⭐ Ball:',
     'txt-balloon-start': '▶️ O‘yinni boshlash',
+    'builder-clue-label': 'Topilishi kerak bo‘lgan so‘z:',
+    'builder-bank-hint': '👇 Harflarni to‘g‘ri tartibda bosing:',
     'sec-badges-title': 'Yutuqlar va Nishonlar Zali 🏆',
     'sec-badges-desc': 'Siz erishgan barcha muvaffaqiyatlar va ochilishi kerak bo‘lgan sovg‘alar!',
     'english-footer-p1': '<strong>KiddoLingo</strong> - Bolalar uchun eng quvnoq va xavfsiz ingliz tili platformasi.',
@@ -188,6 +253,7 @@ const ENGLISH_UI_TRANSLATIONS = {
     'brand-tagline': 'Английский язык — легко и весело! 🌟',
     'txt-turtle': 'Черепаха',
     'sound-text': 'Звук',
+    'link-txt-english': 'Английский',
     'link-txt-math': 'Математика',
     'link-txt-physics': 'Физика',
     'mascot-click-hint': 'Нажми на меня! 👆',
@@ -200,18 +266,31 @@ const ENGLISH_UI_TRANSLATIONS = {
     'tab-txt-badges': 'Достижения / Badges',
     'sec-vocab-title': 'Мир Волшебных Слов 🌈',
     'sec-vocab-desc': 'Нажимайте на карточки, слушайте произношение и учите перевод!',
+    'phonics-header-title': 'Волшебные Буквы и Фоника (26 Букв)',
+    'phonics-header-desc': 'Нажимайте на буквы, слушайте фонетическое звучание и открывайте слова на эту букву!',
+    'phonics-txt-all': 'Все (All)',
     'vocab-search-placeholder': 'Искать слово (например: Lion, Apple, Книга, Яблоко)...',
-    'cat-btn-all': '✨ Все',
-    'cat-btn-animals': '🦁 Животные',
-    'cat-btn-fruits': '🍎 Фрукты и еда',
-    'cat-btn-colors': '🎨 Цвета и формы',
-    'cat-btn-family': '👨‍👩‍👧 Семья и люди',
-    'cat-btn-nature': '🌲 Природа и погода',
-    'cat-btn-body': '🖐️ Части тела',
-    'cat-btn-school': '📚 Школа и дом',
-    'cat-btn-actions': '🏃‍♂️ Действия',
-    'cat-btn-clothes': '🧸 Одежда и игрушки',
-    'cat-btn-space': '🚀 Космос и время',
+    'cat-btn-all': '✨ Все (500)',
+    'cat-btn-animals': '🦁 Животные (25)',
+    'cat-btn-fruits': '🍎 Фрукты (25)',
+    'cat-btn-space': '🚀 Космос (25)',
+    'cat-btn-vehicles': '🚗 Транспорт (25)',
+    'cat-btn-emotions': '😊 Эмоции (25)',
+    'cat-btn-school': '📚 Школа (25)',
+    'cat-btn-jobs': '👩‍⚕️ Профессии (25)',
+    'cat-btn-nature': '🌲 Природа (25)',
+    'cat-btn-body': '🖐️ Части тела (25)',
+    'cat-btn-colors': '🎨 Цвета (25)',
+    'cat-btn-shapes': '🔺 Формы (25)',
+    'cat-btn-house': '🏠 Дом и уют (25)',
+    'cat-btn-verbs': '🏃 Действия / Глаголы (25)',
+    'cat-btn-adjectives': '🌟 Прилагательные (25)',
+    'cat-btn-weather': '☀️ Погода (25)',
+    'cat-btn-food': '🍕 Еда (25)',
+    'cat-btn-sports': '⚽ Спорт (25)',
+    'cat-btn-clothing': '👕 Одежда (25)',
+    'cat-btn-family': '👨‍👩‍👧 Семья (25)',
+    'cat-btn-time': '⏰ Время и сезоны (25)',
     'sec-grammar-title': 'Увлекательная Грамматика ✏️',
     'sec-grammar-desc': 'Понимайте правила по картинкам и закрепляйте их сразу на практике!',
     'sec-exercises-title': 'Упражнения и Тесты 🎯',
@@ -223,12 +302,15 @@ const ENGLISH_UI_TRANSLATIONS = {
     'sec-games-desc': 'Учите английский быстрее и веселее через увлекательные игры!',
     'subtab-memory': '🧠 Волшебные карты (Memory Match)',
     'subtab-balloon': '🎈 Лопни шарики (Balloon Pop)',
+    'subtab-builder': '🔤 Собери слово (Word Builder)',
     'lbl-memory-moves': 'Попытки: ',
     'lbl-memory-time': 'Время: ',
     'btn-memory-refresh': '🔄 Начать заново',
     'lbl-balloon-target': 'Слово для поиска / Target Word:',
     'lbl-balloon-score': '⭐ Очки:',
     'txt-balloon-start': '▶️ Начать игру',
+    'builder-clue-label': 'Слово для сборки:',
+    'builder-bank-hint': '👇 Нажимайте на буквы по порядку:',
     'sec-badges-title': 'Зал Достижений и Наград 🏆',
     'sec-badges-desc': 'Все ваши успехи, медали и подарки, которые можно открыть!',
     'english-footer-p1': '<strong>KiddoLingo</strong> — самая веселая и безопасная платформа английского языка для детей.',
@@ -275,6 +357,7 @@ function applyLanguageToUI(lang) {
   updateSoundUI(window.appState ? window.appState.soundEnabled : true);
 
   renderVocabGrid();
+  renderPhonicsLetters();
   initGrammarSection();
   renderBadgesSection();
 
@@ -284,8 +367,13 @@ function applyLanguageToUI(lang) {
     if (typeof window.exerciseManager.renderFillBlank === 'function') window.exerciseManager.renderFillBlank();
   }
 
-  if (window.miniGamesManager && typeof window.miniGamesManager.updateBalloonHintForLang === 'function') {
-    window.miniGamesManager.updateBalloonHintForLang();
+  if (window.miniGamesManager) {
+    if (typeof window.miniGamesManager.updateBalloonHintForLang === 'function') {
+      window.miniGamesManager.updateBalloonHintForLang();
+    }
+    if (typeof window.miniGamesManager.renderBuilderUI === 'function') {
+      window.miniGamesManager.renderBuilderUI();
+    }
   }
 }
 
@@ -294,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initSoundControls();
   initNavigation();
+  initPhonicsSection();
   initVocabSection();
   initGrammarSection();
   initMascot();
@@ -409,7 +498,17 @@ function initNavigation() {
 
       // Mini game actions when switching tabs
       if (targetSectionId === 'section-games') {
-        window.miniGamesManager.initMemoryGame();
+        const activeSubBtn = document.querySelector('.game-tab-btn.active');
+        const target = activeSubBtn ? activeSubBtn.dataset.target : 'panel-memory';
+        if (target === 'panel-wordbuilder') {
+          window.miniGamesManager.stopBalloonGame();
+          window.miniGamesManager.initWordBuilderGame();
+        } else if (target === 'panel-balloon') {
+          window.miniGamesManager.initBalloonGame();
+        } else {
+          window.miniGamesManager.stopBalloonGame();
+          window.miniGamesManager.initMemoryGame();
+        }
       } else {
         window.miniGamesManager.stopBalloonGame();
       }
@@ -435,13 +534,137 @@ function initSubTabs(btnClass, panelClass) {
       const targetPanel = document.getElementById(btn.dataset.target);
       if (targetPanel) targetPanel.classList.add('active');
 
-      if (btn.dataset.target === 'panel-balloon') {
+      if (btn.dataset.target === 'panel-wordbuilder') {
+        window.miniGamesManager.stopBalloonGame();
+        window.miniGamesManager.initWordBuilderGame();
+      } else if (btn.dataset.target === 'panel-balloon') {
         window.miniGamesManager.initBalloonGame();
+      } else if (btn.dataset.target === 'panel-memory') {
+        window.miniGamesManager.stopBalloonGame();
+        window.miniGamesManager.initMemoryGame();
       } else {
         window.miniGamesManager.stopBalloonGame();
       }
     });
   });
+}
+
+// --- 26 LETTERS ALPHABET & PHONICS ---
+function initPhonicsSection() {
+  renderPhonicsLetters();
+}
+
+function renderPhonicsLetters() {
+  const grid = document.getElementById('phonics-letters-grid');
+  if (!grid) return;
+
+  const activeLetter = window.appState ? window.appState.activeLetter : null;
+
+  grid.innerHTML = ALPHABET_PHONICS_DATA.map(item => {
+    const isActive = activeLetter === item.letter;
+    return `
+      <button type="button" 
+        class="phonics-letter-btn ${isActive ? 'active' : ''}" 
+        id="phonics-btn-${item.letter}"
+        style="--letter-color: ${item.color};"
+        onclick="playPhonicsLetter('${item.letter}')"
+        title="${item.letter} - ${item.word}">
+        <span class="phonics-letter-char">${item.letter}</span>
+        <span class="phonics-letter-emoji">${item.emoji}</span>
+      </button>
+    `;
+  }).join('');
+
+  updatePhonicsUI();
+}
+
+function updatePhonicsUI() {
+  const activeLetter = window.appState ? window.appState.activeLetter : null;
+  const allBtn = document.getElementById('btn-phonics-all');
+  if (allBtn) {
+    allBtn.classList.toggle('active', !activeLetter);
+  }
+
+  document.querySelectorAll('.phonics-letter-btn').forEach(btn => {
+    const l = btn.id.replace('phonics-btn-', '');
+    btn.classList.toggle('active', l === activeLetter);
+  });
+
+  const spotlight = document.getElementById('phonics-spotlight-card');
+  if (!spotlight) return;
+
+  if (!activeLetter) {
+    spotlight.style.display = 'none';
+    return;
+  }
+
+  const item = ALPHABET_PHONICS_DATA.find(p => p.letter === activeLetter);
+  if (!item) {
+    spotlight.style.display = 'none';
+    return;
+  }
+
+  const lang = window.appState ? window.appState.lang : 'uz';
+  const isRu = lang === 'ru';
+  const meaning = isRu ? item.russian : item.uzbek;
+
+  spotlight.innerHTML = `
+    <div class="phonics-spotlight-inner" style="border-left: 6px solid ${item.color};">
+      <div class="phonics-spotlight-left">
+        <div class="phonics-big-letter" style="background: ${item.color};">${item.letter}</div>
+        <div class="phonics-badge-sound">${item.phonics}</div>
+      </div>
+      <div class="phonics-spotlight-content">
+        <div class="phonics-exemplar-row">
+          <span class="phonics-exemplar-emoji">${item.emoji}</span>
+          <div>
+            <h4 class="phonics-exemplar-word">${item.word}</h4>
+            <span class="phonics-exemplar-trans">${meaning}</span>
+          </div>
+        </div>
+        <p class="phonics-speech-cue">"${item.letter} is for ${item.word}! ${item.phonics} ${item.word}!"</p>
+      </div>
+      <div class="phonics-spotlight-actions">
+        <button type="button" class="btn btn-primary phonics-speak-btn" onclick="playPhonicsLetter('${item.letter}')">
+          🔊 ${isRu ? 'Слушать фонику' : 'Fonikani Tinglash'}
+        </button>
+        <button type="button" class="btn btn-ctrl phonics-close-btn" onclick="window.appState.setLetterFilter(null)">
+          ✕
+        </button>
+      </div>
+    </div>
+  `;
+  spotlight.style.display = 'block';
+}
+
+function playPhonicsLetter(letterChar) {
+  const item = ALPHABET_PHONICS_DATA.find(p => p.letter === letterChar);
+  if (!item) return;
+
+  if (window.soundEngine && typeof window.soundEngine.playPop === 'function') {
+    window.soundEngine.playPop();
+  }
+
+  const btn = document.getElementById(`phonics-btn-${letterChar}`);
+  if (btn) {
+    btn.classList.add('phonics-bounce');
+    setTimeout(() => btn.classList.remove('phonics-bounce'), 450);
+  }
+
+  // Set letter filter & show spotlight
+  window.appState.activeLetter = letterChar;
+  window.appState.vocabPage = 1;
+  updatePhonicsUI();
+  renderVocabGrid();
+
+  // Speak phonics with clear pronunciation
+  if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+    window.soundEngine.speak(item.speech);
+  }
+
+  if (window.gamificationHub) {
+    window.gamificationHub.addXP(2, 'English Phonics');
+  }
 }
 
 // --- VOCABULARY SECTION ---
@@ -490,16 +713,18 @@ function renderVocabGrid() {
 
   const query = window.appState.searchQuery;
   const cat = window.appState.activeCategory;
+  const letter = window.appState.activeLetter;
   const lang = window.appState ? window.appState.lang : 'uz';
   const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
 
   const filteredWords = VOCABULARY_DATA.filter(item => {
     const matchesCat = cat === 'all' || item.category === cat;
+    const matchesLetter = !letter || item.word.toUpperCase().startsWith(letter);
     const matchesQuery = !query || 
       item.word.toLowerCase().includes(query) ||
       item.uzbek.toLowerCase().includes(query) ||
       item.russian.toLowerCase().includes(query);
-    return matchesCat && matchesQuery;
+    return matchesCat && matchesLetter && matchesQuery;
   });
 
   const paginationContainer = document.getElementById('vocab-pagination-controls');
@@ -685,11 +910,13 @@ function getCategoryName(categoryKey) {
     colors: '🎨 Ranglar',
     shapes: '📐 Shakllar',
     house: '🏠 Uy jihozlari',
+    verbs: '🏃 Harakatlar (Fe‘llar)',
     actions: '🏃 Harakatlar (Fe‘llar)',
     adjectives: '✨ Sifatlar',
     weather: '⛅ Ob-havo',
     food: '🍕 Ovqatlar',
     sports: '⚽ Sport',
+    clothing: '👕 Kiyimlar',
     clothes: '👕 Kiyimlar',
     family: '👨‍👩‍👧 Oila',
     time: '⏰ Vaqt'
@@ -708,11 +935,13 @@ function getCategoryName(categoryKey) {
     colors: '🎨 Цвета',
     shapes: '📐 Формы',
     house: '🏠 Дом и уют',
+    verbs: '🏃 Действия (Глаголы)',
     actions: '🏃 Действия (Глаголы)',
     adjectives: '✨ Прилагательные',
     weather: '⛅ Погода',
     food: '🍕 Еда',
     sports: '⚽ Спорт',
+    clothing: '👕 Одежда',
     clothes: '👕 Одежда',
     family: '👨‍👩‍👧 Семья',
     time: '⏰ Время'

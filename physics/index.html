@@ -5,8 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PhysicsKids - Yosh Bolalar Uchun Fizika | Физика для детей</title>
   <meta name="description" content="Yosh bolalar uchun qiziqarli fizika olami. Gravitatsiya, magnitizm, yorug'lik, moddaning holatlari, laboratoriya tajribalari va magnit labirinti o'yini!">
-  
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>">
+  <!-- Content Security Policy (CYBERSECURITY.md Section 5) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; img-src 'self' data: https: blob:; media-src 'self' blob:;">
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#2563EB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="EduKids">
+  <meta name="application-name" content="EduKids">
+  <meta name="msapplication-TileColor" content="#2563EB">
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
   <link rel="stylesheet" href="../shared/shared.css">
   <link rel="stylesheet" href="../shared/subscription.css">
   <link rel="stylesheet" href="../shared/level-map.css">
@@ -42,7 +56,7 @@
         </a>
         <span class="subject-nav-item active-subject" title="Hozirgi fan: Fizika">
           <span class="subject-icon">⚛️</span>
-          <span class="subject-label">Fizika</span>
+          <span class="subject-label" id="link-txt-physics">Fizika</span>
         </span>
       </nav>
 
@@ -63,6 +77,12 @@
             <span id="stat-gems-count">6</span>
           </div>
         </div>
+
+        <!-- 3D Tactile PWA Install Button -->
+        <button class="btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
+          <span class="pwa-icon">📲</span>
+          <span id="txt-pwa-install">Ilovani O‘rnatish</span>
+        </button>
 
         <!-- Language Switcher Pill -->
         <div class="lang-switcher-pill" role="group" aria-label="Tilni tanlash / Выбор языка">
@@ -179,6 +199,9 @@
         <button class="lab-sub-btn" data-target="panel-state-changer">
           <span id="subtab-state">🧊 3. Harorat va Modda Holati</span>
         </button>
+        <button class="lab-sub-btn" data-target="panel-circuit-lab">
+          <span id="subtab-circuit">⚡ 4. Elektr Zanjiri</span>
+        </button>
       </div>
 
       <!-- Experiment 1: Gravity Drop Tower -->
@@ -209,8 +232,10 @@
 
           <div class="lab-controls-strip">
             <span style="font-weight: 700; font-size: 0.9rem;" id="lbl-gravity-env">Muhit / Gravitatsiya:</span>
-            <button class="lab-chip-btn gravity-env-btn active" data-env="earth" id="btn-env-earth">🌍 Yer (Kuchli)</button>
-            <button class="lab-chip-btn gravity-env-btn" data-env="moon" id="btn-env-moon">🌕 Oy (6 barobar kuchsiz)</button>
+            <button class="lab-chip-btn gravity-env-btn active" data-env="earth" id="btn-env-earth">🌍 Yer (9.8 m/s²)</button>
+            <button class="lab-chip-btn gravity-env-btn" data-env="moon" id="btn-env-moon">🌕 Oy (1.6 m/s²)</button>
+            <button class="lab-chip-btn gravity-env-btn" data-env="jupiter" id="btn-env-jupiter">🪐 Yupiter (24.8 m/s²)</button>
+            <button class="lab-chip-btn gravity-env-btn" data-env="zerog" id="btn-env-zerog">🛸 Vaznsizlik (0-G)</button>
           </div>
 
           <div class="gravity-tower-arena" id="gravity-tower-arena">
@@ -284,9 +309,9 @@
 
           <div class="temp-slider-wrap">
             <div style="font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">
-              <span id="lbl-temp">Harorat:</span> <span id="temp-value-display" style="color: var(--cyan);">20°C</span>
+              <label for="temp-slider" id="lbl-temp">Harorat:</label> <span id="temp-value-display" style="color: var(--cyan);">20°C</span>
             </div>
-            <input type="range" id="temp-slider" class="temp-slider" min="-20" max="120" value="20">
+            <input type="range" id="temp-slider" class="temp-slider" min="-20" max="120" value="20" title="Harorat" aria-label="Harorat">
             <div class="temp-labels">
               <span id="temp-lbl-1">-20°C (Muz ❄️)</span>
               <span id="temp-lbl-2">0°C (Eriydi)</span>
@@ -303,6 +328,119 @@
 
           <div class="lab-desc-banner" id="state-desc-box">
             <strong>Hozirgi holat:</strong> Suyuq Holat (Suv 💧 / Liquid)
+          </div>
+        </div>
+      </div>
+
+      <!-- Experiment 4: Electric Circuit & Glowing Neon Bulb -->
+      <div class="lab-panel" id="panel-circuit-lab">
+        <div class="lab-card">
+          <div class="gravity-hud-bar">
+            <div class="circuit-multimeter-hud">
+              <div class="lab-stat-pill">
+                ⚡ <span id="lbl-circuit-volt">Kuchlanish:</span> <strong id="circuit-voltage-display" style="color: var(--amber);">4.5V</strong>
+              </div>
+              <div class="lab-stat-pill">
+                🔌 <span id="lbl-circuit-curr">Tok:</span> <strong id="circuit-current-display" style="color: var(--cyan);">0.45A</strong>
+              </div>
+              <div class="lab-stat-pill">
+                💡 <span id="lbl-circuit-stat">Holat:</span> <strong id="circuit-status-display" style="color: var(--green);">Yopiq (Tok oqyapti)</strong>
+              </div>
+            </div>
+
+            <div class="header-actions">
+              <button class="btn btn-primary" id="btn-toggle-switch">
+                <span id="txt-switch-btn">🔌 Kalitni Ochish (Uzish)</span>
+              </button>
+              <button class="btn btn-ctrl" id="btn-circuit-reset">
+                <span id="txt-circuit-reset">🔄 Qayta Yig‘ish</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="lab-controls-strip">
+            <span style="font-weight: 700; font-size: 0.9rem;" id="lbl-battery-power">Batareya quvvati:</span>
+            <button class="lab-chip-btn circuit-voltage-btn" data-voltage="1.5" id="btn-volt-15">🔋 1.5V (Kuchsiz)</button>
+            <button class="lab-chip-btn circuit-voltage-btn active" data-voltage="4.5" id="btn-volt-45">🔋🔋🔋 4.5V (O‘rtacha)</button>
+            <button class="lab-chip-btn circuit-voltage-btn" data-voltage="9" id="btn-volt-90">⚡ 9V (Kuchli)</button>
+          </div>
+
+          <div class="lab-controls-strip">
+            <span style="font-weight: 700; font-size: 0.9rem;" id="lbl-circuit-material">Sinov buyumi (Material):</span>
+            <button class="lab-chip-btn circuit-material-btn active" data-material="copper" data-conductor="true" id="btn-mat-copper">⚡ Mis sim (O‘tkazgich)</button>
+            <button class="lab-chip-btn circuit-material-btn" data-material="iron" data-conductor="true" id="btn-mat-iron">🔩 Temir mix (O‘tkazgich)</button>
+            <button class="lab-chip-btn circuit-material-btn" data-material="graphite" data-conductor="true" id="btn-mat-graphite">✏️ Grafit qalam (O‘tkazgich)</button>
+            <button class="lab-chip-btn circuit-material-btn" data-material="plastic" data-conductor="false" id="btn-mat-plastic">📏 Plastmassa (Izolyator)</button>
+            <button class="lab-chip-btn circuit-material-btn" data-material="wood" data-conductor="false" id="btn-mat-wood">🪵 Yog‘och (Izolyator)</button>
+            <button class="lab-chip-btn circuit-material-btn" data-material="rubber" data-conductor="false" id="btn-mat-rubber">🎈 Rezina (Izolyator)</button>
+          </div>
+
+          <!-- Interactive Circuit Schematic Arena -->
+          <div class="circuit-schematic-arena" id="circuit-schematic-arena">
+            <canvas id="circuit-electrons-canvas" class="circuit-electrons-canvas"></canvas>
+
+            <!-- Battery Component (Left) -->
+            <div class="circuit-component battery-unit" id="circuit-battery">
+              <div class="battery-terminal terminal-pos">+</div>
+              <div class="battery-body">
+                <span class="battery-brand">⚡ VOLT</span>
+                <span class="battery-volts" id="battery-volts-tag">4.5V</span>
+              </div>
+              <div class="battery-terminal terminal-neg">-</div>
+            </div>
+
+            <!-- 3D Knife Switch Component (Top Right) -->
+            <div class="circuit-component switch-unit closed" id="circuit-switch" title="Kalitni bosing!">
+              <div class="switch-base">
+                <div class="switch-post post-left"></div>
+                <div class="switch-blade-pivot">
+                  <div class="switch-blade" id="switch-blade">
+                    <div class="switch-handle"></div>
+                  </div>
+                </div>
+                <div class="switch-post post-right">
+                  <div class="switch-spark" id="switch-spark">⚡</div>
+                </div>
+              </div>
+              <div class="switch-label" id="switch-label">Kalit: Yopiq 🔒</div>
+            </div>
+
+            <!-- Center Neon Lightbulb Component -->
+            <div class="circuit-component neon-bulb-unit lit" id="circuit-bulb">
+              <div class="bulb-glow-halo" id="bulb-glow-halo"></div>
+              <div class="bulb-rays" id="bulb-rays">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <div class="bulb-dome" id="bulb-dome">
+                <div class="bulb-reflection"></div>
+                <div class="bulb-filament" id="bulb-filament">
+                  <div class="filament-coil"></div>
+                </div>
+              </div>
+              <div class="bulb-screw-base">
+                <div class="screw-thread"></div>
+                <div class="screw-thread"></div>
+                <div class="screw-contact"></div>
+              </div>
+              <div class="bulb-status-caption" id="bulb-status-caption">Lampochka: Yonmoqda 💡</div>
+            </div>
+
+            <!-- Test Material Clamp Slot (Bottom) -->
+            <div class="circuit-component material-clamp-unit" id="circuit-material-clamp">
+              <div class="clamp-jaw clamp-left">🗜️</div>
+              <div class="test-specimen-holder" id="test-specimen-holder">
+                <div class="specimen-item copper" id="specimen-item">
+                  <span class="specimen-icon" id="specimen-icon">⚡</span>
+                  <span class="specimen-text" id="specimen-text">Mis sim (O‘tkazgich)</span>
+                </div>
+              </div>
+              <div class="clamp-jaw clamp-right">🗜️</div>
+            </div>
+          </div>
+
+          <div class="lab-desc-banner" id="circuit-desc-box">
+            ⚡ <strong>Zanjir tutashdi!</strong> Mis sim yaxshi o‘tkazgich bo‘lgani uchun elektronlar oqib o‘tmoqda va lampochka porlab yonmoqda!
           </div>
         </div>
       </div>
@@ -403,7 +541,9 @@
   </footer>
 
   <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/pwa-register.js"></script>
   <script src="../shared/uzbek-speech.js"></script>
+  <script src="../shared/audio.js"></script>
   <script src="../shared/subscription.js"></script>
   <script src="../shared/screen-vfx.js"></script>
   <script src="../shared/gamification.js"></script>

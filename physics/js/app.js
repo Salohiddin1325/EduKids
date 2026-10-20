@@ -37,6 +37,14 @@ const PHYSICS_BADGES = [
     descRu: 'Менял температуру и превращал воду в лед и пар!' 
   },
   { 
+    id: 'electrician', 
+    icon: '💡', 
+    titleUz: 'Yosh Elektrik', 
+    titleRu: 'Юный Электрик',
+    descUz: 'Elektr zanjirini to‘g‘ri yig‘ib, neon lampochkani yoqdingiz!', 
+    descRu: 'Собрал электрическую цепь и зажег неоновую лампу!' 
+  },
+  { 
     id: 'maze-champ', 
     icon: '🌀', 
     titleUz: 'Labirint Qahramoni', 
@@ -85,6 +93,7 @@ const PHYSICS_UI_TRANSLATIONS = {
     streakSuffix: "kun",
     linkEnglish: "Ingliz Tili",
     linkMath: "Matematika",
+    linkPhysics: "Fizika",
     sparkyTitle: "Bzz-bzz! Men Sparkyman — Sizning Fizik Do‘stingiz! ⚡",
     sparkySpeech: "Nega narsalar yerga tushadi? Magnitlar nimalarni tortadi? Muz qachon bug‘ga aylanadi? Keling, tabiatning eng ajoyib sirlarini birgalikda tajribalar orqali o‘rganamiz!",
     sparkyClickHint: "Menga bosing! 👆",
@@ -101,6 +110,7 @@ const PHYSICS_UI_TRANSLATIONS = {
     subtabGravity: "🍏 1. Gravitatsiya Minorasi",
     subtabMagnet: "🧲 2. Magnit Maydoni",
     subtabState: "🧊 3. Harorat va Modda Holati",
+    subtabCircuit: "⚡ 4. Elektr Zanjiri",
     lblGravityTimer: "Tushish vaqti:",
     gravityDropTxt: "⬇️ Tashlash (Drop)",
     gravityResetTxt: "🔄 Qaytarish",
@@ -110,8 +120,26 @@ const PHYSICS_UI_TRANSLATIONS = {
     btnObjBall: "🏀 Koptok",
     btnObjRock: "🪨 Og‘ir Tosh",
     lblGravityEnv: "Muhit / Gravitatsiya:",
-    btnEnvEarth: "🌍 Yer (Kuchli)",
-    btnEnvMoon: "🌕 Oy (6 barobar kuchsiz)",
+    btnEnvEarth: "🌍 Yer (9.8 m/s²)",
+    btnEnvMoon: "🌕 Oy (1.6 m/s²)",
+    btnEnvJupiter: "🪐 Yupiter (24.8 m/s²)",
+    btnEnvZerog: "🛸 Vaznsizlik (0-G)",
+    lblCircuitVolt: "Kuchlanish:",
+    lblCircuitCurr: "Tok:",
+    lblCircuitStat: "Holat:",
+    lblBatteryPower: "Batareya quvvati:",
+    lblCircuitMaterial: "Sinov buyumi (Material):",
+    btnVolt15: "🔋 1.5V (Kuchsiz)",
+    btnVolt45: "🔋🔋🔋 4.5V (O‘rtacha)",
+    btnVolt90: "⚡ 9V (Kuchli)",
+    btnMatCopper: "⚡ Mis sim (O‘tkazgich)",
+    btnMatIron: "🔩 Temir mix (O‘tkazgich)",
+    btnMatGraphite: "✏️ Grafit qalam (O‘tkazgich)",
+    btnMatPlastic: "📏 Plastmassa (Izolyator)",
+    btnMatWood: "🪵 Yog‘och (Izolyator)",
+    btnMatRubber: "🎈 Rezina (Izolyator)",
+    txtSwitchBtn: "🔌 Kalitni Ochish (Uzish)",
+    txtCircuitReset: "🔄 Qayta Yig‘ish",
     lblMagnetItem: "Sinab ko‘rish uchun buyum tanlang:",
     btnMagClip: "📎 Qisqich",
     btnMagNail: "🔩 Mix",
@@ -142,8 +170,9 @@ const PHYSICS_UI_TRANSLATIONS = {
   ru: {
     brandTagline: "Физика — Чудеса Природы! 💡",
     streakSuffix: "дн.",
-    linkEnglish: "Английский Язык",
+    linkEnglish: "Английский",
     linkMath: "Математика",
+    linkPhysics: "Физика",
     sparkyTitle: "Бзз-бзз! Я Спарки — твой друг по физике! ⚡",
     sparkySpeech: "Почему предметы падают на землю? Что притягивают магниты? Когда лед превращается в пар? Давай вместе откроем тайны природы через опыты!",
     sparkyClickHint: "Нажми на меня! 👆",
@@ -160,6 +189,7 @@ const PHYSICS_UI_TRANSLATIONS = {
     subtabGravity: "🍏 1. Башня Гравитации",
     subtabMagnet: "🧲 2. Магнитное Поле",
     subtabState: "🧊 3. Температура и Вещество",
+    subtabCircuit: "⚡ 4. Электрическая Цепь",
     lblGravityTimer: "Время падения:",
     gravityDropTxt: "⬇️ Сбросить (Drop)",
     gravityResetTxt: "🔄 Сброс",
@@ -169,8 +199,26 @@ const PHYSICS_UI_TRANSLATIONS = {
     btnObjBall: "🏀 Мяч",
     btnObjRock: "🪨 Камень",
     lblGravityEnv: "Среда / Гравитация:",
-    btnEnvEarth: "🌍 Земля (Сильная)",
-    btnEnvMoon: "🌕 Луна (В 6 раз слабее)",
+    btnEnvEarth: "🌍 Земля (9.8 м/с²)",
+    btnEnvMoon: "🌕 Луна (1.6 м/с²)",
+    btnEnvJupiter: "🪐 Юпитер (24.8 м/с²)",
+    btnEnvZerog: "🛸 Невесомость (0-G)",
+    lblCircuitVolt: "Напряжение:",
+    lblCircuitCurr: "Ток:",
+    lblCircuitStat: "Состояние:",
+    lblBatteryPower: "Мощность батареи:",
+    lblCircuitMaterial: "Исследуемый предмет:",
+    btnVolt15: "🔋 1.5В (Слабо)",
+    btnVolt45: "🔋🔋🔋 4.5В (Средне)",
+    btnVolt90: "⚡ 9В (Мощно)",
+    btnMatCopper: "⚡ Медный провод (Проводник)",
+    btnMatIron: "🔩 Железный гвоздь (Проводник)",
+    btnMatGraphite: "✏️ Графит грифель (Проводник)",
+    btnMatPlastic: "📏 Пластмасса (Изолятор)",
+    btnMatWood: "🪵 Дерево (Изолятор)",
+    btnMatRubber: "🎈 Резина (Изолятор)",
+    txtSwitchBtn: "🔌 Разомкнуть цепь",
+    txtCircuitReset: "🔄 Собрать заново",
     lblMagnetItem: "Выберите предмет для опыта:",
     btnMagClip: "📎 Скрепка",
     btnMagNail: "🔩 Гвоздь",
@@ -247,6 +295,8 @@ class PhysicsApp {
     if (linkEn) linkEn.textContent = t.linkEnglish;
     const linkMath = document.getElementById('link-txt-math');
     if (linkMath) linkMath.textContent = t.linkMath;
+    const linkPhys = document.getElementById('link-txt-physics');
+    if (linkPhys) linkPhys.textContent = t.linkPhysics;
 
     // Hero
     const sparkyTitle = document.getElementById('sparky-title');
@@ -288,6 +338,8 @@ class PhysicsApp {
     if (subM) subM.textContent = t.subtabMagnet;
     const subS = document.getElementById('subtab-state');
     if (subS) subS.textContent = t.subtabState;
+    const subC = document.getElementById('subtab-circuit');
+    if (subC) subC.textContent = t.subtabCircuit;
 
     const lblGTimer = document.getElementById('lbl-gravity-timer');
     if (lblGTimer) lblGTimer.textContent = t.lblGravityTimer;
@@ -313,6 +365,44 @@ class PhysicsApp {
     if (btnEnvEarth) btnEnvEarth.textContent = t.btnEnvEarth;
     const btnEnvMoon = document.getElementById('btn-env-moon');
     if (btnEnvMoon) btnEnvMoon.textContent = t.btnEnvMoon;
+    const btnEnvJupiter = document.getElementById('btn-env-jupiter');
+    if (btnEnvJupiter) btnEnvJupiter.textContent = t.btnEnvJupiter;
+    const btnEnvZerog = document.getElementById('btn-env-zerog');
+    if (btnEnvZerog) btnEnvZerog.textContent = t.btnEnvZerog;
+
+    // Circuit Lab elements
+    const lblCircuitVolt = document.getElementById('lbl-circuit-volt');
+    if (lblCircuitVolt) lblCircuitVolt.textContent = t.lblCircuitVolt;
+    const lblCircuitCurr = document.getElementById('lbl-circuit-curr');
+    if (lblCircuitCurr) lblCircuitCurr.textContent = t.lblCircuitCurr;
+    const lblCircuitStat = document.getElementById('lbl-circuit-stat');
+    if (lblCircuitStat) lblCircuitStat.textContent = t.lblCircuitStat;
+    const lblBatteryPower = document.getElementById('lbl-battery-power');
+    if (lblBatteryPower) lblBatteryPower.textContent = t.lblBatteryPower;
+    const lblCircuitMaterial = document.getElementById('lbl-circuit-material');
+    if (lblCircuitMaterial) lblCircuitMaterial.textContent = t.lblCircuitMaterial;
+    const txtCircuitReset = document.getElementById('txt-circuit-reset');
+    if (txtCircuitReset) txtCircuitReset.textContent = t.txtCircuitReset;
+
+    const btnVolt15 = document.getElementById('btn-volt-15');
+    if (btnVolt15) btnVolt15.textContent = t.btnVolt15;
+    const btnVolt45 = document.getElementById('btn-volt-45');
+    if (btnVolt45) btnVolt45.textContent = t.btnVolt45;
+    const btnVolt90 = document.getElementById('btn-volt-90');
+    if (btnVolt90) btnVolt90.textContent = t.btnVolt90;
+
+    const btnMatCopper = document.getElementById('btn-mat-copper');
+    if (btnMatCopper) btnMatCopper.textContent = t.btnMatCopper;
+    const btnMatIron = document.getElementById('btn-mat-iron');
+    if (btnMatIron) btnMatIron.textContent = t.btnMatIron;
+    const btnMatGraphite = document.getElementById('btn-mat-graphite');
+    if (btnMatGraphite) btnMatGraphite.textContent = t.btnMatGraphite;
+    const btnMatPlastic = document.getElementById('btn-mat-plastic');
+    if (btnMatPlastic) btnMatPlastic.textContent = t.btnMatPlastic;
+    const btnMatWood = document.getElementById('btn-mat-wood');
+    if (btnMatWood) btnMatWood.textContent = t.btnMatWood;
+    const btnMatRubber = document.getElementById('btn-mat-rubber');
+    if (btnMatRubber) btnMatRubber.textContent = t.btnMatRubber;
 
     const lblMItem = document.getElementById('lbl-magnet-item');
     if (lblMItem) lblMItem.textContent = t.lblMagnetItem;
@@ -384,11 +474,13 @@ class PhysicsApp {
       window.physicsLab.resetGravityDrop();
       window.physicsLab.testMagnetInteraction();
       if (window.physicsLab.updateState) window.physicsLab.updateState(window.physicsLab.temperature);
+      if (window.physicsLab.updateCircuitUI) window.physicsLab.updateCircuitUI();
     }
     if (window.magnetMazeGame) {
       window.magnetMazeGame.updatePoleButtonText();
     }
     if (window.physicsSandbox) window.physicsSandbox.updateLanguage();
+    if (window.EduKidsPWA) window.EduKidsPWA.setLanguage(lang);
     if (window.astroCat) window.astroCat.onLanguageChanged(lang);
     if (window.gamificationHub) window.gamificationHub.updateAllUI();
   }

@@ -64,6 +64,7 @@
   cursor: pointer;
   animation: fabBubbleBounce 4s ease-in-out infinite;
   transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -107,6 +108,7 @@
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   outline: none;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -309,6 +311,7 @@
 /* Gamification Stars Chip in Header */
 .astro-header-stars-chip {
   background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: 1.5px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
@@ -381,6 +384,7 @@
 /* Question Limit Chip in Header */
 .astro-header-limit-chip {
   background: rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: 1.5px solid rgba(255, 255, 255, 0.4);
   border-radius: 999px;
@@ -393,6 +397,7 @@
   color: #FFFFFF;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -1023,6 +1028,7 @@
   overflow-x: auto;
   white-space: nowrap;
   scroll-behavior: smooth;
+  -webkit-user-select: none;
   user-select: none;
 }
 

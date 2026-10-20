@@ -158,7 +158,8 @@ class PhysicsGravitySandbox {
       isHeavy: !!t.isHeavy,
       isBalloon: !!t.isBalloon,
       rotation: 0,
-      vRot: (Math.random() - 0.5) * 0.1
+      vRot: (Math.random() - 0.5) * 0.1,
+      trail: []
     });
 
     this.updateObjectCount();
@@ -340,6 +341,18 @@ class PhysicsGravitySandbox {
       obj.y += obj.vy;
       obj.rotation += obj.vRot;
 
+      // Trajectory trail history
+      if (!obj.trail) obj.trail = [];
+      const speed = Math.hypot(obj.vx, obj.vy);
+      if (speed > 0.8) {
+        obj.trail.push({ x: obj.x, y: obj.y, alpha: 0.85 });
+        if (obj.trail.length > 8) obj.trail.shift();
+      }
+      for (let ti = obj.trail.length - 1; ti >= 0; ti--) {
+        obj.trail[ti].alpha *= 0.91;
+        if (obj.trail[ti].alpha < 0.05) obj.trail.splice(ti, 1);
+      }
+
       // Floor Collision
       const floorY = height - obj.radius - 8;
       if (obj.y >= floorY) {
@@ -391,6 +404,20 @@ class PhysicsGravitySandbox {
 
     // Draw Objects
     this.objects.forEach(obj => {
+      // Trajectory trail dots
+      if (obj.trail && obj.trail.length > 0) {
+        this.ctx.save();
+        for (let ti = 0; ti < obj.trail.length; ti++) {
+          const pt = obj.trail[ti];
+          const dotRadius = Math.max(2, (obj.radius * 0.32) * ((ti + 1) / obj.trail.length));
+          this.ctx.beginPath();
+          this.ctx.arc(pt.x, pt.y, dotRadius, 0, Math.PI * 2);
+          this.ctx.fillStyle = `rgba(245, 158, 11, ${pt.alpha * 0.55})`;
+          this.ctx.fill();
+        }
+        this.ctx.restore();
+      }
+
       this.ctx.save();
       this.ctx.translate(obj.x, obj.y);
       this.ctx.rotate(obj.rotation);
@@ -427,6 +454,15 @@ class PhysicsGravitySandbox {
 
       this.ctx.restore();
     });
+
+    // Update real-time max speed display
+    let maxSpeed = 0;
+    this.objects.forEach(o => {
+      const spd = Math.hypot(o.vx, o.vy) * 0.45;
+      if (spd > maxSpeed) maxSpeed = spd;
+    });
+    const spdEl = document.getElementById('sandbox-speed-value');
+    if (spdEl) spdEl.textContent = `${maxSpeed.toFixed(1)} m/s`;
   }
 
   renderEnvironmentBackdrop(w, h) {
@@ -550,6 +586,10 @@ class PhysicsGravitySandbox {
           <div class="hud-item">
             <span class="hud-item-lbl">${isRu ? 'Предметов:' : 'Narsalar soni:'}</span>
             <strong class="hud-item-val" id="sandbox-obj-count">${this.objects.length}</strong>
+          </div>
+          <div class="hud-item">
+            <span class="hud-item-lbl">${isRu ? 'Скорость:' : 'Tezlik:'}</span>
+            <strong class="hud-item-val" id="sandbox-speed-value" style="color: var(--cyan);">0.0 m/s</strong>
           </div>
           <div class="hud-item">
             <span class="hud-item-lbl">${isRu ? 'Управление:' : 'Boshqaruv:'}</span>
