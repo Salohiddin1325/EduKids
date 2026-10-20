@@ -1023,20 +1023,26 @@
 
 @media (max-width: 640px) {
   .mascot-companion-dock {
-    bottom: 14px;
-    left: 14px;
+    bottom: 12px;
+    left: 12px;
   }
   .mascot-char-card {
-    width: 76px;
-    height: 76px;
+    width: 64px;
+    height: 64px;
   }
   .mascot-item-hat {
-    top: -14px;
-    font-size: 1.9rem;
+    top: -12px;
+    font-size: 1.6rem;
   }
   .mascot-item-acc {
-    top: 20px;
-    font-size: 1.5rem;
+    top: 16px;
+    font-size: 1.25rem;
+  }
+  .mascot-bubble-wrap {
+    max-width: 220px;
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    border-radius: 16px 16px 16px 6px;
   }
 }
 

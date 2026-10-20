@@ -2054,6 +2054,34 @@ body {
   animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+@media (max-width: 600px) {
+  .kiddo-modal {
+    padding: 10px;
+  }
+  .modal-content-card {
+    border-radius: 22px;
+    max-height: 94vh;
+  }
+  .modal-hero-visual {
+    height: 135px !important;
+  }
+  .modal-big-emoji {
+    font-size: 3.6rem !important;
+  }
+  .modal-info-panel {
+    padding: 16px 16px !important;
+  }
+  .modal-en-word {
+    font-size: 1.7rem !important;
+  }
+  .modal-title-row {
+    margin-bottom: 12px !important;
+  }
+  .example-en-sentence {
+    font-size: 1rem !important;
+  }
+}
+
 .modal-content-card::-webkit-scrollbar {
   width: 8px;
 }

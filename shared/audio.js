@@ -506,23 +506,56 @@
         return;
       }
 
+      // Sanitize lang parameter to prevent null.startsWith crash
+      const targetLang = (typeof lang === 'string' && lang.trim()) ? lang.trim() : 'en-US';
+
       try {
-        this.speechSynth.cancel(); // Stop any pending speech
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
+        // Resume synthesis if paused on mobile
+        if (this.speechSynth.paused) {
+          try { this.speechSynth.resume(); } catch (e) {}
+        }
+
+        // Cancel previous utterance safely
+        if (this.speechSynth.speaking || this.speechSynth.pending) {
+          try { this.speechSynth.cancel(); } catch (e) {}
+        }
+
+        const utterance = new SpeechSynthesisUtterance(String(text));
+        utterance.lang = targetLang;
         utterance.rate = this.isTurtleMode ? 0.72 : 0.95; // Child-friendly natural speed
         utterance.pitch = 1.15; // Friendly, slightly higher kid-pitch
 
-        if (this.preferredVoice && lang.startsWith('en')) {
+        if (this.preferredVoice && typeof targetLang === 'string' && targetLang.startsWith('en')) {
           utterance.voice = this.preferredVoice;
         }
 
-        if (callback) {
-          utterance.onend = () => callback();
-          utterance.onerror = () => callback();
-        }
+        // Keep reference on instance to prevent aggressive GC on Mobile Safari/Chrome
+        this.currentUtterance = utterance;
 
-        this.speechSynth.speak(utterance);
+        let finished = false;
+        const cleanup = () => {
+          if (finished) return;
+          finished = true;
+          if (this.currentUtterance === utterance) {
+            this.currentUtterance = null;
+          }
+          if (typeof callback === 'function') {
+            try { callback(); } catch (err) {}
+          }
+        };
+
+        utterance.onend = cleanup;
+        utterance.onerror = cleanup;
+
+        // Small timeout ensures clean execution queue after cancel()
+        setTimeout(() => {
+          try {
+            this.speechSynth.speak(utterance);
+          } catch (speakErr) {
+            console.warn('Speech synthesis speak execution error', speakErr);
+            cleanup();
+          }
+        }, 15);
       } catch (e) {
         console.warn('Speech synthesis error', e);
         if (callback) callback();

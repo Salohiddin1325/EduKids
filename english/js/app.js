@@ -769,7 +769,7 @@ function renderVocabGrid() {
 
     const speechAction = isLocked
       ? `event.stopPropagation(); openVocabPaywall('${word.id}')`
-      : `event.stopPropagation(); playWordSpeech('${word.id}', '${word.word}')`;
+      : `event.stopPropagation(); playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)`;
 
     const lockBadge = isLocked
       ? `<span class="card-lock-badge">🔒 Pro ($2/oy)</span>`
@@ -950,84 +950,145 @@ function getCategoryName(categoryKey) {
   return map[categoryKey] || categoryKey;
 }
 
-function playWordSpeech(wordId, wordText) {
+function playWordSpeech(wordId, wordText, e) {
+  if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
   const card = document.getElementById(`card-${wordId}`);
   if (card) card.classList.add('speaking-pulse');
 
-  window.soundEngine.speak(wordText, null, () => {
+  if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+    window.soundEngine.speak(wordText, 'en-US', () => {
+      if (card) card.classList.remove('speaking-pulse');
+    });
+  } else {
     if (card) card.classList.remove('speaking-pulse');
-  });
+  }
 
-  window.appState.recordWordListened(wordId);
+  if (window.appState && typeof window.appState.recordWordListened === 'function') {
+    window.appState.recordWordListened(wordId);
+  }
 }
+
+// Helpers for reading modal details aloud
+window.speakActiveModalDef = function(lang) {
+  const word = window._activeModalWord;
+  if (!word) return;
+  if (lang === 'uz') {
+    if (window.uzbekSpeech && typeof window.uzbekSpeech.speak === 'function') {
+      window.uzbekSpeech.speak(`${word.uzbek}. ${word.definitionUz}`);
+    }
+  } else if (lang === 'ru') {
+    if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+      window.soundEngine.speak(`${word.russian}. ${word.definitionRu}`, 'ru-RU');
+    }
+  } else {
+    if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+      window.soundEngine.speak(word.definitionEn, 'en-US');
+    }
+  }
+};
+
+window.speakActiveModalExample = function(lang) {
+  const word = window._activeModalWord;
+  if (!word) return;
+  if (lang === 'uz') {
+    if (window.uzbekSpeech && typeof window.uzbekSpeech.speak === 'function') {
+      window.uzbekSpeech.speak(word.exampleUz);
+    }
+  } else if (lang === 'ru') {
+    if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+      window.soundEngine.speak(word.exampleRu, 'ru-RU');
+    }
+  } else {
+    if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+      window.soundEngine.speak(word.exampleEn, 'en-US');
+    }
+  }
+};
 
 // Word Detailed View Modal
 function openWordModal(wordId) {
-  const word = VOCABULARY_DATA.find(w => w.id === wordId);
-  if (!word) return;
+  try {
+    const word = VOCABULARY_DATA.find(w => w.id === wordId);
+    if (!word) return;
 
-  window.soundEngine.playFlip();
+    if (window.soundEngine && typeof window.soundEngine.playFlip === 'function') {
+      window.soundEngine.playFlip();
+    }
 
-  const modal = document.getElementById('word-modal');
-  const modalContent = document.getElementById('word-modal-content');
-  if (!modal || !modalContent) return;
+    const modal = document.getElementById('word-modal');
+    const modalContent = document.getElementById('word-modal-content');
+    if (!modal || !modalContent) return;
 
-  const lang = window.appState ? window.appState.lang : 'uz';
-  const audioBtnText = lang === 'ru' ? '🔊 Слушать / Listen' : '🔊 Eshitish / Listen';
-  const exLabel = lang === 'ru' ? '✨ Пример предложения / Example Sentence:' : '✨ Namuna Jumla / Example Sentence:';
+    const lang = window.appState ? window.appState.lang : (localStorage.getItem('kiddo_language') || 'uz');
+    const audioBtnText = lang === 'ru' ? '🔊 Слушать / Listen' : '🔊 Eshitish / Listen';
+    const exLabel = lang === 'ru' ? '✨ Пример предложения / Example Sentence:' : '✨ Namuna Jumla / Example Sentence:';
 
-  modalContent.innerHTML = `
-    <button class="modal-close-btn" onclick="closeWordModal()">✕</button>
-    
-    <div class="modal-hero-visual" style="background: radial-gradient(circle, ${word.color}44, ${word.color}11);">
-      <span class="modal-big-emoji">${word.emoji}</span>
-      <button class="big-audio-btn" onclick="playWordSpeech('${word.id}', '${word.word}')">
-        ${audioBtnText}
-      </button>
-    </div>
+    // Store active word reference to avoid fragile inline string escaping
+    window._activeModalWord = word;
 
-    <div class="modal-info-panel">
-      <div class="modal-title-row">
-        <h2 class="modal-en-word">${word.word}</h2>
-        <span class="modal-phonetic">${word.phonetic}</span>
+    modalContent.innerHTML = `
+      <button class="modal-close-btn" onclick="closeWordModal()" aria-label="Yopish">✕</button>
+      
+      <div class="modal-hero-visual" style="background: radial-gradient(circle, ${word.color}44, ${word.color}11);">
+        <span class="modal-big-emoji">${word.emoji}</span>
+        <button class="big-audio-btn" onclick="playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" title="Pronounce word">
+          ${audioBtnText}
+        </button>
       </div>
 
-      <div class="modal-definitions">
-        <div class="def-block en-def">
-          <span class="badge-mini en">English</span>
-          <p>${word.definitionEn}</p>
+      <div class="modal-info-panel">
+        <div class="modal-title-row">
+          <h2 class="modal-en-word">${word.word}</h2>
+          <span class="modal-phonetic">${word.phonetic}</span>
         </div>
-        <div class="def-block uz-def" style="cursor: pointer;" onclick="if(window.uzbekSpeech) window.uzbekSpeech.speak('${word.uzbek}. ${word.definitionUz.replace(/'/g, "\\'")}')" title="O‘zbekcha talaffuzni eshitish">
-          <span class="badge-mini uz">O‘zbekcha 🔊</span>
-          <p><strong>${word.uzbek}:</strong> ${word.definitionUz}</p>
+
+        <div class="modal-definitions">
+          <div class="def-block en-def" style="cursor: pointer;" onclick="speakActiveModalDef('en')" title="Listen / Eshitish">
+            <span class="badge-mini en">English 🔊</span>
+            <p>${word.definitionEn}</p>
+          </div>
+          <div class="def-block uz-def" style="cursor: pointer;" onclick="speakActiveModalDef('uz')" title="O‘zbekcha talaffuzni eshitish">
+            <span class="badge-mini uz">O‘zbekcha 🔊</span>
+            <p><strong>${word.uzbek}:</strong> ${word.definitionUz}</p>
+          </div>
+          <div class="def-block ru-def" style="cursor: pointer;" onclick="speakActiveModalDef('ru')" title="Слушать перевод">
+            <span class="badge-mini ru">Русский 🔊</span>
+            <p><strong>${word.russian}:</strong> ${word.definitionRu}</p>
+          </div>
         </div>
-        <div class="def-block ru-def">
-          <span class="badge-mini ru">Русский</span>
-          <p><strong>${word.russian}:</strong> ${word.definitionRu}</p>
+
+        <div class="modal-example-card">
+          <h4>${exLabel}</h4>
+          <div class="example-en-sentence" style="cursor: pointer;" onclick="speakActiveModalExample('en')">
+            <p>"${word.exampleEn}"</p>
+            <button class="speaker-btn mini-speaker" onclick="event.stopPropagation(); speakActiveModalExample('en')" title="Listen / Eshitish">🔊</button>
+          </div>
+          <p class="example-sub-sentence" style="cursor: pointer;" onclick="speakActiveModalExample('uz')" title="O‘zbekcha jumla talaffuzi">🇺🇿 ${word.exampleUz} 🔊</p>
+          <p class="example-sub-sentence" style="cursor: pointer;" onclick="speakActiveModalExample('ru')" title="Русский пример">🇷🇺 ${word.exampleRu} 🔊</p>
         </div>
       </div>
+    `;
 
-      <div class="modal-example-card">
-        <h4>${exLabel}</h4>
-        <div class="example-en-sentence">
-          <p>"${word.exampleEn}"</p>
-          <button class="speaker-btn mini-speaker" onclick="window.soundEngine.speak('${word.exampleEn.replace(/'/g, "\\'")}')">🔊</button>
-        </div>
-        <p class="example-sub-sentence" style="cursor: pointer;" onclick="if(window.uzbekSpeech) window.uzbekSpeech.speak('${word.exampleUz.replace(/'/g, "\\'")}')" title="O‘zbekcha jumla talaffuzi">🇺🇿 ${word.exampleUz} 🔊</p>
-        <p class="example-sub-sentence">🇷🇺 ${word.exampleRu}</p>
-      </div>
-    </div>
-  `;
+    modalContent.scrollTop = 0;
+    modal.classList.add('open');
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
 
-  modalContent.scrollTop = 0;
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  playWordSpeech(word.id, word.word);
+    // Pronounce the word out loud when modal opens
+    playWordSpeech(word.id, word.word);
+  } catch (err) {
+    console.error('Error opening word modal:', err);
+  }
 }
 
 function closeWordModal() {
   const modal = document.getElementById('word-modal');
-  if (modal) modal.classList.remove('open');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
   document.body.style.overflow = '';
 }
 

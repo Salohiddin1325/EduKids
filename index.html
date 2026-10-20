@@ -50,13 +50,163 @@
       overflow-x: hidden;
     }
 
-    /* Top Language Switcher Bar */
-    .hub-top-bar {
+    /* Modern Responsive Hub Header System */
+    .hub-header-container {
       width: 100%;
       max-width: 1100px;
+      margin-bottom: 24px;
+    }
+
+    .hub-top-bar {
       display: flex;
-      justify-content: flex-end;
-      margin-bottom: 16px;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 2px solid rgba(226, 232, 240, 0.9);
+      border-radius: 28px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .hub-top-bar {
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(51, 65, 85, 0.9);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .hub-user-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hub-stats-cluster {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--bg-surface, #FFFFFF);
+      border: 2px solid var(--border-color, #E2E8F0);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .stat-pill.stat-stars { color: #D97706; }
+    .stat-pill.stat-gems { color: #0284C7; }
+
+    .hub-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hub-quick-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hub-quick-buttons .btn-ctrl {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 40px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.08);
+      border: 2px solid #E2E8F0;
+      background: white;
+      color: #334155;
+    }
+
+    .hub-quick-buttons .btn-ctrl:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    .btn-pro-upgrade {
+      background: linear-gradient(135deg, #FEF3C7, #FDE68A) !important;
+      border: 2px solid #F59E0B !important;
+      color: #92400E !important;
+      font-weight: 800 !important;
+    }
+
+    .btn-star-store {
+      background: linear-gradient(135deg, #FFD166, #FFB703) !important;
+      border: 2px solid #D97706 !important;
+      color: #78350F !important;
+    }
+
+    .btn-parent-mode {
+      padding: 8px 12px !important;
+    }
+
+    /* Subject Navigation Strip in Hub */
+    .header-subject-nav {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(241, 245, 249, 0.9);
+      padding: 4px;
+      border-radius: 999px;
+      border: 2px solid #CBD5E1;
+      gap: 4px;
+    }
+
+    [data-theme="dark"] .header-subject-nav {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: #334155;
+    }
+
+    .subject-nav-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #475569;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      white-space: nowrap;
+    }
+
+    [data-theme="dark"] .subject-nav-item {
+      color: #94A3B8;
+    }
+
+    .subject-nav-item:hover {
+      background: rgba(255, 255, 255, 0.9);
+      color: #1E293B;
+      transform: translateY(-1px);
+    }
+
+    [data-theme="dark"] .subject-nav-item:hover {
+      background: #1E293B;
+      color: #F8FAFC;
     }
 
     .lang-switcher-pill {
@@ -287,15 +437,77 @@
       line-height: 1.5;
     }
 
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
       .hub-header h1 {
-        font-size: 2.2rem;
-      }
-      .hub-top-bar {
-        justify-content: center;
+        font-size: 2.1rem;
       }
       .portal-cards-grid {
         grid-template-columns: 1fr;
+        margin-bottom: 90px;
+      }
+      .hub-top-bar {
+        padding: 10px 12px;
+        gap: 10px;
+        border-radius: 20px;
+      }
+      .hub-user-bar {
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .hub-actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .header-subject-nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        box-sizing: border-box;
+      }
+      .subject-nav-item {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 6px;
+        font-size: 0.85rem;
+      }
+      .hub-quick-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2px;
+        gap: 6px;
+      }
+      .hub-quick-buttons .btn-ctrl {
+        flex: 0 0 auto;
+        font-size: 0.82rem;
+        padding: 6px 10px;
+      }
+      .hub-stats-cluster {
+        gap: 6px;
+      }
+      .stat-pill {
+        padding: 4px 8px;
+        font-size: 0.82rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-level-pill {
+        max-width: 175px;
+      }
+      .level-number-name {
+        font-size: 0.78rem !important;
+      }
+      .hub-stats-cluster .stat-pill {
+        font-size: 0.78rem;
+        padding: 4px 6px;
+      }
+      .lang-btn {
+        padding: 6px 10px !important;
+        font-size: 0.82rem !important;
       }
     }
   </style>
@@ -303,86 +515,98 @@
 <body>
 
   <!-- Top Bar with Gamification Controls & Language -->
-  <div class="hub-top-bar" style="justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-      <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
-        <span class="avatar-header-badge" id="hud-user-avatar" title="Sizning Qahramoningiz">🐱</span>
-        <span class="level-icon-badge" id="hud-level-icon" style="display:none;">🌱</span>
-        <div class="level-info-text">
-          <span class="level-title-tag" id="hud-level-title-tag">LEVEL</span>
-          <span class="level-number-name" id="hud-level-name">Lvl 1: Boshlang‘ich Sayyoh</span>
-          <div class="xp-bar-wrap">
-            <div class="xp-bar-fill" id="hud-level-progress" style="width: 45%;"></div>
+  <header class="hub-header-container">
+    <div class="hub-top-bar">
+      <!-- Tier 1: User Profile, Stats & Language -->
+      <div class="hub-user-bar">
+        <!-- Level & XP Pill -->
+        <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
+          <span class="avatar-header-badge" id="hud-user-avatar" title="Sizning Qahramoningiz">🐱</span>
+          <span class="level-icon-badge" id="hud-level-icon" style="display:none;">🌱</span>
+          <div class="level-info-text">
+            <span class="level-title-tag" id="hud-level-title-tag">LEVEL</span>
+            <span class="level-number-name" id="hud-level-name">Lvl 1: Boshlang‘ich Sayyoh</span>
+            <div class="xp-bar-wrap">
+              <div class="xp-bar-fill" id="hud-level-progress" style="width: 45%;"></div>
+            </div>
           </div>
+        </div>
+
+        <!-- Currencies (Streak, Stars, Gems) -->
+        <div class="hub-stats-cluster">
+          <div class="stat-pill stat-streak flame-streak-chip" title="Kunlik seriya / Daily Streak">
+            <span class="flame-icon">🔥</span>
+            <span id="stat-streak-count">1 kun</span>
+          </div>
+
+          <div class="stat-pill stat-stars" title="To‘plangan yulduzlar / Stars">
+            <span>⭐</span>
+            <span id="stat-stars-count">35</span>
+          </div>
+
+          <div class="stat-pill stat-gems" title="Olmoslar / Gems">
+            <span>💎</span>
+            <span id="stat-gems-count">8</span>
+          </div>
+        </div>
+
+        <!-- Language Switcher Pill -->
+        <div class="lang-switcher-pill" role="group" aria-label="Language Switcher">
+          <button class="lang-btn active" id="btn-lang-uz" onclick="setSiteLanguage('uz')">
+            <span>🇺🇿</span>
+            <span>UZ</span>
+          </button>
+          <button class="lang-btn" id="btn-lang-ru" onclick="setSiteLanguage('ru')">
+            <span>🇷🇺</span>
+            <span>RU</span>
+          </button>
         </div>
       </div>
 
-      <div class="stat-pill stat-streak flame-streak-chip" style="background: white; border: 2px solid #E2E8F0; padding: 4px 12px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
-        <span class="flame-icon">🔥</span>
-        <span id="stat-streak-count">1 kun</span>
-      </div>
+      <!-- Tier 2: Subject Switcher & Action Controls -->
+      <div class="hub-actions-bar">
+        <!-- Center: Subject Quick Switcher Pill Strip -->
+        <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
+          <a href="./english/index.html" class="subject-nav-item" title="Ingliz tili darsiga o‘tish">
+            <span class="subject-icon">🦁</span>
+            <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
+          </a>
+          <a href="./math/index.html" class="subject-nav-item" title="Matematika darsiga o‘tish">
+            <span class="subject-icon">🚀</span>
+            <span class="subject-label" id="link-txt-math">Matematika</span>
+          </a>
+          <a href="./physics/index.html" class="subject-nav-item" title="Fizika darsiga o‘tish">
+            <span class="subject-icon">⚛️</span>
+            <span class="subject-label" id="link-txt-physics">Fizika</span>
+          </a>
+        </nav>
 
-      <div class="stat-pill stat-stars" style="background: white; border: 2px solid #E2E8F0; padding: 4px 12px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; color: #D97706;">
-        <span>⭐</span>
-        <span id="stat-stars-count">35</span>
-      </div>
+        <!-- Quick Action Buttons -->
+        <div class="hub-quick-buttons">
+          <button class="btn btn-ctrl btn-pro-upgrade" id="btn-hub-pro-upgrade" onclick="window.subscriptionManager && window.subscriptionManager.openPricingModal()" title="Pro Plan ($13/oy)">
+            <span>👑</span> <span id="txt-hub-pro">PRO ($13/oy)</span>
+          </button>
 
-      <div class="stat-pill stat-gems" style="background: white; border: 2px solid #E2E8F0; padding: 4px 12px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; color: #0284C7;" title="Olmoslar">
-        <span>💎</span>
-        <span id="stat-gems-count">8</span>
-      </div>
-    </div>
+          <button class="btn btn-ctrl btn-star-store" id="btn-hub-star-store" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Astro-Shop">
+            <span>⭐</span> <span id="txt-hub-store">Astro-Shop</span>
+          </button>
 
-    <!-- Center: Subject Quick Switcher Pill Strip -->
-    <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
-      <a href="./english/index.html" class="subject-nav-item" title="Ingliz tili darsiga o‘tish">
-        <span class="subject-icon">🦁</span>
-        <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
-      </a>
-      <a href="./math/index.html" class="subject-nav-item" title="Matematika darsiga o‘tish">
-        <span class="subject-icon">🚀</span>
-        <span class="subject-label" id="link-txt-math">Matematika</span>
-      </a>
-      <a href="./physics/index.html" class="subject-nav-item" title="Fizika darsiga o‘tish">
-        <span class="subject-icon">⚛️</span>
-        <span class="subject-label" id="link-txt-physics">Fizika</span>
-      </a>
-    </nav>
+          <button class="btn btn-ctrl" id="btn-hub-cert" onclick="window.subscriptionManager && window.subscriptionManager.openCertificateModal()" title="Grand Master Sertifikati">
+            <span>📜</span> <span id="txt-hub-cert" style="font-size: 0.88rem; font-weight: 700;">Sertifikat</span>
+          </button>
 
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <!-- 3D Tactile PWA Install Button -->
-      <button class="btn btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
-        <span class="pwa-icon">📲</span> <span id="txt-pwa-install">Ilovani O‘rnatish</span>
-      </button>
+          <button class="btn btn-ctrl btn-parent-mode" id="btn-hub-parent-mode" onclick="window.gamificationHub && window.gamificationHub.openParentDashboard()" title="Ota-onalar paneli (OTP)">
+            <span>👨‍👩‍👧</span>
+          </button>
 
-      <button class="btn btn-ctrl btn-pro-upgrade" id="btn-hub-pro-upgrade" onclick="window.subscriptionManager && window.subscriptionManager.openPricingModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 2px solid #F59E0B; color: #92400E; font-weight: 800;" title="Pro Plan ($13/oy)">
-        <span>👑</span> <span id="txt-hub-pro">PRO ($13/oy)</span>
-      </button>
-
-      <button class="btn btn-ctrl btn-star-store" id="btn-hub-star-store" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; cursor: pointer; border: none;">
-        <span>⭐</span> <span id="txt-hub-store">Astro-Shop</span>
-      </button>
-
-      <button class="btn btn-ctrl" id="btn-hub-cert" onclick="window.subscriptionManager && window.subscriptionManager.openCertificateModal()" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Grand Master Sertifikati">
-        <span>📜</span> <span id="txt-hub-cert" style="font-size: 0.88rem; font-weight: 700;">Sertifikat</span>
-      </button>
-
-      <button class="btn btn-ctrl btn-parent-mode" id="btn-hub-parent-mode" onclick="window.gamificationHub && window.gamificationHub.openParentDashboard()" style="padding: 6px 12px; border-radius: 999px; cursor: pointer;" title="Ota-onalar paneli (OTP)">
-        <span>👨‍👩‍👧</span>
-      </button>
-
-      <div class="lang-switcher-pill" role="group" aria-label="Language Switcher">
-        <button class="lang-btn active" id="btn-lang-uz" onclick="setSiteLanguage('uz')">
-          <span>🇺🇿</span>
-          <span>UZ</span>
-        </button>
-        <button class="lang-btn" id="btn-lang-ru" onclick="setSiteLanguage('ru')">
-          <span>🇷🇺</span>
-          <span>RU</span>
-        </button>
+          <!-- 3D Tactile PWA Install Button -->
+          <button class="btn btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
+            <span class="pwa-icon">📲</span> <span id="txt-pwa-install">O‘rnatish</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  </header>
 
   <header class="hub-header">
     <div class="hub-badge" id="hub-badge">🌟 Yosh Bolalar Ta'lim Portali</div>
