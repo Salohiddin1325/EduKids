@@ -64,21 +64,28 @@
 
     loadVoices() {
       if (!this.speechSynth) return;
-      this.voices = this.speechSynth.getVoices();
-      const englishVoices = this.voices.filter(v => v.lang && v.lang.startsWith('en'));
-      const naturalVoice = englishVoices.find(v =>
-        v.name.includes('Natural') ||
-        v.name.includes('Google') ||
-        v.name.includes('Samantha') ||
-        v.name.includes('Zira') ||
-        v.name.includes('Jenny')
-      );
-      this.preferredVoice = naturalVoice || englishVoices[0] || null;
+      try {
+        this.voices = this.speechSynth.getVoices() || [];
+        if (!this.voices || this.voices.length === 0) return;
+
+        const englishVoices = this.voices.filter(v => v.lang && (v.lang.startsWith('en') || v.lang.startsWith('EN')));
+        // Priority 1: High-quality local offline voice
+        const localNatural = englishVoices.find(v => v.localService && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Jenny')));
+        // Priority 2: Any local English voice
+        const anyLocal = englishVoices.find(v => v.localService === true);
+        // Priority 3: Default English voice
+        const defaultVoice = englishVoices.find(v => v.default);
+        // Priority 4: Any English voice
+        this.preferredVoice = localNatural || anyLocal || defaultVoice || englishVoices[0] || null;
+      } catch (e) {
+        console.warn('Voice loading error', e);
+      }
     }
 
     toggleSound(enable) {
       this.soundEnabled = enable !== undefined ? enable : !this.soundEnabled;
       localStorage.setItem('kiddo_sound_enabled', this.soundEnabled);
+      localStorage.setItem('kiddo_sound', this.soundEnabled);
       return this.soundEnabled;
     }
 
@@ -500,14 +507,22 @@
     // NATIVE TEXT-TO-SPEECH (Web Speech API)
     // =========================================================================
 
-    speak(text, lang = 'en-US', callback = null) {
-      if (!this.speechSynth || !text) {
-        if (callback) callback();
-        return;
+    speak(text, langOrStart = 'en-US', callbackOrEnd = null) {
+      if (!text) return;
+
+      let targetLang = 'en-US';
+      let doneCb = callbackOrEnd;
+
+      if (typeof langOrStart === 'string' && langOrStart.trim()) {
+        targetLang = langOrStart.trim();
+      } else if (typeof langOrStart === 'function') {
+        doneCb = langOrStart;
       }
 
-      // Sanitize lang parameter to prevent null.startsWith crash
-      const targetLang = (typeof lang === 'string' && lang.trim()) ? lang.trim() : 'en-US';
+      if (!this.speechSynth) {
+        if (typeof doneCb === 'function') doneCb();
+        return;
+      }
 
       try {
         // Resume synthesis if paused on mobile
@@ -515,8 +530,8 @@
           try { this.speechSynth.resume(); } catch (e) {}
         }
 
-        // Cancel previous utterance safely
-        if (this.speechSynth.speaking || this.speechSynth.pending) {
+        // Only cancel if speaking to avoid queue lock
+        if (this.speechSynth.speaking) {
           try { this.speechSynth.cancel(); } catch (e) {}
         }
 
@@ -524,13 +539,17 @@
         utterance.lang = targetLang;
         utterance.rate = this.isTurtleMode ? 0.72 : 0.95; // Child-friendly natural speed
         utterance.pitch = 1.15; // Friendly, slightly higher kid-pitch
+        utterance.volume = 1.0; // Maximum audible clarity
 
         if (this.preferredVoice && typeof targetLang === 'string' && targetLang.startsWith('en')) {
-          utterance.voice = this.preferredVoice;
+          try {
+            utterance.voice = this.preferredVoice;
+          } catch (e) {}
         }
 
-        // Keep reference on instance to prevent aggressive GC on Mobile Safari/Chrome
+        // Keep reference to prevent garbage collection on Mobile Safari/Chrome
         this.currentUtterance = utterance;
+        window._activeUtterance = utterance;
 
         let finished = false;
         const cleanup = () => {
@@ -539,26 +558,32 @@
           if (this.currentUtterance === utterance) {
             this.currentUtterance = null;
           }
-          if (typeof callback === 'function') {
-            try { callback(); } catch (err) {}
+          if (window._activeUtterance === utterance) {
+            window._activeUtterance = null;
+          }
+          if (typeof doneCb === 'function') {
+            try { doneCb(); } catch (err) {}
           }
         };
 
         utterance.onend = cleanup;
-        utterance.onerror = cleanup;
+        utterance.onerror = (err) => {
+          console.warn('SpeechSynthesis utterance event warning:', err);
+          cleanup();
+        };
 
-        // Small timeout ensures clean execution queue after cancel()
+        // CRITICAL: speak() MUST be synchronous to preserve user gesture activation on mobile!
+        this.speechSynth.speak(utterance);
+
+        // Safety watchdog if onend never fires (e.g. background tab)
         setTimeout(() => {
-          try {
-            this.speechSynth.speak(utterance);
-          } catch (speakErr) {
-            console.warn('Speech synthesis speak execution error', speakErr);
+          if (!finished && this.currentUtterance === utterance) {
             cleanup();
           }
-        }, 15);
+        }, 6000);
       } catch (e) {
         console.warn('Speech synthesis error', e);
-        if (callback) callback();
+        if (typeof doneCb === 'function') doneCb();
       }
     }
   }
@@ -572,4 +597,34 @@
   window.mathAudio = masterAudio;
   window.physicsAudio = masterAudio;
   window.UnifiedKiddoAudioEngine = UnifiedKiddoAudioEngine;
+
+  // Mobile User Interaction Audio Unlocker (iOS Safari & Android Chrome)
+  const primeMobileAudio = () => {
+    try {
+      if (masterAudio.getAudioContext) {
+        const ctx = masterAudio.getAudioContext();
+        if (ctx && ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+      }
+      if (window.speechSynthesis) {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        if (!window._speechSynthPrimed) {
+          window._speechSynthPrimed = true;
+          const silent = new SpeechSynthesisUtterance(' ');
+          silent.volume = 0.01;
+          silent.rate = 10;
+          window.speechSynthesis.speak(silent);
+        }
+      }
+    } catch (e) {}
+    window.removeEventListener('pointerdown', primeMobileAudio);
+    window.removeEventListener('touchstart', primeMobileAudio);
+    window.removeEventListener('click', primeMobileAudio);
+  };
+  window.addEventListener('pointerdown', primeMobileAudio, { passive: true });
+  window.addEventListener('touchstart', primeMobileAudio, { passive: true });
+  window.addEventListener('click', primeMobileAudio, { passive: true });
 })();

@@ -779,14 +779,14 @@ function renderVocabGrid() {
       <div class="word-card ${isLocked ? 'card-pro-locked' : ''}" id="card-${word.id}" style="--accent-color: ${word.color};" onclick="${clickAction}">
         <div class="card-visual-header" style="background: linear-gradient(135deg, ${word.color}22, ${word.color}55);">
           ${lockBadge}
-          <span class="card-emoji-visual">${word.emoji}</span>
+          <span class="card-emoji-visual" onclick="${speechAction}" style="cursor: pointer;" title="Listen / Eshitish">${word.emoji}</span>
           <button class="speaker-circle-btn" onclick="${speechAction}" title="${isLocked ? 'Pro A‘zolik ($2/oy)' : 'Listen / Eshitish'}">
             ${isLocked ? '🔒' : '🔊'}
           </button>
         </div>
 
         <div class="card-body">
-          <div class="card-main-title">
+          <div class="card-main-title" onclick="${speechAction}" style="cursor: pointer;" title="Listen / Eshitish">
             <h3 class="card-english-word">${word.word}</h3>
             <span class="card-phonetic">${word.phonetic}</span>
           </div>
@@ -1030,15 +1030,15 @@ function openWordModal(wordId) {
       <button class="modal-close-btn" onclick="closeWordModal()" aria-label="Yopish">✕</button>
       
       <div class="modal-hero-visual" style="background: radial-gradient(circle, ${word.color}44, ${word.color}11);">
-        <span class="modal-big-emoji">${word.emoji}</span>
+        <span class="modal-big-emoji" onclick="playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" style="cursor: pointer;" title="Eshitish / Listen">${word.emoji}</span>
         <button class="big-audio-btn" onclick="playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" title="Pronounce word">
           ${audioBtnText}
         </button>
       </div>
 
       <div class="modal-info-panel">
-        <div class="modal-title-row">
-          <h2 class="modal-en-word">${word.word}</h2>
+        <div class="modal-title-row" onclick="playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" style="cursor: pointer;" title="Eshitish / Listen">
+          <h2 class="modal-en-word">${word.word} 🔊</h2>
           <span class="modal-phonetic">${word.phonetic}</span>
         </div>
 
