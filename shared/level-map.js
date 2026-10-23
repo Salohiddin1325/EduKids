@@ -267,7 +267,7 @@ class LevelProgressionSystem {
             </div>
             <div class="map-stat-pill plan-pill ${isPro ? 'pro' : 'free'}">
               <span class="stat-ico">${isPro ? '👑' : '🎁'}</span>
-              <span class="stat-txt">${isPro ? 'PRO PLAN ($13/oy)' : 'FREE PLAN'}</span>
+              <span class="stat-txt">${isPro ? 'PRO PLAN ($2.50/oy)' : 'FREE PLAN'}</span>
             </div>
           </div>
 
@@ -317,7 +317,7 @@ class LevelProgressionSystem {
                 <div 
                   class="level-map-node ${tier.id} ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${!isAccessible ? 'locked' : ''} ${isProLocked ? 'pro-locked' : ''} ${isMilestone ? 'milestone-node' : ''}"
                   onclick="window.levelProgressionSystem.handleLevelClick('${gameId}', ${lvl}, window.levelProgressionSystem.onSelectCallback)"
-                  title="${isProLocked ? '👑 Pro Plan ($13/oy)' : (isAccessible ? `Daraja ${lvl} - ${tier.nameUz}` : 'Qulflangan')}"
+                  title="${isProLocked ? '👑 Pro Plan ($2.50/oy)' : (isAccessible ? `Daraja ${lvl} - ${tier.nameUz}` : 'Qulflangan')}"
                 >
                   <!-- Node Level Number & Badge -->
                   <div class="node-inner">

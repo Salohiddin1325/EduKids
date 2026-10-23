@@ -491,11 +491,12 @@ function initNavTabs() {
 function initSoundControls() {
   const btn = document.getElementById('sound-toggle-btn');
   if (btn) {
+    const icon = document.getElementById('sound-icon');
+    if (icon) icon.textContent = window.mathApp.soundEnabled ? '🔊' : '🔇';
     btn.addEventListener('click', () => {
       window.mathApp.soundEnabled = !window.mathApp.soundEnabled;
       window.mathAudio.toggleSound(window.mathApp.soundEnabled);
       window.mathApp.save();
-      const icon = document.getElementById('sound-icon');
       if (icon) icon.textContent = window.mathApp.soundEnabled ? '🔊' : '🔇';
       if (window.mathApp.soundEnabled) window.mathAudio.playPop();
     });
@@ -528,12 +529,20 @@ function initCosmoMascot() {
 
   if (mascot && bubble) {
     mascot.addEventListener('click', () => {
-      window.mathAudio.playPop();
+      if (window.mathAudio && window.mathAudio.playPop) window.mathAudio.playPop();
       mascot.classList.add('mascot-bounce');
       const lang = window.mathApp ? window.mathApp.lang : 'uz';
       const quotes = COSMO_QUOTES[lang] || COSMO_QUOTES.uz;
       const q = quotes[Math.floor(Math.random() * quotes.length)];
       bubble.textContent = q;
+
+      // Speak aloud for kid interaction
+      if (lang === 'uz' && window.uzbekSpeech) {
+        window.uzbekSpeech.speak(q);
+      } else if (window.kiddoAudio) {
+        window.kiddoAudio.speak(q, lang === 'ru' ? 'ru-RU' : 'en-US');
+      }
+
       setTimeout(() => mascot.classList.remove('mascot-bounce'), 600);
     });
   }

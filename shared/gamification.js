@@ -1065,12 +1065,12 @@ class GamificationHub {
             <div>
               <span style="font-size: 0.82rem; font-weight: 800; color: #64748B; text-transform: uppercase;">Amaldagi Obuna:</span>
               <div style="font-size: 1.15rem; font-weight: 800; color: ${isPro ? '#B45309' : '#1E293B'};">
-                ${isPro ? '👑 Pro Plan ($13/oy) • Cheksiz Kirish Faol' : '🆓 Bepul Rejim (Kunlik limitlar o‘rnatilgan)'}
+                ${isPro ? '👑 Pro Plan ($2.50/oy) • Cheksiz Kirish Faol' : '🆓 Bepul Rejim (Kunlik limitlar o‘rnatilgan)'}
               </div>
             </div>
             <div style="display: flex; gap: 8px;">
               <button class="btn btn-ctrl" onclick="window.subscriptionManager.openPricingModal()" style="background: ${isPro ? '#FEF3C7' : '#2563EB'}; color: ${isPro ? '#78350F' : '#FFF'}; font-weight: 800; border-radius: 999px;">
-                ${isPro ? '⚙️ Obuna' : '👑 Pro ($13) 🚀'}
+                ${isPro ? '⚙️ Obuna' : '👑 Pro ($2.50) 🚀'}
               </button>
               <button class="btn btn-ctrl" onclick="window.gamificationHub.logoutParent()" style="color: #EF4444;" title="Panelni qulflash">
                 🔒 Qulflash

@@ -1,10 +1,10 @@
 /**
  * EduKids — Universal PWA Service Worker (sw.js)
  * Strategiya: Cache-First (Keshdan birinchi olish va 100% oflayn ishlash)
- * Versiya: edukids-v1
+ * Versiya: edukids-v2
  */
 
-const CACHE_NAME = 'edukids-v1';
+const CACHE_NAME = 'edukids-v4';
 
 // Barcha statik resurslar ro'yxati (Pre-cache)
 const PRECACHE_ASSETS = [
@@ -27,8 +27,13 @@ const PRECACHE_ASSETS = [
   './shared/subscription.css',
   './shared/level-map.css',
   './shared/chatbot.css',
+  './shared/age-tracks.css',
+  './shared/screen-time.css',
+  './shared/worksheets.css',
+  './shared/profile-switcher.css',
 
   // Shared JS Tizimlari
+  './shared/env-config.js',
   './shared/pwa-register.js',
   './shared/uzbek-speech.js',
   './shared/audio.js',
@@ -38,6 +43,12 @@ const PRECACHE_ASSETS = [
   './shared/level-map.js',
   './shared/mascot-companion.js',
   './shared/chatbot.js',
+  './shared/mascots.js',
+  './shared/age-tracks.js',
+  './shared/screen-time.js',
+  './shared/learning-engine.js',
+  './shared/worksheets.js',
+  './shared/profile-switcher.js',
 
   // Matematika Moduli
   './math/index.html',
@@ -55,11 +66,13 @@ const PRECACHE_ASSETS = [
   // Ingliz Tili Moduli
   './english/index.html',
   './english/css/style.css',
+  './english/css/speech-grader.css',
   './english/js/data.js',
   './english/js/audio.js',
   './english/js/confetti.js',
   './english/js/exercises.js',
   './english/js/games.js',
+  './english/js/speech-grader.js',
   './english/js/app.js',
 
   // Fizika Moduli

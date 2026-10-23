@@ -668,16 +668,16 @@ class AstroCatMascot {
     }
 
     // Last resort fallback
-    const nonEnglishVoice = this.voices.find(v => !v.lang || !v.lang.toLowerCase().startsWith('en'));
+    const fallbackVoice = this.voices.find(v => !v.lang || !v.lang.toLowerCase().startsWith('en')) || this.voices[0] || null;
     return {
-      voice: nonEnglishVoice || null,
-      langCode: nonEnglishVoice ? nonEnglishVoice.lang : 'tr-TR',
+      voice: fallbackVoice,
+      langCode: fallbackVoice ? fallbackVoice.lang : 'en-US',
       textToSpeak: this.uzLatinToTurkish(rawText)
     };
   }
 
   speak(text) {
-    if (this.audio.isMuted) return;
+    if (this.audio.isMuted || (window.soundEngine && !window.soundEngine.soundEnabled) || localStorage.getItem('kiddo_sound') === 'false' || localStorage.getItem('kiddo_sound_enabled') === 'false' || localStorage.getItem('kiddo_muted') === 'true') return;
     try {
       const lang = this.getLang();
       if (lang === 'uz' && window.uzbekSpeech) {

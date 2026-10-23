@@ -1,24 +1,34 @@
 /**
  * PhysicsKids - Audio Engine Adapter
  * Powered by Unified Core Audio Engine (shared/audio.js)
- * 100% Offline, Zero external dependencies, Safe Child Volume Limiter (<= 0.35)
+ * 100% Offline, Zero external dependencies, Calibrated Child-Friendly Volume (0.55)
  */
 
 (function () {
   'use strict';
 
-  window.physicsAudio = window.kiddoAudio || {
+  const dummy = {
     playPop: () => {},
     playBounce: () => {},
     playMagnetSnap: () => {},
     playRepel: () => {},
     playSizzle: () => {},
     playCorrect: () => {},
+    playSuccess: () => {},
     playWrong: () => {},
+    playError: () => {},
     playFanfare: () => {},
+    playCheer: () => {},
     playCollect: () => {},
-    toggleSound: () => true
+    playCoin: () => {},
+    playWhoosh: () => {},
+    playChime: () => {},
+    playBoing: () => {},
+    toggleSound: () => true,
+    toggleTurtleMode: () => false
   };
+
+  window.physicsAudio = window.kiddoAudio || dummy;
 
   window.PhysicsAudioEngine = window.UnifiedKiddoAudioEngine || class {
     constructor() {

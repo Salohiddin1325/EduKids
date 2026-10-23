@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yoshlar Akademiyasi - Bolalar Uchun Ta'lim Portali | Детский Образовательный Портал</title>
+  <meta name="description" content="Yosh bolalar uchun ingliz tili, matematika va fizika fanlarini o‘rgatuvchi zamonaviy interaktiv platformalar!">
+  <!-- Content Security Policy (CYBERSECURITY.md Section 5) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; img-src 'self' data: https: blob:; media-src 'self' blob:;">
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#2563EB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="EduKids">
+  <meta name="application-name" content="EduKids">
+  <meta name="msapplication-TileColor" content="#2563EB">
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/shared.css">
+  <link rel="stylesheet" href="shared/subscription.css">
+  <link rel="stylesheet" href="shared/level-map.css">
+  <link rel="stylesheet" href="shared/chatbot.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #FFF1F2 0%, #EFF6FF 50%, #ECFDF5 100%);
+      color: #1E293B;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      overflow-x: hidden;
+    }
+
+    /* Modern Responsive Hub Header System */
+    .hub-header-container {
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: 24px;
+    }
+
+    .hub-top-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 2px solid rgba(226, 232, 240, 0.9);
+      border-radius: 28px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .hub-top-bar {
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(51, 65, 85, 0.9);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .hub-user-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hub-stats-cluster {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--bg-surface, #FFFFFF);
+      border: 2px solid var(--border-color, #E2E8F0);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+    }
+
+    .stat-pill.stat-stars { color: #D97706; }
+    .stat-pill.stat-gems { color: #0284C7; }
+
+    .hub-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hub-quick-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hub-quick-buttons .btn-ctrl {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 40px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.08);
+      border: 2px solid #E2E8F0;
+      background: white;
+      color: #334155;
+    }
+
+    .hub-quick-buttons .btn-ctrl:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    .btn-pro-upgrade {
+      background: linear-gradient(135deg, #FEF3C7, #FDE68A) !important;
+      border: 2px solid #F59E0B !important;
+      color: #92400E !important;
+      font-weight: 800 !important;
+    }
+
+    .btn-star-store {
+      background: linear-gradient(135deg, #FFD166, #FFB703) !important;
+      border: 2px solid #D97706 !important;
+      color: #78350F !important;
+    }
+
+    .btn-parent-mode {
+      padding: 8px 12px !important;
+    }
+
+    /* Subject Navigation Strip in Hub */
+    .header-subject-nav {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(241, 245, 249, 0.9);
+      padding: 4px;
+      border-radius: 999px;
+      border: 2px solid #CBD5E1;
+      gap: 4px;
+    }
+
+    [data-theme="dark"] .header-subject-nav {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: #334155;
+    }
+
+    .subject-nav-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #475569;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      white-space: nowrap;
+    }
+
+    [data-theme="dark"] .subject-nav-item {
+      color: #94A3B8;
+    }
+
+    .subject-nav-item:hover {
+      background: rgba(255, 255, 255, 0.9);
+      color: #1E293B;
+      transform: translateY(-1px);
+    }
+
+    [data-theme="dark"] .subject-nav-item:hover {
+      background: #1E293B;
+      color: #F8FAFC;
+    }
+
+    .lang-switcher-pill {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      padding: 4px;
+      border-radius: 999px;
+      border: 2px solid #E2E8F0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      gap: 4px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #64748B;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lang-btn:hover {
+      color: #1E293B;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transform: scale(1.02);
+    }
+
+    .hub-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .hub-badge {
+      display: inline-block;
+      background: #FFD166;
+      color: #713F12;
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 10px rgba(255, 209, 102, 0.4);
+    }
+
+    .hub-header h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FF5E7E, #2563EB);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .hub-header p {
+      font-size: 1.2rem;
+      color: #64748B;
+      max-width: 660px;
+      margin: 0 auto;
+      line-height: 1.4;
+    }
+
+    /* Cards Grid */
+    .portal-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 28px;
+      max-width: 1100px;
+      width: 100%;
+      margin-bottom: 40px;
+    }
+
+    .portal-card {
+      background: #FFFFFF;
+      border: 4px solid #E2E8F0;
+      border-radius: 32px;
+      padding: 36px 28px;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .portal-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.16);
+    }
+
+    /* English Card Theme */
+    .card-english:hover {
+      border-color: #FF5E7E;
+    }
+    .card-english .portal-mascot {
+      background: linear-gradient(135deg, #FFE4E6, #FECDD3);
+    }
+    .card-english .portal-btn {
+      background: #FF5E7E;
+      box-shadow: 0 6px 0 #D93858;
+    }
+    .card-english .portal-btn:hover {
+      box-shadow: 0 8px 0 #D93858;
+    }
+
+    /* Math Card Theme */
+    .card-math:hover {
+      border-color: #2563EB;
+    }
+    .card-math .portal-mascot {
+      background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
+    }
+    .card-math .portal-btn {
+      background: #2563EB;
+      box-shadow: 0 6px 0 #1D4ED8;
+    }
+    .card-math .portal-btn:hover {
+      box-shadow: 0 8px 0 #1D4ED8;
+    }
+
+    /* Physics Card Theme */
+    .card-physics:hover {
+      border-color: #8B5CF6;
+    }
+    .card-physics .portal-mascot {
+      background: linear-gradient(135deg, #EDE9FE, #DDD6FE);
+    }
+    .card-physics .portal-btn {
+      background: #8B5CF6;
+      box-shadow: 0 6px 0 #6D28D9;
+    }
+    .card-physics .portal-btn:hover {
+      box-shadow: 0 8px 0 #6D28D9;
+    }
+
+    .portal-mascot {
+      width: 120px;
+      height: 120px;
+      border-radius: 32px;
+      font-size: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      transition: transform 0.25s ease;
+    }
+
+    .portal-card:hover .portal-mascot {
+      transform: scale(1.1) rotate(4deg);
+    }
+
+    .portal-card h2 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .portal-desc {
+      font-size: 1.05rem;
+      color: #64748B;
+      margin-bottom: 24px;
+      line-height: 1.45;
+      flex: 1;
+    }
+
+    .portal-features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .feature-tag {
+      background: #F1F5F9;
+      color: #475569;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .portal-btn {
+      color: #FFFFFF;
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 999px;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease;
+    }
+
+    .portal-btn:active {
+      transform: translateY(3px);
+    }
+
+    .hub-footer {
+      text-align: center;
+      color: #94A3B8;
+      font-size: 0.95rem;
+      max-width: 800px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .hub-header h1 {
+        font-size: 2.1rem;
+      }
+      .portal-cards-grid {
+        grid-template-columns: 1fr;
+        margin-bottom: 90px;
+      }
+      .hub-top-bar {
+        padding: 10px 12px;
+        gap: 10px;
+        border-radius: 20px;
+      }
+      .hub-user-bar {
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .hub-actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .header-subject-nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        box-sizing: border-box;
+      }
+      .subject-nav-item {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 6px;
+        font-size: 0.85rem;
+      }
+      .hub-quick-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2px;
+        gap: 6px;
+      }
+      .hub-quick-buttons .btn-ctrl {
+        flex: 0 0 auto;
+        font-size: 0.82rem;
+        padding: 6px 10px;
+      }
+      .hub-stats-cluster {
+        gap: 6px;
+      }
+      .stat-pill {
+        padding: 4px 8px;
+        font-size: 0.82rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-level-pill {
+        max-width: 175px;
+      }
+      .level-number-name {
+        font-size: 0.78rem !important;
+      }
+      .hub-stats-cluster .stat-pill {
+        font-size: 0.78rem;
+        padding: 4px 6px;
+      }
+      .lang-btn {
+        padding: 6px 10px !important;
+        font-size: 0.82rem !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar with Gamification Controls & Language -->
+  <header class="hub-header-container">
+    <div class="hub-top-bar">
+      <!-- Tier 1: User Profile, Stats & Language -->
+      <div class="hub-user-bar">
+        <!-- Level & XP Pill -->
+        <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
+          <span class="avatar-header-badge" id="hud-user-avatar" title="Sizning Qahramoningiz">🐱</span>
+          <span class="level-icon-badge" id="hud-level-icon" style="display:none;">🌱</span>
+          <div class="level-info-text">
+            <span class="level-title-tag" id="hud-level-title-tag">LEVEL</span>
+            <span class="level-number-name" id="hud-level-name">Lvl 1: Boshlang‘ich Sayyoh</span>
+            <div class="xp-bar-wrap">
+              <div class="xp-bar-fill" id="hud-level-progress" style="width: 45%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Currencies (Streak, Stars, Gems) -->
+        <div class="hub-stats-cluster">
+          <div class="stat-pill stat-streak flame-streak-chip" title="Kunlik seriya / Daily Streak">
+            <span class="flame-icon">🔥</span>
+            <span id="stat-streak-count">1 kun</span>
+          </div>
+
+          <div class="stat-pill stat-stars" title="To‘plangan yulduzlar / Stars">
+            <span>⭐</span>
+            <span id="stat-stars-count">35</span>
+          </div>
+
+          <div class="stat-pill stat-gems" title="Olmoslar / Gems">
+            <span>💎</span>
+            <span id="stat-gems-count">8</span>
+          </div>
+        </div>
+
+        <!-- Language Switcher Pill -->
+        <div class="lang-switcher-pill" role="group" aria-label="Language Switcher">
+          <button class="lang-btn active" id="btn-lang-uz" onclick="setSiteLanguage('uz')">
+            <span>🇺🇿</span>
+            <span>UZ</span>
+          </button>
+          <button class="lang-btn" id="btn-lang-ru" onclick="setSiteLanguage('ru')">
+            <span>🇷🇺</span>
+            <span>RU</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tier 2: Subject Switcher & Action Controls -->
+      <div class="hub-actions-bar">
+        <!-- Center: Subject Quick Switcher Pill Strip -->
+        <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
+          <a href="./english/index.html" class="subject-nav-item" title="Ingliz tili darsiga o‘tish">
+            <span class="subject-icon">🦁</span>
+            <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
+          </a>
+          <a href="./math/index.html" class="subject-nav-item" title="Matematika darsiga o‘tish">
+            <span class="subject-icon">🚀</span>
+            <span class="subject-label" id="link-txt-math">Matematika</span>
+          </a>
+          <a href="./physics/index.html" class="subject-nav-item" title="Fizika darsiga o‘tish">
+            <span class="subject-icon">⚛️</span>
+            <span class="subject-label" id="link-txt-physics">Fizika</span>
+          </a>
+        </nav>
+
+        <!-- Quick Action Buttons -->
+        <div class="hub-quick-buttons">
+          <button class="btn btn-ctrl btn-pro-upgrade" id="btn-hub-pro-upgrade" onclick="window.subscriptionManager && window.subscriptionManager.openPricingModal()" title="Pro Plan ($13/oy)">
+            <span>👑</span> <span id="txt-hub-pro">PRO ($13/oy)</span>
+          </button>
+
+          <button class="btn btn-ctrl btn-star-store" id="btn-hub-star-store" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Astro-Shop">
+            <span>⭐</span> <span id="txt-hub-store">Astro-Shop</span>
+          </button>
+
+          <button class="btn btn-ctrl" id="btn-hub-cert" onclick="window.subscriptionManager && window.subscriptionManager.openCertificateModal()" title="Grand Master Sertifikati">
+            <span>📜</span> <span id="txt-hub-cert" style="font-size: 0.88rem; font-weight: 700;">Sertifikat</span>
+          </button>
+
+          <button class="btn btn-ctrl btn-parent-mode" id="btn-hub-parent-mode" onclick="window.gamificationHub && window.gamificationHub.openParentDashboard()" title="Ota-onalar paneli (OTP)">
+            <span>👨‍👩‍👧</span>
+          </button>
+
+          <!-- 3D Tactile PWA Install Button -->
+          <button class="btn btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
+            <span class="pwa-icon">📲</span> <span id="txt-pwa-install">O‘rnatish</span>
+          </button>
+
+          <!-- Master Sound Mute/Unmute Toggle (Bez Zvuk) -->
+          <button class="btn btn-ctrl btn-icon-only" id="sound-toggle-btn" onclick="toggleHubSound()" title="Ovozni yoqish / o‘chirish (Bez Zvuk)" style="width: 40px; height: 40px; border-radius: 50%; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center;">
+            <span id="sound-icon">🔊</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <header class="hub-header">
+    <div class="hub-badge" id="hub-badge">🌟 Yosh Bolalar Ta'lim Portali</div>
+    <h1 id="hub-title">Keling, Birgalikda O‘rganamiz!</h1>
+    <p id="hub-desc">Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!</p>
+
+    <!-- Discount Badge -->
+    <div class="hub-discount-banner" onclick="window.subscriptionManager.openPricingModal()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border: 2px solid #F59E0B; padding: 8px 18px; border-radius: 999px; margin-top: 14px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);">
+      <span style="font-size: 1.1rem;">🔥</span>
+      <span id="hub-discount-text" style="font-size: 0.92rem; font-weight: 800; color: #92400E;">
+        Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat
+      </span>
+      <span style="background: #F59E0B; color: #FFF; font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 999px;">PRO</span>
+    </div>
+  </header>
+
+  <main class="portal-cards-grid">
+    <!-- English Portal Card -->
+    <a href="./english/index.html" class="portal-card card-english">
+      <div class="portal-mascot">🦁</div>
+      <h2 id="card-en-title">Ingliz Tili (KiddoLingo)</h2>
+      <p class="portal-desc" id="card-en-desc">Ovozli talaffuzli lug‘at, sodda grammatika saboqlari, viktorinalar va havo sharlari o‘yini!</p>
+      
+      <div class="portal-features-list">
+        <span class="feature-tag" id="en-feat-1">📚 500 ta So‘z</span>
+        <span class="feature-tag" id="en-feat-2">🔊 Audio Talaffuz</span>
+        <span class="feature-tag" id="en-feat-3">🎮 50+ Bosqichlar</span>
+        <span class="feature-tag" id="en-feat-4">🧠 Xotira Kartalari</span>
+      </div>
+
+      <div class="portal-btn">
+        <span id="en-btn-text">Ingliz Tilini Boshlash</span>
+        <span>➜</span>
+      </div>
+    </a>
+
+    <!-- Mathematics Portal Card -->
+    <a href="./math/index.html" class="portal-card card-math">
+      <div class="portal-mascot">🚀</div>
+      <h2 id="card-math-title">Matematika (MathKids)</h2>
+      <p class="portal-desc" id="card-math-desc">Jonli hisoblagichlar, 12×12 karra jadvali, 50+ darajali kosmik raketa o‘yini va 60s poyga!</p>
+      
+      <div class="portal-features-list">
+        <span class="feature-tag" id="math-feat-1">✖️ Karra Jadvali (12×12)</span>
+        <span class="feature-tag" id="math-feat-2">🍎 Mevali Hisoblagich</span>
+        <span class="feature-tag" id="math-feat-3">⚡ 60s Poyga</span>
+        <span class="feature-tag" id="math-feat-4">🎮 50+ Bosqichlar</span>
+      </div>
+
+      <div class="portal-btn">
+        <span id="math-btn-text">Matematikani Boshlash</span>
+        <span>➜</span>
+      </div>
+    </a>
+
+    <!-- Physics Portal Card -->
+    <a href="./physics/index.html" class="portal-card card-physics">
+      <div class="portal-mascot">⚛️</div>
+      <h2 id="card-phys-title">Fizika (PhysicsKids)</h2>
+      <p class="portal-desc" id="card-phys-desc">Gravitatsiya minorasi, magnit maydoni, muz va bug‘ laboratoriyasi hamda 50+ darajali magnit labirinti!</p>
+      
+      <div class="portal-features-list">
+        <span class="feature-tag" id="phys-feat-1">🍏 Gravitatsiya</span>
+        <span class="feature-tag" id="phys-feat-2">🧲 Magnit Laboratoriyasi</span>
+        <span class="feature-tag" id="phys-feat-3">🌀 Magnit Labirinti</span>
+        <span class="feature-tag" id="phys-feat-4">🎮 50+ Bosqichlar</span>
+      </div>
+
+      <div class="portal-btn">
+        <span id="phys-btn-text">Fizikani Boshlash</span>
+        <span>➜</span>
+      </div>
+    </a>
+  </main>
+
+  <footer class="hub-footer">
+    <p id="hub-footer-text">KiddoLingo & MathKids & PhysicsKids — 100% oflayn ishlaydigan, bolalar uchun xavfsiz va quvnoq ta'lim loyihasi.</p>
+  </footer>
+
+  <!-- Shared Engine Scripts -->
+  <script src="shared/env-config.js"></script>
+  <script src="shared/pwa-register.js"></script>
+  <script src="shared/uzbek-speech.js"></script>
+  <script src="shared/audio.js"></script>
+  <script src="shared/subscription.js"></script>
+  <script src="shared/screen-vfx.js"></script>
+  <script src="shared/gamification.js"></script>
+  <script src="shared/level-map.js"></script>
+  <script src="shared/mascot-companion.js"></script>
+  <script src="shared/chatbot.js"></script>
+
+  <!-- Hub Controller & Multilingual System -->
+  <script>
+    const HUB_TRANSLATIONS = {
+      uz: {
+        pageTitle: "Yoshlar Akademiyasi - Bolalar Uchun Ta'lim Portali | KiddoLingo, MathKids, PhysicsKids",
+        badge: "🌟 Yosh Bolalar Ta'lim Portali",
+        title: "Keling, Birgalikda O‘rganamiz!",
+        desc: "Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!",
+        discount: "Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat",
+        proText: "PRO ($13/oy)",
+        proActiveText: "PRO FAOL",
+        storeText: "Astro-Shop",
+        certText: "Sertifikat",
+        cardEnTitle: "Ingliz Tili (KiddoLingo)",
+        cardEnDesc: "500 ta so‘zli lug‘at, ovozli talaffuz, sodda grammatika va 50+ darajali mini-o‘yinlar!",
+        enFeat1: "📚 500 ta So‘z",
+        enFeat2: "🔊 Audio Talaffuz",
+        enFeat3: "🎮 50+ Bosqichlar",
+        enFeat4: "🧠 Xotira Kartalari",
+        enBtn: "Ingliz Tilini Boshlash",
+        cardMathTitle: "Matematika (MathKids)",
+        cardMathDesc: "12×12 karra jadvali, mevali hisoblagich, 50+ darajali kosmik raketa va 60s poyga!",
+        mathFeat1: "✖️ Karra Jadvali (12×12)",
+        mathFeat2: "🍎 Mevali Hisoblagich",
+        mathFeat3: "⚡ 60s Poyga",
+        mathFeat4: "🎮 50+ Bosqichlar",
+        mathBtn: "Matematikani Boshlash",
+        cardPhysTitle: "Fizika (PhysicsKids)",
+        cardPhysDesc: "Gravitatsiya minorasi, magnit maydoni, laboratoriya hamda 50+ darajali magnit labirinti!",
+        physFeat1: "🍏 Gravitatsiya",
+        physFeat2: "🧲 Magnit Laboratoriyasi",
+        physFeat3: "🌀 Magnit Labirinti",
+        physFeat4: "🎮 50+ Bosqichlar",
+        physBtn: "Fizikani Boshlash",
+        footer: "KiddoLingo & MathKids & PhysicsKids — 100% oflayn ishlaydigan, bolalar uchun xavfsiz va quvnoq ta'lim loyihasi."
+      },
+      ru: {
+        pageTitle: "Детская Академия - Образовательный Портал Для Детей | KiddoLingo, MathKids, PhysicsKids",
+        badge: "🌟 Детский Образовательный Портал",
+        title: "Давайте Учиться Вместе!",
+        desc: "Какой предмет ты хочешь изучать? Выбери один из предметов ниже и отправляйся в увлекательное путешествие!",
+        discount: "Спецпредложение: Pro план $13/мес (160,000 UZS) • 50+ Уровней, 500 Слов & Официальный Сертификат",
+        proText: "PRO ($13/мес)",
+        proActiveText: "PRO АКТИВЕН",
+        storeText: "Магазин",
+        certText: "Сертификат",
+        cardEnTitle: "Английский Язык (KiddoLingo)",
+        cardEnDesc: "Словарь на 500 слов с озвучкой, уроки грамматики и 50+ уровней мини-игр!",
+        enFeat1: "📚 500 Слов",
+        enFeat2: "🔊 Озвучка Слов",
+        enFeat3: "🎮 50+ Уровней",
+        enFeat4: "🧠 Карточки Памяти",
+        enBtn: "Начать Английский",
+        cardMathTitle: "Математика (MathKids)",
+        cardMathDesc: "Таблица умножения 12×12, фруктовый счетчик, игра-ракета на 50+ уровней и 60-сек гонка!",
+        mathFeat1: "✖️ Таблица 12×12",
+        mathFeat2: "🍎 Фруктовый Счетчик",
+        mathFeat3: "⚡ 60-сек Гонка",
+        mathFeat4: "🎮 50+ Уровней",
+        mathBtn: "Начать Математику",
+        cardPhysTitle: "Физика (PhysicsKids)",
+        cardPhysDesc: "Башня гравитации, опыты с магнитами и магнитный лабиринт на 50+ уровней!",
+        physFeat1: "🍏 Гравитация",
+        physFeat2: "🧲 Лаборатория Магнитов",
+        physFeat3: "🌀 Магнитный Лабиринт",
+        physFeat4: "🎮 50+ Уровней",
+        physBtn: "Начать Физику",
+        footer: "KiddoLingo & MathKids & PhysicsKids — 100% офлайн, безопасный и веселый образовательный проект для детей."
+      }
+    };
+
+    function setSiteLanguage(lang) {
+      const activeLang = (lang === 'ru') ? 'ru' : 'uz';
+      localStorage.setItem('kiddo_language', activeLang);
+      document.documentElement.lang = activeLang;
+
+      document.body.classList.add('lang-transitioning');
+      setTimeout(() => {
+        document.body.classList.remove('lang-transitioning');
+      }, 200);
+
+      const t = HUB_TRANSLATIONS[activeLang];
+      const isRu = activeLang === 'ru';
+
+      // Update Document Title
+      if (t.pageTitle) {
+        document.title = t.pageTitle;
+      }
+
+      // Update Header Text Elements
+      const badgeEl = document.getElementById('hub-badge');
+      if (badgeEl) badgeEl.textContent = t.badge;
+
+      const titleEl = document.getElementById('hub-title');
+      if (titleEl) titleEl.textContent = t.title;
+
+      const descEl = document.getElementById('hub-desc');
+      if (descEl) descEl.textContent = t.desc;
+
+      const discEl = document.getElementById('hub-discount-text');
+      if (discEl && t.discount) discEl.textContent = t.discount;
+
+      // Update Controls Text & Pro State
+      const proTxt = document.getElementById('txt-hub-pro');
+      const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
+      if (proTxt) {
+        proTxt.textContent = isPro ? t.proActiveText : t.proText;
+      }
+
+      const storeTxt = document.getElementById('txt-hub-store');
+      if (storeTxt) {
+        storeTxt.textContent = t.storeText;
+      }
+
+      const certTxt = document.getElementById('txt-hub-cert');
+      if (certTxt) {
+        certTxt.textContent = t.certText;
+      }
+
+      // Update Control Tooltips
+      const lvlPill = document.getElementById('hud-level-pill');
+      if (lvlPill) {
+        lvlPill.title = isRu ? "Ваш уровень и опыт (Нажмите)" : "Darajangiz va tajribangiz (Bosing)";
+      }
+
+      const proBtn = document.getElementById('btn-hub-pro-upgrade');
+      if (proBtn) {
+        proBtn.title = isPro ? (isRu ? "PRO Активен - Полный доступ" : "PRO Faol - Cheksiz kirish") : (isRu ? "PRO План ($13/мес)" : "PRO Plan ($13/oy)");
+      }
+
+      const certBtn = document.getElementById('btn-hub-cert');
+      if (certBtn) {
+        certBtn.title = isRu ? "Сертификат Гранд-Мастера" : "Grand Master Sertifikati";
+      }
+
+      const parentBtn = document.getElementById('btn-hub-parent-mode');
+      if (parentBtn) {
+        parentBtn.title = isRu ? "Родительский контроль (OTP)" : "Ota-onalar paneli (OTP)";
+      }
+
+      // Update Cards
+      const cardEnTitle = document.getElementById('card-en-title');
+      if (cardEnTitle) cardEnTitle.textContent = t.cardEnTitle;
+      const cardEnDesc = document.getElementById('card-en-desc');
+      if (cardEnDesc) cardEnDesc.textContent = t.cardEnDesc;
+      const enFeat1 = document.getElementById('en-feat-1');
+      if (enFeat1) enFeat1.textContent = t.enFeat1;
+      const enFeat2 = document.getElementById('en-feat-2');
+      if (enFeat2) enFeat2.textContent = t.enFeat2;
+      const enFeat3 = document.getElementById('en-feat-3');
+      if (enFeat3) enFeat3.textContent = t.enFeat3;
+      const enFeat4 = document.getElementById('en-feat-4');
+      if (enFeat4) enFeat4.textContent = t.enFeat4;
+      const enBtn = document.getElementById('en-btn-text');
+      if (enBtn) enBtn.textContent = t.enBtn;
+
+      const cardMathTitle = document.getElementById('card-math-title');
+      if (cardMathTitle) cardMathTitle.textContent = t.cardMathTitle;
+      const cardMathDesc = document.getElementById('card-math-desc');
+      if (cardMathDesc) cardMathDesc.textContent = t.cardMathDesc;
+      const mathFeat1 = document.getElementById('math-feat-1');
+      if (mathFeat1) mathFeat1.textContent = t.mathFeat1;
+      const mathFeat2 = document.getElementById('math-feat-2');
+      if (mathFeat2) mathFeat2.textContent = t.mathFeat2;
+      const mathFeat3 = document.getElementById('math-feat-3');
+      if (mathFeat3) mathFeat3.textContent = t.mathFeat3;
+      const mathFeat4 = document.getElementById('math-feat-4');
+      if (mathFeat4) mathFeat4.textContent = t.mathFeat4;
+      const mathBtn = document.getElementById('math-btn-text');
+      if (mathBtn) mathBtn.textContent = t.mathBtn;
+
+      const cardPhysTitle = document.getElementById('card-phys-title');
+      if (cardPhysTitle) cardPhysTitle.textContent = t.cardPhysTitle;
+      const cardPhysDesc = document.getElementById('card-phys-desc');
+      if (cardPhysDesc) cardPhysDesc.textContent = t.cardPhysDesc;
+      const physFeat1 = document.getElementById('phys-feat-1');
+      if (physFeat1) physFeat1.textContent = t.physFeat1;
+      const physFeat2 = document.getElementById('phys-feat-2');
+      if (physFeat2) physFeat2.textContent = t.physFeat2;
+      const physFeat3 = document.getElementById('phys-feat-3');
+      if (physFeat3) physFeat3.textContent = t.physFeat3;
+      const physFeat4 = document.getElementById('phys-feat-4');
+      if (physFeat4) physFeat4.textContent = t.physFeat4;
+      const physBtn = document.getElementById('phys-btn-text');
+      if (physBtn) physBtn.textContent = t.physBtn;
+
+      // Update Subject Switcher links
+      const linkEn = document.getElementById('link-txt-english');
+      if (linkEn) linkEn.textContent = isRu ? 'Английский' : 'Ingliz Tili';
+      const linkMath = document.getElementById('link-txt-math');
+      if (linkMath) linkMath.textContent = isRu ? 'Математика' : 'Matematika';
+      const linkPh = document.getElementById('link-txt-physics');
+      if (linkPh) linkPh.textContent = isRu ? 'Физика' : 'Fizika';
+
+      // Update Footer
+      const footerText = document.getElementById('hub-footer-text');
+      if (footerText) footerText.textContent = t.footer;
+
+      // Toggle Active Language Buttons
+      const btnUz = document.getElementById('btn-lang-uz');
+      const btnRu = document.getElementById('btn-lang-ru');
+      if (btnUz && btnRu) {
+        btnUz.classList.toggle('active', activeLang === 'uz');
+        btnRu.classList.toggle('active', activeLang === 'ru');
+      }
+
+      // Synchronize Modules
+      if (window.subscriptionManager) {
+        window.subscriptionManager.lang = activeLang;
+        if (typeof window.subscriptionManager.updateUI === 'function') {
+          window.subscriptionManager.updateUI();
+        }
+      }
+
+      if (window.gamificationHub) {
+        window.gamificationHub.updateAllUI();
+      }
+
+      if (window.astroCat) {
+        window.astroCat.onLanguageChanged(activeLang);
+      }
+
+      if (window.astroBot) {
+        window.astroBot.setLanguage(activeLang);
+      }
+
+      if (window.EduKidsPWA) {
+        window.EduKidsPWA.setLanguage(activeLang);
+      }
+    }
+
+    // Master Hub Sound Toggle
+    function toggleHubSound() {
+      if (window.kiddoAudio) {
+        const isEnabled = window.kiddoAudio.toggleSound();
+        updateHubSoundUI(isEnabled);
+        if (isEnabled && window.kiddoAudio.playPop) window.kiddoAudio.playPop();
+      }
+    }
+
+    function updateHubSoundUI(enabled) {
+      const icon = document.getElementById('sound-icon');
+      if (icon) icon.textContent = enabled ? '🔊' : '🔇';
+    }
+
+    // Initialize saved language & sound
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('kiddo_language') || 'uz';
+      setSiteLanguage(savedLang);
+
+      const soundEnabled = localStorage.getItem('kiddo_sound_enabled') !== 'false' && localStorage.getItem('kiddo_sound') !== 'false';
+      updateHubSoundUI(soundEnabled);
+    });
+  </script>
+</body>
+</html>

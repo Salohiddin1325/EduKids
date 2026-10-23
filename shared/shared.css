@@ -6,6 +6,33 @@
 @import url('subscription.css');
 
 /* =========================================================================
+   UNIVERSAL MOBILE TOUCH RESPONSIVENESS & 0ms TAP DELAY (TASK FIX)
+   ========================================================================= */
+html, body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+button,
+a,
+.word-card,
+.speaker-circle-btn,
+.speaker-btn,
+.big-audio-btn,
+.category-chip,
+.tab-btn,
+.nav-item,
+.header-level-pill,
+.store-item-card,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* =========================================================================
    1. LEVEL & XP HEADER PILL & FIRE STREAK
    ========================================================================= */
 .header-level-pill {

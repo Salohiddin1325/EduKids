@@ -208,12 +208,35 @@
       navigator.serviceWorker.register(swPath, { scope: swScope })
         .then((registration) => {
           console.log('[EduKids PWA] Service Worker faol. Scope:', registration.scope);
+
+          // Kesh versiyasini (edukids-v2) avtomatik tekshirish
+          if (typeof registration.update === 'function') {
+            registration.update().catch(() => {});
+          }
+
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('[EduKids PWA] Yangi versiya (edukids-v2) o‘rnatildi va kesh yangilandi!');
+              }
+            });
+          });
         })
         .catch((error) => {
           if (window.location.protocol !== 'file:') {
             console.warn('[EduKids PWA] Service Worker xatoligi:', error);
           }
         });
+
+      // Yangi Service Worker faollashganda boshqaruv o'zgarishini kuzatish
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        console.log('[EduKids PWA] Yangi kesh kontrolleri ishga tushirildi.');
+      });
 
       // UI ni sahifa yuklanganda ishga tushirish
       window.EduKidsPWA.updateUI();

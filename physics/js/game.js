@@ -621,8 +621,8 @@ class MagnetMazeGame {
     const nextLevel = this.currentLevel + 1;
     const isPro = window.subscriptionManager && window.subscriptionManager.isPro();
     const btnNext = isRu 
-      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 10) ? '• 👑 Pro ($13)' : ''}` 
-      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 10) ? '• 👑 Pro ($13)' : ''}`;
+      ? `🚀 Уровень ${nextLevel} ${(!isPro && nextLevel > 10) ? '• 👑 Pro ($2.50)' : ''}` 
+      : `🚀 Keyingi Daraja (${nextLevel}) ${(!isPro && nextLevel > 10) ? '• 👑 Pro ($2.50)' : ''}`;
 
     const winBanner = document.getElementById('maze-win-banner');
     if (winBanner) {

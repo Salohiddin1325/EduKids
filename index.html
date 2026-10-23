@@ -29,6 +29,10 @@
   <link rel="stylesheet" href="shared/subscription.css">
   <link rel="stylesheet" href="shared/level-map.css">
   <link rel="stylesheet" href="shared/chatbot.css">
+  <link rel="stylesheet" href="shared/age-tracks.css">
+  <link rel="stylesheet" href="shared/screen-time.css">
+  <link rel="stylesheet" href="shared/worksheets.css">
+  <link rel="stylesheet" href="shared/profile-switcher.css">
 
   <style>
     * {
@@ -519,6 +523,9 @@
     <div class="hub-top-bar">
       <!-- Tier 1: User Profile, Stats & Language -->
       <div class="hub-user-bar">
+        <!-- Multi-Child Profile Switcher Pill -->
+        <div id="profile-trigger-mount"></div>
+
         <!-- Level & XP Pill -->
         <div id="hud-level-pill" class="header-level-pill" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Darajangiz va tajribangiz">
           <span class="avatar-header-badge" id="hud-user-avatar" title="Sizning Qahramoningiz">🐱</span>
@@ -583,12 +590,17 @@
 
         <!-- Quick Action Buttons -->
         <div class="hub-quick-buttons">
-          <button class="btn btn-ctrl btn-pro-upgrade" id="btn-hub-pro-upgrade" onclick="window.subscriptionManager && window.subscriptionManager.openPricingModal()" title="Pro Plan ($13/oy)">
-            <span>👑</span> <span id="txt-hub-pro">PRO ($13/oy)</span>
+          <button class="btn btn-ctrl btn-pro-upgrade" id="btn-hub-pro-upgrade" onclick="window.subscriptionManager && window.subscriptionManager.openPricingModal()" title="Pro Plan ($2.50/oy)">
+            <span>👑</span> <span id="txt-hub-pro">PRO ($2.50/oy)</span>
           </button>
 
           <button class="btn btn-ctrl btn-star-store" id="btn-hub-star-store" onclick="window.gamificationHub && window.gamificationHub.openStoreModal()" title="Astro-Shop">
             <span>⭐</span> <span id="txt-hub-store">Astro-Shop</span>
+          </button>
+
+          <!-- Printable Worksheets Button -->
+          <button class="btn btn-ctrl btn-worksheets" id="btn-hub-worksheets" onclick="window.EduWorksheets && window.EduWorksheets.openModal()" title="Chop etiladigan ish varaqalari (A4 Worksheets)">
+            <span>🖨️</span> <span id="txt-hub-worksheets">Ish Varaqalari</span>
           </button>
 
           <button class="btn btn-ctrl" id="btn-hub-cert" onclick="window.subscriptionManager && window.subscriptionManager.openCertificateModal()" title="Grand Master Sertifikati">
@@ -603,6 +615,11 @@
           <button class="btn btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
             <span class="pwa-icon">📲</span> <span id="txt-pwa-install">O‘rnatish</span>
           </button>
+
+          <!-- Master Sound Mute/Unmute Toggle (Bez Zvuk) -->
+          <button class="btn btn-ctrl btn-icon-only" id="sound-toggle-btn" onclick="toggleHubSound()" title="Ovozni yoqish / o‘chirish (Bez Zvuk)" style="width: 40px; height: 40px; border-radius: 50%; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center;">
+            <span id="sound-icon">🔊</span>
+          </button>
         </div>
       </div>
     </div>
@@ -613,11 +630,14 @@
     <h1 id="hub-title">Keling, Birgalikda O‘rganamiz!</h1>
     <p id="hub-desc">Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!</p>
 
+    <!-- Age-Adaptive Track Selector Mount -->
+    <div id="age-track-mount"></div>
+
     <!-- Discount Badge -->
     <div class="hub-discount-banner" onclick="window.subscriptionManager.openPricingModal()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border: 2px solid #F59E0B; padding: 8px 18px; border-radius: 999px; margin-top: 14px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);">
       <span style="font-size: 1.1rem;">🔥</span>
       <span id="hub-discount-text" style="font-size: 0.92rem; font-weight: 800; color: #92400E;">
-        Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat
+        Maxsus Taklif: Pro Plan $2.50/oy (32,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat
       </span>
       <span style="background: #F59E0B; color: #FFF; font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 999px;">PRO</span>
     </div>
@@ -687,6 +707,7 @@
   </footer>
 
   <!-- Shared Engine Scripts -->
+  <script src="shared/env-config.js"></script>
   <script src="shared/pwa-register.js"></script>
   <script src="shared/uzbek-speech.js"></script>
   <script src="shared/audio.js"></script>
@@ -696,6 +717,12 @@
   <script src="shared/level-map.js"></script>
   <script src="shared/mascot-companion.js"></script>
   <script src="shared/chatbot.js"></script>
+  <script src="shared/mascots.js"></script>
+  <script src="shared/age-tracks.js"></script>
+  <script src="shared/screen-time.js"></script>
+  <script src="shared/learning-engine.js"></script>
+  <script src="shared/worksheets.js"></script>
+  <script src="shared/profile-switcher.js"></script>
 
   <!-- Hub Controller & Multilingual System -->
   <script>
@@ -705,10 +732,11 @@
         badge: "🌟 Yosh Bolalar Ta'lim Portali",
         title: "Keling, Birgalikda O‘rganamiz!",
         desc: "Qaysi fanni o‘rganishni xohlaysiz? Quyidagi fanlardan birini tanlang va sarguzashtni boshlang!",
-        discount: "Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat",
-        proText: "PRO ($13/oy)",
+        discount: "Maxsus Taklif: Pro Plan $2.50/oy (32,000 UZS) • 50+ Bosqichlar, 500 Lug‘at & Rasmiy Sertifikat",
+        proText: "PRO ($2.50/oy)",
         proActiveText: "PRO FAOL",
         storeText: "Astro-Shop",
+        worksheetsText: "Ish Varaqalari",
         certText: "Sertifikat",
         cardEnTitle: "Ingliz Tili (KiddoLingo)",
         cardEnDesc: "500 ta so‘zli lug‘at, ovozli talaffuz, sodda grammatika va 50+ darajali mini-o‘yinlar!",
@@ -738,10 +766,11 @@
         badge: "🌟 Детский Образовательный Портал",
         title: "Давайте Учиться Вместе!",
         desc: "Какой предмет ты хочешь изучать? Выбери один из предметов ниже и отправляйся в увлекательное путешествие!",
-        discount: "Спецпредложение: Pro план $13/мес (160,000 UZS) • 50+ Уровней, 500 Слов & Официальный Сертификат",
-        proText: "PRO ($13/мес)",
+        discount: "Спецпредложение: Pro план $2.50/мес (32,000 UZS) • 50+ Уровней, 500 Слов & Официальный Сертификат",
+        proText: "PRO ($2.50/мес)",
         proActiveText: "PRO АКТИВЕН",
         storeText: "Магазин",
+        worksheetsText: "Задания A4",
         certText: "Сертификат",
         cardEnTitle: "Английский Язык (KiddoLingo)",
         cardEnDesc: "Словарь на 500 слов с озвучкой, уроки грамматики и 50+ уровней мини-игр!",
@@ -811,6 +840,11 @@
         storeTxt.textContent = t.storeText;
       }
 
+      const wsTxt = document.getElementById('txt-hub-worksheets');
+      if (wsTxt && t.worksheetsText) {
+        wsTxt.textContent = t.worksheetsText;
+      }
+
       const certTxt = document.getElementById('txt-hub-cert');
       if (certTxt) {
         certTxt.textContent = t.certText;
@@ -824,7 +858,7 @@
 
       const proBtn = document.getElementById('btn-hub-pro-upgrade');
       if (proBtn) {
-        proBtn.title = isPro ? (isRu ? "PRO Активен - Полный доступ" : "PRO Faol - Cheksiz kirish") : (isRu ? "PRO План ($13/мес)" : "PRO Plan ($13/oy)");
+        proBtn.title = isPro ? (isRu ? "PRO Активен - Полный доступ" : "PRO Faol - Cheksiz kirish") : (isRu ? "PRO План ($2.50/мес)" : "PRO Plan ($2.50/oy)");
       }
 
       const certBtn = document.getElementById('btn-hub-cert');
@@ -926,12 +960,37 @@
       if (window.EduKidsPWA) {
         window.EduKidsPWA.setLanguage(activeLang);
       }
+
+      if (window.EduAgeTracks) {
+        window.EduAgeTracks.updateBarUI();
+      }
+
+      if (window.EduProfiles) {
+        window.EduProfiles.updateTriggerUI();
+      }
     }
 
-    // Initialize saved language
+    // Master Hub Sound Toggle
+    function toggleHubSound() {
+      if (window.kiddoAudio) {
+        const isEnabled = window.kiddoAudio.toggleSound();
+        updateHubSoundUI(isEnabled);
+        if (isEnabled && window.kiddoAudio.playPop) window.kiddoAudio.playPop();
+      }
+    }
+
+    function updateHubSoundUI(enabled) {
+      const icon = document.getElementById('sound-icon');
+      if (icon) icon.textContent = enabled ? '🔊' : '🔇';
+    }
+
+    // Initialize saved language & sound
     document.addEventListener('DOMContentLoaded', () => {
       const savedLang = localStorage.getItem('kiddo_language') || 'uz';
       setSiteLanguage(savedLang);
+
+      const soundEnabled = localStorage.getItem('kiddo_sound_enabled') !== 'false' && localStorage.getItem('kiddo_sound') !== 'false';
+      updateHubSoundUI(soundEnabled);
     });
   </script>
 </body>

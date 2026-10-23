@@ -643,11 +643,12 @@ function initLabSubTabs() {
 function initSoundControls() {
   const btn = document.getElementById('sound-toggle-btn');
   if (btn) {
+    const icon = document.getElementById('sound-icon');
+    if (icon) icon.textContent = window.physicsApp.soundEnabled ? '🔊' : '🔇';
     btn.addEventListener('click', () => {
       window.physicsApp.soundEnabled = !window.physicsApp.soundEnabled;
       window.physicsAudio.toggleSound(window.physicsApp.soundEnabled);
       window.physicsApp.save();
-      const icon = document.getElementById('sound-icon');
       if (icon) icon.textContent = window.physicsApp.soundEnabled ? '🔊' : '🔇';
       if (window.physicsApp.soundEnabled) window.physicsAudio.playPop();
     });

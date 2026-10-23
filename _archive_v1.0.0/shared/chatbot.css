@@ -1,0 +1,1312 @@
+/* =========================================================================
+   ASTROBOT - INTERACTIVE AI CHATBOT WIDGET FOR KIDS
+   Modern, Colorful, Child-Friendly UI with Rich Micro-Animations
+   ========================================================================= */
+
+:root {
+  --astro-primary: #0284C7;
+  --astro-primary-glow: rgba(2, 132, 199, 0.35);
+  --astro-accent-gold: #FFB703;
+  --astro-accent-coral: #F43F5E;
+  --astro-accent-green: #10B981;
+  --astro-accent-purple: #8B5CF6;
+  --astro-bg-card: #FFFFFF;
+  --astro-bg-soft: #F8FAFC;
+  --astro-text-main: #0F172A;
+  --astro-text-sub: #475569;
+  --astro-border: #E2E8F0;
+  --astro-shadow-lg: 0 20px 40px -8px rgba(15, 23, 42, 0.22), 0 8px 16px -4px rgba(15, 23, 42, 0.12);
+  --astro-font: 'Fredoka', system-ui, -apple-system, sans-serif;
+}
+
+[data-theme="dark"] {
+  --astro-bg-card: #1E293B;
+  --astro-bg-soft: #0F172A;
+  --astro-text-main: #F8FAFC;
+  --astro-text-sub: #94A3B8;
+  --astro-border: #334155;
+  --astro-shadow-lg: 0 24px 48px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* =========================================================================
+   1. FLOATING ACTION BUTTON (FAB) & INVITATION CHIP
+   ========================================================================= */
+.astro-fab-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+  font-family: var(--astro-font);
+}
+
+.astro-fab-container * {
+  pointer-events: auto;
+}
+
+/* Floating Invitation Bubble */
+.astro-fab-bubble {
+  background: var(--astro-bg-card);
+  color: var(--astro-text-main);
+  border: 3px solid var(--astro-accent-gold);
+  border-radius: 20px 20px 6px 20px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 10px 25px rgba(255, 183, 3, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  animation: fabBubbleBounce 4s ease-in-out infinite;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.astro-fab-bubble:hover {
+  transform: scale(1.05) translateY(-2px);
+  border-color: #F59E0B;
+}
+
+.astro-fab-bubble .bubble-close {
+  opacity: 0.5;
+  font-size: 0.85rem;
+  margin-left: 4px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 50%;
+  transition: opacity 0.2s;
+}
+
+.astro-fab-bubble .bubble-close:hover {
+  opacity: 1;
+  background: rgba(0,0,0,0.06);
+}
+
+@keyframes fabBubbleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* Main Mascot FAB Button */
+.astro-fab-btn {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284C7 0%, #38BDF8 50%, #6366F1 100%);
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 12px 30px var(--astro-primary-glow), 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.astro-fab-btn:hover {
+  transform: scale(1.12) rotate(4deg);
+  box-shadow: 0 16px 36px rgba(2, 132, 199, 0.5), 0 6px 16px rgba(99, 102, 241, 0.3);
+}
+
+.astro-fab-btn:active {
+  transform: scale(0.94);
+}
+
+/* Mascot SVG inside FAB */
+.astro-fab-mascot-svg {
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  transition: transform 0.3s ease;
+}
+
+.astro-fab-btn:hover .astro-fab-mascot-svg {
+  transform: scale(1.08);
+}
+
+/* Glowing Pulsing Ring around FAB */
+.astro-fab-pulse-ring {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border-radius: 50%;
+  border: 2px solid #38BDF8;
+  opacity: 0.7;
+  animation: fabPulseRing 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fabPulseRing {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  60% { transform: scale(1.22); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+/* Notification / Unread Star Badge */
+.astro-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #FFB703, #F59E0B);
+  color: #713F12;
+  font-size: 0.75rem;
+  font-weight: 800;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  border-radius: 12px;
+  border: 2.5px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.4);
+  animation: badgePop 0.5s ease-out;
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* =========================================================================
+   2. CHAT WINDOW CONTAINER & SLIDE-UP ANIMATION
+   ========================================================================= */
+.astro-chat-window {
+  position: fixed;
+  bottom: 104px;
+  right: 24px;
+  width: 410px;
+  max-width: calc(100vw - 32px);
+  height: 620px;
+  max-height: calc(100vh - 128px);
+  background: var(--astro-bg-card);
+  border-radius: 28px;
+  border: 3px solid #38BDF8;
+  box-shadow: var(--astro-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+  font-family: var(--astro-font);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(30px) scale(0.92);
+  transform-origin: bottom right;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.astro-chat-window.astro-chat-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* =========================================================================
+   3. CHAT HEADER
+   ========================================================================= */
+.astro-chat-header {
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 60%, #4F46E5 100%);
+  color: #FFFFFF;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+  position: relative;
+  z-index: 10;
+}
+
+.astro-chat-header-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.astro-header-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.astro-header-avatar-svg {
+  width: 36px;
+  height: 36px;
+}
+
+.astro-status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 8px #10B981;
+}
+
+.astro-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.astro-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.astro-header-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #FFFFFF;
+}
+
+.astro-header-badge {
+  background: #FFD166;
+  color: #713F12;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.astro-header-subtitle {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #E0F2FE;
+  opacity: 0.95;
+}
+
+/* Header Actions Controls */
+.astro-chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Gamification Stars Chip in Header */
+.astro-header-stars-chip {
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #FFD166;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.astro-header-stars-chip:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.astro-header-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.astro-header-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+  transform: scale(1.08);
+}
+
+.astro-header-btn:active {
+  transform: scale(0.92);
+}
+
+.astro-header-btn.active-sound {
+  background: #FFB703;
+  color: #713F12;
+  border-color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+}
+
+/* Header Lang Selector Pill */
+.astro-lang-select {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  border-radius: 999px;
+  padding: 3px 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.astro-lang-select option {
+  background: #0F172A;
+  color: #FFFFFF;
+}
+
+/* Question Limit Chip in Header */
+.astro-header-limit-chip {
+  background: rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  padding: 4px 9px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.astro-header-limit-chip:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.astro-header-limit-chip.limit-depleted {
+  background: #EF4444;
+  color: #FFFFFF;
+  animation: limitPulse 1.5s infinite;
+}
+
+@keyframes limitPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); box-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
+}
+
+/* Limit Banner Bar below Header */
+.astro-limit-banner {
+  background: #F0F9FF;
+  border-bottom: 1.5px solid #BAE6FD;
+  padding: 7px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 9;
+}
+
+.astro-limit-banner-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0369A1;
+}
+
+.astro-limit-badge {
+  background: #E0F2FE;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid #7DD3FC;
+  font-size: 0.74rem;
+  color: #0284C7;
+  font-weight: 800;
+}
+
+.astro-limit-track {
+  width: 100%;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.astro-limit-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981 0%, #38BDF8 60%, #6366F1 100%);
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+}
+
+.astro-limit-progress.progress-low {
+  background: linear-gradient(90deg, #EF4444 0%, #F59E0B 100%);
+}
+
+/* Settings & API Key Panel Drawer */
+.astro-settings-panel {
+  position: absolute;
+  top: 72px;
+  left: 12px;
+  right: 12px;
+  background: #FFFFFF;
+  border: 2.5px solid #38BDF8;
+  border-radius: 20px;
+  box-shadow: 0 14px 35px rgba(2, 132, 199, 0.3);
+  padding: 16px;
+  z-index: 100;
+  animation: panelSlideDown 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes panelSlideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.astro-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 6px;
+}
+
+.astro-settings-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0369A1;
+}
+
+.astro-settings-close {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #64748B;
+  padding: 2px 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.astro-settings-close:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.astro-settings-desc {
+  font-size: 0.77rem;
+  color: #475569;
+  margin: 0 0 10px 0;
+  line-height: 1.45;
+}
+
+.astro-settings-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 10px;
+}
+
+.astro-settings-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.astro-settings-input:focus {
+  outline: none;
+  border-color: #0284C7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.astro-settings-btns {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.astro-btn-save-key {
+  flex: 1;
+  background: linear-gradient(135deg, #0284C7, #0369A1);
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.astro-btn-save-key:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.astro-btn-reset-limit {
+  flex: 1;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.astro-btn-reset-limit:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.astro-settings-hint {
+  font-size: 0.72rem;
+  color: #64748B;
+  display: block;
+  line-height: 1.35;
+}
+
+/* Math, English, Physics and Science Cards */
+.astro-math-card {
+  background: #F0FDF4;
+  border: 2px solid #86EFAC;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-size: 0.88rem;
+  color: #14532D;
+}
+
+.astro-english-card {
+  background: #FAF5FF;
+  border: 2px solid #C084FC;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-size: 0.88rem;
+  color: #581C87;
+}
+
+.astro-physics-card {
+  background: #F0FDFA;
+  border: 2px solid #5EEAD4;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-size: 0.88rem;
+  color: #134E4A;
+}
+
+.astro-subject-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.astro-subject-math {
+  background: #DCFCE7;
+  color: #166534;
+  border: 1px solid #86EFAC;
+}
+
+.astro-subject-english {
+  background: #F3E8FF;
+  color: #6B21A8;
+  border: 1px solid #D8B4FE;
+}
+
+.astro-subject-physics {
+  background: #CCFBF1;
+  color: #115E59;
+  border: 1px solid #5EEAD4;
+}
+
+.astro-step-item {
+  margin: 5px 0;
+  padding-left: 8px;
+  border-left: 3px solid #10B981;
+  font-size: 0.86rem;
+}
+
+.astro-science-box {
+  background: #EFF6FF;
+  border: 2px solid #93C5FD;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  color: #1E3A8A;
+}
+
+.astro-limit-alert-card {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  border: 2px solid #F59E0B;
+  border-radius: 16px;
+  padding: 14px;
+  margin: 8px 0;
+  color: #78350F;
+}
+
+/* =========================================================================
+   4. CHAT MESSAGES BODY
+   ========================================================================= */
+.astro-chat-messages {
+  flex: 1;
+  padding: 16px 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--astro-bg-soft);
+  scroll-behavior: smooth;
+  position: relative;
+}
+
+/* Custom Scrollbar */
+.astro-chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.astro-chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.astro-chat-messages::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+/* In-Chat Confetti Overlay Canvas */
+.astro-inchat-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Message Rows */
+.astro-msg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  animation: msgSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  max-width: 90%;
+}
+
+@keyframes msgSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.astro-msg-row.astro-msg-bot {
+  align-self: flex-start;
+}
+
+.astro-msg-row.astro-msg-user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+/* Bot Avatar in Message Row */
+.astro-msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0284C7;
+  border: 2px solid #38BDF8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: 0 4px 8px rgba(2, 132, 199, 0.25);
+}
+
+.astro-msg-avatar svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Message Content Wrapper */
+.astro-msg-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Bot Bubble */
+.astro-msg-bot .astro-msg-bubble {
+  background: var(--astro-bg-card);
+  color: var(--astro-text-main);
+  border: 2px solid var(--astro-border);
+  border-radius: 20px 20px 20px 6px;
+  padding: 12px 16px;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  word-break: break-word;
+}
+
+/* User Bubble */
+.astro-msg-user .astro-msg-bubble {
+  background: linear-gradient(135deg, #0284C7 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  border-radius: 20px 20px 6px 20px;
+  padding: 12px 16px;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+  word-break: break-word;
+}
+
+/* Highlighted keywords, analogies & code-like blocks */
+.astro-msg-bubble strong {
+  color: var(--astro-primary);
+  font-weight: 700;
+}
+
+.astro-msg-user .astro-msg-bubble strong {
+  color: #FFD166;
+}
+
+.astro-analogy-box {
+  background: #FEF3C7;
+  border: 2px dashed #F59E0B;
+  border-radius: 14px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 0.92rem;
+  color: #78350F;
+  font-weight: 600;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+[data-theme="dark"] .astro-analogy-box {
+  background: #312E81;
+  border-color: #818CF8;
+  color: #E0E7FF;
+}
+
+/* Bottom Controls in Bot Bubble (Audio + Reactions) */
+.astro-msg-bot-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--astro-border);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Audio Read Button */
+.astro-tts-btn {
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  color: #1D4ED8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.astro-tts-btn:hover {
+  background: #DBEAFE;
+  transform: scale(1.04);
+}
+
+.astro-tts-btn.is-speaking {
+  background: #FEE2E2;
+  border-color: #FCA5A5;
+  color: #DC2626;
+  animation: speakingGlow 1.2s infinite alternate;
+}
+
+@keyframes speakingGlow {
+  from { box-shadow: 0 0 4px #FCA5A5; }
+  to { box-shadow: 0 0 12px #EF4444; }
+}
+
+/* Reaction Buttons Strip */
+.astro-reactions-bar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.astro-react-btn {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.18s;
+  position: relative;
+}
+
+.astro-react-btn:hover {
+  transform: scale(1.35);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.astro-react-btn:active {
+  transform: scale(0.9);
+}
+
+.astro-react-btn.reacted {
+  background: #FEF3C7;
+  transform: scale(1.15);
+}
+
+/* Floating Reaction Particle */
+.astro-react-burst {
+  position: absolute;
+  pointer-events: none;
+  animation: reactFloat 0.85s ease-out forwards;
+  font-size: 1.4rem;
+  z-index: 100;
+}
+
+@keyframes reactFloat {
+  0% { transform: translateY(0) scale(0.8); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.4); opacity: 0; }
+}
+
+/* Interactive Quiz Options in Bot Bubble */
+.astro-quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.astro-quiz-opt-btn {
+  background: #F0FDF4;
+  border: 2px solid #86EFAC;
+  color: #166534;
+  border-radius: 14px;
+  padding: 8px 14px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.astro-quiz-opt-btn:hover {
+  background: #DCFCE7;
+  border-color: #22C55E;
+  transform: translateX(4px) scale(1.02);
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.25);
+}
+
+.astro-quiz-opt-btn.correct-opt {
+  background: #22C55E !important;
+  color: #FFFFFF !important;
+  border-color: #16A34A !important;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
+}
+
+.astro-quiz-opt-btn.wrong-opt {
+  background: #FEE2E2 !important;
+  color: #991B1B !important;
+  border-color: #F87171 !important;
+}
+
+/* Typing Indicator */
+.astro-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--astro-bg-card);
+  border: 2px solid var(--astro-border);
+  border-radius: 20px;
+  align-self: flex-start;
+  margin-left: 40px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.astro-typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--astro-primary);
+  animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.astro-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.astro-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-7px); opacity: 1; }
+}
+
+.astro-typing-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--astro-text-sub);
+  margin-left: 4px;
+}
+
+/* =========================================================================
+   5. QUICK-PROMPT CHIPS CAROUSEL
+   ========================================================================= */
+.astro-prompt-chips-wrap {
+  background: var(--astro-bg-card);
+  border-top: 2px solid var(--astro-border);
+  padding: 8px 12px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scroll-behavior: smooth;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.astro-prompt-chips-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.astro-chip-btn {
+  background: #F1F5F9;
+  border: 1.5px solid #CBD5E1;
+  color: var(--astro-text-main);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.astro-chip-btn:hover {
+  background: #E0F2FE;
+  border-color: #38BDF8;
+  color: #0369A1;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.25);
+}
+
+.astro-chip-btn:active {
+  transform: scale(0.96);
+}
+
+/* =========================================================================
+   6. INPUT BAR (VOICE INPUT + TEXT + SEND)
+   ========================================================================= */
+.astro-chat-input-bar {
+  background: var(--astro-bg-card);
+  border-top: 1px solid var(--astro-border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+/* Mic Voice Button */
+.astro-mic-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 2px solid #CBD5E1;
+  color: #475569;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex-shrink: 0;
+  outline: none;
+  position: relative;
+}
+
+.astro-mic-btn:hover {
+  background: #E0F2FE;
+  border-color: #38BDF8;
+  color: #0284C7;
+  transform: scale(1.08);
+}
+
+.astro-mic-btn:active {
+  transform: scale(0.92);
+}
+
+/* Active Recording State */
+.astro-mic-btn.is-recording {
+  background: #FEE2E2 !important;
+  border-color: #EF4444 !important;
+  color: #DC2626 !important;
+  animation: micPulse 1.2s infinite;
+}
+
+@keyframes micPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+    transform: scale(1.05);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
+    transform: scale(1.1);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    transform: scale(1.05);
+  }
+}
+
+/* Mic Listening Toast Pill */
+.astro-mic-listening-pill {
+  position: absolute;
+  top: -34px;
+  left: 14px;
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+  animation: pillFade 0.25s ease-out;
+  pointer-events: none;
+  z-index: 20;
+}
+
+@keyframes pillFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Chat Input Field */
+.astro-input-field {
+  flex: 1;
+  background: var(--astro-bg-soft);
+  border: 2px solid var(--astro-border);
+  border-radius: 24px;
+  padding: 10px 16px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--astro-text-main);
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.astro-input-field:focus {
+  border-color: #0284C7;
+  background: var(--astro-bg-card);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+}
+
+.astro-input-field::placeholder {
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+/* Send Button */
+.astro-send-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284C7, #4F46E5);
+  border: none;
+  color: #FFFFFF;
+  font-size: 1.15rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  outline: none;
+}
+
+.astro-send-btn:hover {
+  transform: scale(1.1) rotate(6deg);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4);
+}
+
+.astro-send-btn:active {
+  transform: scale(0.92);
+}
+
+/* =========================================================================
+   7. CELEBRATION SPARKLES & STARS PARTICLES
+   ========================================================================= */
+.astro-sparkle-fx {
+  position: absolute;
+  pointer-events: none;
+  font-size: 1.5rem;
+  animation: sparkleFly 1.2s ease-out forwards;
+  z-index: 1000;
+}
+
+@keyframes sparkleFly {
+  0% { transform: translate(0, 0) scale(0.4) rotate(0deg); opacity: 1; }
+  50% { opacity: 1; }
+  100% { transform: translate(var(--tx, 30px), var(--ty, -60px)) scale(1.4) rotate(180deg); opacity: 0; }
+}
+
+/* =========================================================================
+   7.5 TYPING INDICATOR ANIMATION
+   ========================================================================= */
+.astro-typing-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  animation: msgSlideIn 0.2s ease;
+}
+
+.astro-typing-bubble {
+  background: var(--astro-bg-card, #FFFFFF);
+  border: 1.5px solid var(--astro-border, #E2E8F0);
+  border-radius: 18px 18px 18px 6px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08);
+}
+
+.astro-dot {
+  width: 7px;
+  height: 7px;
+  background: #0284C7;
+  border-radius: 50%;
+  display: inline-block;
+  animation: astroDotBounce 1.2s infinite ease-in-out;
+}
+
+.astro-dot:nth-child(1) { animation-delay: 0s; }
+.astro-dot:nth-child(2) { animation-delay: 0.18s; }
+.astro-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes astroDotBounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  40% {
+    transform: translateY(-6px);
+    opacity: 1;
+    background: #FFB703;
+  }
+}
+
+/* =========================================================================
+   8. RESPONSIVE DESIGN (TABLETS & MOBILE PHONES)
+   ========================================================================= */
+@media (max-width: 640px) {
+  .astro-fab-container {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .astro-fab-btn {
+    width: 58px;
+    height: 58px;
+  }
+
+  .astro-fab-bubble {
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    max-width: 200px;
+  }
+
+  .astro-fab-mascot-svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .astro-chat-window {
+    right: 8px;
+    left: 8px;
+    bottom: 84px;
+    width: auto;
+    max-width: none;
+    height: calc(100vh - 100px);
+    max-height: none;
+    border-radius: 24px;
+  }
+}

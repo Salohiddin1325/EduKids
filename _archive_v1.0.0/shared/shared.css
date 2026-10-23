@@ -1,0 +1,2004 @@
+/**
+ * Shared Gamification, Mascot Companion, Star Store, and Parent Dashboard Styles
+ * 100% Offline, Rich Aesthetics, Theme-Aware (Light & Dark)
+ */
+@import url('chatbot.css');
+@import url('subscription.css');
+
+/* =========================================================================
+   UNIVERSAL MOBILE TOUCH RESPONSIVENESS & 0ms TAP DELAY (TASK FIX)
+   ========================================================================= */
+html, body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+button,
+a,
+.word-card,
+.speaker-circle-btn,
+.speaker-btn,
+.big-audio-btn,
+.category-chip,
+.tab-btn,
+.nav-item,
+.header-level-pill,
+.store-item-card,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* =========================================================================
+   1. LEVEL & XP HEADER PILL & FIRE STREAK
+   ========================================================================= */
+.header-level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface-soft, rgba(255, 255, 255, 0.9));
+  border: 2px solid var(--border-color, #E2E8F0);
+  padding: 4px 12px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.header-level-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 183, 3, 0.25);
+  border-color: #FFB703;
+}
+
+.level-icon-badge {
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-header-badge {
+  font-size: 1.35rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  border: 2px solid #F59E0B;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.header-level-pill:hover .avatar-header-badge {
+  transform: scale(1.15) rotate(6deg);
+}
+
+.level-info-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.level-title-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #F59E0B;
+  letter-spacing: 0.5px;
+}
+
+.level-number-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-main, #1E293B);
+}
+
+.xp-bar-wrap {
+  width: 65px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+[data-theme="dark"] .xp-bar-wrap {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F59E0B, #10B981);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* Burning Flame Animation on Streaks */
+.flame-streak-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+
+.flame-icon {
+  display: inline-block;
+  animation: flamePulse 1.4s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 6px rgba(234, 88, 12, 0.6));
+}
+
+@keyframes flamePulse {
+  0% { transform: scale(1) rotate(-3deg); filter: drop-shadow(0 0 4px rgba(234, 88, 12, 0.4)); }
+  50% { transform: scale(1.22) rotate(4deg); filter: drop-shadow(0 0 10px rgba(255, 107, 0, 0.8)); }
+  100% { transform: scale(1.08) rotate(-2deg); filter: drop-shadow(0 0 7px rgba(245, 158, 11, 0.7)); }
+}
+
+/* Star Store Button */
+.btn-star-store {
+  background: linear-gradient(135deg, #FFB703, #FB8500) !important;
+  color: #FFFFFF !important;
+  border-color: #D97706 !important;
+  box-shadow: 0 3px 0 #B45309 !important;
+  font-weight: 800 !important;
+}
+
+.btn-star-store:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #B45309, 0 6px 16px rgba(251, 133, 0, 0.35) !important;
+}
+
+/* Parent Dashboard Button */
+.btn-parent-mode {
+  background: var(--bg-surface-soft, #F8FAFC);
+  border: 2px solid var(--border-color, #CBD5E1);
+  color: var(--text-muted, #64748B);
+  font-weight: 700;
+}
+
+.btn-parent-mode:hover {
+  color: var(--text-main, #0F172A);
+  border-color: #94A3B8;
+}
+
+/* =========================================================================
+   2. ASTRO CAT MASCOT & CUSTOMIZABLE ACCESSORIES
+   ========================================================================= */
+.astro-mascot-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 90px;
+  height: 90px;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+.astro-mascot-base {
+  width: 100%;
+  height: 100%;
+  font-size: 5rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
+}
+
+.astro-mascot-wrapper:hover .astro-mascot-base {
+  transform: scale(1.1) rotate(4deg);
+}
+
+.astro-mascot-wrapper:active .astro-mascot-base {
+  transform: scale(0.92);
+}
+
+/* Overlay accessories */
+.mascot-acc-hat {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.4rem;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+  animation: gentleBob 2s ease-in-out infinite;
+}
+
+.mascot-acc-glasses {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  z-index: 9;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+.mascot-acc-outfit {
+  position: absolute;
+  bottom: -8px;
+  right: -6px;
+  font-size: 2.2rem;
+  z-index: 8;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+@keyframes gentleBob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-4px); }
+}
+
+.mascot-cheer-anim {
+  animation: mascotCheerBurst 0.75s ease-out;
+}
+
+@keyframes mascotCheerBurst {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.25) translateY(-14px) rotate(-8deg); }
+  50% { transform: scale(1.3) translateY(-18px) rotate(8deg); }
+  75% { transform: scale(1.15) translateY(-6px) rotate(-4deg); }
+  100% { transform: scale(1) translateY(0) rotate(0); }
+}
+
+/* Floating speech bubble popup next to mascot */
+.mascot-cheer-bubble {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FFFFFF;
+  color: #1E293B;
+  padding: 8px 16px;
+  border-radius: 18px;
+  border: 2px solid #FFB703;
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mascot-cheer-bubble.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-6px);
+}
+
+.mascot-cheer-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 8px 0 8px;
+  border-style: solid;
+  border-color: #FFB703 transparent transparent transparent;
+}
+
+[data-theme="dark"] .mascot-cheer-bubble {
+  background: #1E293B;
+  color: #F8FAFC;
+  border-color: #F59E0B;
+}
+
+[data-theme="dark"] .mascot-cheer-bubble::after {
+  border-color: #F59E0B transparent transparent transparent;
+}
+
+/* =========================================================================
+   3. STAR STORE & WARDROBE MODAL
+   ========================================================================= */
+.kiddo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  box-sizing: border-box;
+}
+
+.kiddo-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.kiddo-modal-window {
+  background: var(--bg-surface, #FFFFFF);
+  border: 3px solid var(--border-color, #E2E8F0);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 920px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  position: relative;
+  transform: scale(0.92);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.kiddo-modal-backdrop.open .kiddo-modal-window {
+  transform: scale(1);
+}
+
+.modal-header-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 2px solid var(--border-color, #E2E8F0);
+  background: var(--bg-surface, #FFFFFF);
+  z-index: 20;
+}
+
+.modal-header-bar h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.modal-close-round {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color, #E2E8F0);
+  background: var(--bg-surface-soft, #F8FAFC);
+  color: var(--text-main, #1E293B);
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close-round:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  border-color: #DC2626;
+  transform: rotate(90deg);
+}
+
+.modal-body-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 24px 28px 40px;
+}
+
+/* Star Store Mascot Preview Stage */
+.store-preview-stage {
+  background: linear-gradient(135deg, rgba(255, 183, 3, 0.15), rgba(6, 214, 160, 0.15));
+  border: 2px dashed #FFB703;
+  border-radius: 22px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.preview-mascot-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-stars-balance {
+  background: #FFFFFF;
+  border: 2px solid #FFB703;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #D97706;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-theme="dark"] .preview-stars-balance {
+  background: #1E293B;
+  color: #FBBF24;
+}
+
+/* Store Filter Tabs */
+.store-category-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.store-cat-btn {
+  background: var(--bg-surface-soft, #F1F5F9);
+  border: 2px solid var(--border-color, #E2E8F0);
+  color: var(--text-muted, #64748B);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.store-cat-btn.active {
+  background: #FFB703;
+  color: #FFFFFF;
+  border-color: #D97706;
+  box-shadow: 0 2px 8px rgba(255, 183, 3, 0.4);
+}
+
+/* Store Grid */
+.store-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.store-card {
+  background: var(--bg-card, #FFFFFF);
+  border: 2px solid var(--border-color, #E2E8F0);
+  border-radius: 20px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.store-card:hover {
+  transform: translateY(-4px);
+  border-color: #FFB703;
+  box-shadow: 0 10px 20px -5px rgba(255, 183, 3, 0.2);
+}
+
+.store-card-icon {
+  font-size: 3.2rem;
+  line-height: 1;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.store-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main, #1E293B);
+}
+
+.store-card-price {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #D97706;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.store-card-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-buy {
+  background: #FFB703;
+  color: #FFFFFF;
+  box-shadow: 0 3px 0 #D97706;
+}
+
+.btn-buy:hover {
+  background: #F59E0B;
+  transform: translateY(-1px);
+}
+
+.btn-equip {
+  background: #10B981;
+  color: #FFFFFF;
+  box-shadow: 0 3px 0 #059669;
+}
+
+.btn-equip:hover {
+  background: #059669;
+}
+
+.btn-equipped {
+  background: #64748B;
+  color: #FFFFFF;
+  box-shadow: 0 3px 0 #475569;
+}
+
+/* =========================================================================
+   4. PARENT DASHBOARD MODAL
+   ========================================================================= */
+.parent-gate-card {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.parent-gate-card h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.parent-gate-card p {
+  color: var(--text-muted, #64748B);
+  margin-bottom: 20px;
+}
+
+.gate-math-box {
+  background: var(--bg-surface-soft, #F8FAFC);
+  border: 2px dashed #94A3B8;
+  border-radius: 18px;
+  padding: 16px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.gate-answer-input {
+  width: 90px;
+  height: 48px;
+  border: 2px solid var(--border-color, #CBD5E1);
+  border-radius: 12px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-align: center;
+  font-family: inherit;
+  outline: none;
+}
+
+.gate-answer-input:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.parent-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.parent-stat-box {
+  background: var(--bg-surface-soft, #F8FAFC);
+  border: 2px solid var(--border-color, #E2E8F0);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.parent-stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(59, 130, 246, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.stat-box-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-main, #1E293B);
+  line-height: 1.1;
+}
+
+.stat-box-lbl {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748B);
+}
+
+.parent-tips-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.12));
+  border: 2px solid #10B981;
+  border-radius: 20px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+}
+
+.parent-tips-card h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #059669;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.parent-tips-card p {
+  font-size: 0.92rem;
+  color: var(--text-main, #334155);
+  line-height: 1.45;
+}
+
+.parent-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 2px solid var(--border-color, #E2E8F0);
+}
+
+/* =========================================================================
+   5. CELEBRATORY LEVEL-UP MODAL
+   ========================================================================= */
+.level-up-window {
+  text-align: center;
+  padding: 40px 30px;
+  background: radial-gradient(circle, rgba(255, 183, 3, 0.25) 0%, var(--bg-surface, #FFFFFF) 70%);
+  border: 4px solid #FFB703;
+  border-radius: 32px;
+  box-shadow: 0 0 50px rgba(255, 183, 3, 0.5);
+  max-width: 520px;
+}
+
+.level-up-crown {
+  font-size: 5rem;
+  line-height: 1;
+  margin-bottom: 12px;
+  animation: levelPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes levelPop {
+  0% { transform: scale(0) rotate(-20deg); }
+  60% { transform: scale(1.3) rotate(10deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.level-up-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.level-up-desc {
+  font-size: 1.15rem;
+  color: var(--text-main, #1E293B);
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.level-up-btn {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  border: none;
+  font-size: 1.15rem;
+  font-weight: 800;
+  padding: 14px 36px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s ease;
+}
+
+.level-up-btn:hover {
+  transform: scale(1.05);
+}
+
+/* =========================================================================
+   6. DRAG AND DROP INTERACTIVE STYLES
+   ========================================================================= */
+.drag-chip {
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.drag-chip:active, .drag-chip.is-dragging {
+  cursor: grabbing;
+  opacity: 0.75;
+  transform: scale(1.08) rotate(3deg);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25) !important;
+  z-index: 1000;
+}
+
+.drop-target-zone {
+  border: 2px dashed #94A3B8;
+  border-radius: 16px;
+  background: var(--bg-surface-soft, rgba(0,0,0,0.03));
+  transition: all 0.2s ease;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.drop-target-zone.drag-hover {
+  border-color: #10B981;
+  background: rgba(16, 185, 129, 0.15);
+  transform: scale(1.03);
+}
+
+.drop-target-zone.matched {
+  border-color: #10B981;
+  border-style: solid;
+  background: rgba(16, 185, 129, 0.2);
+  animation: matchFlash 0.5s ease-out;
+}
+
+@keyframes matchFlash {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* =========================================================================
+   7. MASCOT COMPANION ("ASTRO CAT") & SPEECH BUBBLE
+   ========================================================================= */
+.mascot-companion-dock {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9990;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mascot-companion-dock * {
+  pointer-events: auto;
+}
+
+.mascot-bubble-wrap {
+  margin-bottom: 10px;
+  max-width: 290px;
+  background: var(--bg-surface, #FFFFFF);
+  border: 3px solid #FFB703;
+  border-radius: 20px 20px 20px 6px;
+  padding: 12px 18px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main, #1E293B);
+  line-height: 1.4;
+  position: relative;
+  opacity: 0;
+  transform: translateY(12px) scale(0.92);
+  transition: all 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.mascot-bubble-wrap.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.mascot-bubble-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 32px;
+  border-width: 10px 0 0 10px;
+  border-style: solid;
+  border-color: #FFB703 transparent transparent transparent;
+}
+
+.mascot-char-card {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.22));
+}
+
+.mascot-char-card:hover {
+  transform: scale(1.12) rotate(4deg);
+}
+
+.mascot-char-card:active {
+  transform: scale(0.94);
+}
+
+.mascot-cheering {
+  animation: mascotCheerHop 0.75s ease-in-out infinite alternate;
+}
+
+@keyframes mascotCheerHop {
+  0% { transform: translateY(0) scale(1) rotate(0deg); }
+  50% { transform: translateY(-18px) scale(1.18) rotate(-7deg); }
+  100% { transform: translateY(-6px) scale(1.12) rotate(7deg); }
+}
+
+.mascot-controls-mini {
+  position: absolute;
+  top: -6px;
+  left: -14px;
+  display: flex;
+  gap: 5px;
+  z-index: 20;
+}
+
+.mascot-mini-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #E2E8F0;
+  background: var(--bg-surface, #FFFFFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+  transition: all 0.18s ease;
+}
+
+.mascot-mini-btn:hover {
+  transform: scale(1.2);
+  border-color: #FFB703;
+  background: #FFFBEB;
+}
+
+.mascot-dock-minimized .mascot-bubble-wrap {
+  display: none !important;
+}
+
+.mascot-dock-minimized .mascot-char-card {
+  width: 54px;
+  height: 54px;
+  opacity: 0.9;
+}
+
+/* Layered items on the mascot */
+.mascot-svg-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-base-avatar {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Custom Avatar Slot inside Floating Mascot Dock */
+.mascot-base-avatar-slot {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mascot-custom-avatar-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-avatar-cosmic-ring {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 209, 102, 0.25) 0%, rgba(37, 99, 235, 0.18) 70%, rgba(6, 182, 212, 0.35) 100%);
+  border: 2.5px solid #38BDF8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.45), inset 0 0 10px rgba(255, 255, 255, 0.6);
+  animation: cosmicRingPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes cosmicRingPulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+  100% { transform: scale(1.02); box-shadow: 0 0 20px rgba(56, 189, 248, 0.65); }
+}
+
+.mascot-avatar-center-emoji {
+  font-size: 3.2rem;
+  line-height: 1;
+  z-index: 2;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.mascot-char-card:hover .mascot-avatar-center-emoji {
+  transform: scale(1.12) rotate(4deg);
+}
+
+@keyframes gentleWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-6deg) scale(1.05); }
+  75% { transform: rotate(6deg) scale(1.05); }
+}
+
+.store-card-avatar {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F0FDF4 100%) !important;
+  border-color: #86EFAC !important;
+}
+
+.store-card-avatar:hover {
+  border-color: #22C55E !important;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.22) !important;
+}
+
+.avatar-tag-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #15803D;
+  background: #DCFCE7;
+  padding: 2px 8px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.mascot-item-hat {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.4rem;
+  z-index: 10;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.mascot-item-acc {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.85rem;
+  z-index: 11;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.28));
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.mascot-item-outfit {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.9rem;
+  z-index: 9;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .mascot-companion-dock {
+    bottom: 12px;
+    left: 12px;
+  }
+  .mascot-char-card {
+    width: 64px;
+    height: 64px;
+  }
+  .mascot-item-hat {
+    top: -12px;
+    font-size: 1.6rem;
+  }
+  .mascot-item-acc {
+    top: 16px;
+    font-size: 1.25rem;
+  }
+  .mascot-bubble-wrap {
+    max-width: 220px;
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    border-radius: 16px 16px 16px 6px;
+  }
+}
+
+/* =========================================================================
+   4. ULTRA-SMOOTH TRANSITIONS & REFINED MICRO-INTERACTIONS
+   ========================================================================= */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Silky Page Entrance (Opacity only to prevent breaking position:fixed containing block) */
+@keyframes kiddoPageEntrance {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+body {
+  animation: kiddoPageEntrance 0.25s ease-out both;
+  transform: none !important;
+}
+
+/* Silky Page Exit for Seamless World-Hopping */
+body.page-exit-transition {
+  opacity: 0 !important;
+  transition: opacity 0.16s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: none;
+}
+
+/* Smooth Language Switch Breathing Transition */
+.lang-transitioning {
+  opacity: 0.8 !important;
+  transform: scale(0.997) !important;
+  transition: opacity 0.16s cubic-bezier(0.4, 0, 0.2, 1), transform 0.16s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Global Section Soft Entrance Keyframes */
+@keyframes kiddoSectionFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.995);
+  }
+  60% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Tactile Soft Springs on Navigation & Buttons */
+.physics-nav-btn,
+.math-nav-btn,
+.nav-tab-btn,
+.subject-nav-item,
+.btn-portal-back,
+.lab-sub-btn,
+.category-filter-btn,
+.btn-lang {
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.physics-nav-btn:hover,
+.math-nav-btn:hover,
+.nav-tab-btn:hover,
+.subject-nav-item:hover,
+.btn-portal-back:hover,
+.lab-sub-btn:hover,
+.category-filter-btn:hover {
+  transform: translateY(-3px);
+}
+
+.physics-nav-btn:active,
+.math-nav-btn:active,
+.nav-tab-btn:active,
+.subject-nav-item:active,
+.btn-portal-back:active,
+.lab-sub-btn:active,
+.category-filter-btn:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+/* =========================================================================
+   5. ASTRO-SHOP 3D MASCOT STUDIO & MAGICAL PETS
+   ========================================================================= */
+.store-3d-stage {
+  perspective: 1000px;
+  contain: paint;
+  background: radial-gradient(circle at center, #1E1B4B 0%, #0F172A 85%);
+  border-radius: 24px;
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4), inset 0 0 40px rgba(99, 102, 241, 0.2);
+  margin-bottom: 20px;
+  border: 2px solid #4338CA;
+}
+
+.store-3d-stars-bg {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #E0E7FF, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 40px 70px, #A5B4FC, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 90px 40px, #FFFFFF, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 160px 120px, #C7D2FE, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 230px 80px, #818CF8, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.mascot-pedestal-3d {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  margin-bottom: 12px;
+}
+
+.pedestal-glow-ring {
+  position: absolute;
+  bottom: -15px;
+  width: 130px;
+  height: 40px;
+  background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.8) 0%, rgba(139, 92, 246, 0.4) 50%, transparent 75%);
+  border-radius: 50%;
+  animation: pedestalPulse 2.8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pedestalPulse {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  100% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 14px #818CF8); }
+}
+
+.mascot-item-pet {
+  position: absolute;
+  top: 10px;
+  right: -24px;
+  font-size: 2.1rem;
+  z-index: 12;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+  animation: petFloat 2.6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes petFloat {
+  0% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-10px) rotate(6deg) scale(1.08); }
+  100% { transform: translateY(2px) rotate(-4deg); }
+}
+
+/* Daily Mystery Chest Banner in Store */
+.daily-gift-banner {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%);
+  border: 2px solid #D97706;
+  border-radius: 20px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
+  flex-wrap: wrap;
+}
+
+.daily-gift-banner h4 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #78350F;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.daily-gift-banner p {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #92400E;
+  margin: 0;
+}
+
+.btn-open-chest {
+  background: linear-gradient(135deg, #FF5E7E, #FF2A55);
+  color: #FFFFFF;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 10px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 94, 126, 0.4);
+  animation: chestBtnGlow 2s infinite;
+  transition: all 0.2s ease;
+}
+
+@keyframes chestBtnGlow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* =========================================================================
+   6. MYSTERY CHEST UNBOXING CELEBRATION MODAL
+   ========================================================================= */
+.chest-unboxing-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  z-index: 10005;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: toastFade 0.3s ease;
+}
+
+.chest-unboxing-box {
+  background: linear-gradient(135deg, #1E1B4B, #0F172A);
+  border: 3px solid #F59E0B;
+  border-radius: 32px;
+  padding: 40px 30px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(245, 158, 11, 0.3);
+  color: #FFFFFF;
+}
+
+.chest-icon-anim {
+  font-size: 5rem;
+  display: inline-block;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.8));
+}
+
+.chest-rattle {
+  animation: chestRattleAnim 0.5s ease-in-out infinite;
+}
+
+@keyframes chestRattleAnim {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-8deg) scale(1.08); }
+  75% { transform: rotate(8deg) scale(1.08); }
+}
+
+.chest-unboxed-item {
+  font-size: 5.5rem;
+  display: inline-block;
+  margin-bottom: 14px;
+  animation: itemPopRise 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.9));
+}
+
+@keyframes itemPopRise {
+  0% { transform: scale(0) translateY(40px); opacity: 0; }
+  70% { transform: scale(1.25) translateY(-10px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* =========================================================================
+   7. SECURE PARENT DASHBOARD & SMS/TELEGRAM OTP GATE
+   ========================================================================= */
+.parent-auth-container {
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.parent-channel-selector {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.parent-chan-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 2px solid #E2E8F0;
+  background: #F8FAFC;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.parent-chan-btn.active {
+  border-color: #2563EB;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+}
+
+.otp-sim-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0F172A;
+  color: #FFFFFF;
+  border: 2px solid #38BDF8;
+  border-radius: 18px;
+  padding: 14px 22px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+  z-index: 10010;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 90vw;
+  font-size: 0.95rem;
+  animation: toastFade 0.3s ease;
+}
+
+.otp-code-highlight {
+  font-family: monospace;
+  font-size: 1.25rem;
+  font-weight: 900;
+  background: #0284C7;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 2px;
+}
+
+/* Screen Time Setting & Break Overlay */
+.screen-time-setting-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.screen-time-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 2px solid #CBD5E1;
+  background: #FFF;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.screen-time-btn.active {
+  background: #2563EB;
+  color: #FFF;
+  border-color: #2563EB;
+}
+
+.screen-time-break-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.94);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  z-index: 10012;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: #FFF;
+  animation: toastFade 0.4s ease;
+}
+
+.screen-time-break-box {
+  background: #1E293B;
+  border: 3px solid #10B981;
+  border-radius: 28px;
+  padding: 36px 28px;
+  max-width: 500px;
+  width: 100%;
+}
+
+/* =========================================================================
+   8. MAGICAL STORE ITEMS SCREEN-WIDE VFX EFFECTS & SOUND THEMES
+   ========================================================================= */
+
+/* Store Item VFX Superpower Tag */
+.store-card-vfx-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.12);
+  color: #7C3AED;
+  border: 1px solid rgba(124, 58, 237, 0.28);
+  margin-bottom: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+[data-theme="dark"] .store-card-vfx-badge {
+  background: rgba(167, 139, 250, 0.2);
+  color: #C4B5FD;
+  border-color: rgba(167, 139, 250, 0.4);
+}
+
+/* 1. Wizard / Lab Goggles (Kibernetik Laboratoriya & Matritsa) */
+body.vfx-lab-goggles {
+  --neon-cyan: #00FFCC;
+  --neon-pink: #FF007F;
+}
+
+body.vfx-lab-goggles .portal-card,
+body.vfx-lab-goggles .subject-card,
+body.vfx-lab-goggles .category-card,
+body.vfx-lab-goggles .store-card,
+body.vfx-lab-goggles .store-3d-stage,
+body.vfx-lab-goggles .hero-mascot-card {
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.25), inset 0 0 10px rgba(0, 255, 204, 0.08) !important;
+  border-color: #00FFCC !important;
+}
+
+body.vfx-lab-goggles .btn-primary,
+body.vfx-lab-goggles .btn-buy,
+body.vfx-lab-goggles .math-action-btn,
+body.vfx-lab-goggles .hero-cta-btn {
+  box-shadow: 0 0 14px rgba(0, 255, 204, 0.5) !important;
+}
+
+/* 2. Cosmic Astronaut Helmet (Antigravitatsiya & Kosmik Parvoz) */
+@keyframes zeroGravityFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.8deg);
+  }
+}
+
+body.vfx-cosmic-astronaut .portal-card,
+body.vfx-cosmic-astronaut .subject-card,
+body.vfx-cosmic-astronaut .category-card,
+body.vfx-cosmic-astronaut .hero-mascot-card {
+  animation: zeroGravityFloat 6s ease-in-out infinite;
+  box-shadow: 0 14px 28px rgba(99, 102, 241, 0.25) !important;
+}
+
+body.vfx-cosmic-astronaut .portal-card:nth-child(even),
+body.vfx-cosmic-astronaut .category-card:nth-child(even) {
+  animation-delay: -3s;
+}
+
+/* 3. Magician Cape & Wand (Sehrli Chaqnashlar va Sehrgar Tayoqchasi) */
+body.vfx-magician-spell button,
+body.vfx-magician-spell a,
+body.vfx-magician-spell .store-card,
+body.vfx-magician-spell .portal-card {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'%3E%3Cpath fill='%23C084FC' d='M7.5 5.6L5 7l1.4-2.5L5 2l2.5 1.4L10 2l-1.4 2.5L10 7zm12 9.8L17 14l1.4-2.5L17 9l2.5 1.4L22 9l-1.4 2.5L22 14zM2.8 21.2l9.9-9.9l1.4 1.4l-9.9 9.9z'/%3E%3C/svg%3E"), pointer !important;
+}
+
+body.vfx-magician-spell .store-card:hover,
+body.vfx-magician-spell .portal-card:hover,
+body.vfx-magician-spell button:hover {
+  filter: drop-shadow(0 0 10px #C084FC);
+}
+
+/* 4. Golden Scholar Crown (Oltin Toj Shimmering Aura & 2X Multiplier) */
+body.vfx-golden-crown::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  border: 7px solid rgba(251, 191, 36, 0.75);
+  box-shadow: inset 0 0 35px rgba(245, 158, 11, 0.45), 0 0 25px rgba(251, 191, 36, 0.6);
+  pointer-events: none;
+  z-index: 99990;
+  animation: goldAuraPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes goldAuraPulse {
+  0% {
+    border-color: rgba(251, 191, 36, 0.55);
+    box-shadow: inset 0 0 25px rgba(245, 158, 11, 0.35);
+  }
+  100% {
+    border-color: rgba(252, 211, 77, 0.95);
+    box-shadow: inset 0 0 50px rgba(245, 158, 11, 0.6), 0 0 30px rgba(251, 191, 36, 0.8);
+  }
+}
+
+.vfx-crown-ribbon {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  background: linear-gradient(135deg, #F59E0B, #D97706, #B45309);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  padding: 8px 18px;
+  border-radius: 999px;
+  box-shadow: 0 4px 18px rgba(217, 119, 6, 0.5), 0 0 12px rgba(251, 191, 36, 0.5);
+  border: 2px solid #FDE68A;
+  z-index: 99995;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: ribbonBounce 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes ribbonBounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* 5. Cool Agent Sunglasses (Retro Cyber Dark Mode) */
+body.vfx-agent-sunglasses {
+  background-color: #0B0F19 !important;
+  color: #E2E8F0 !important;
+}
+
+body.vfx-agent-sunglasses .site-header,
+body.vfx-agent-sunglasses header,
+body.vfx-agent-sunglasses .navbar,
+body.vfx-agent-sunglasses .portal-card,
+body.vfx-agent-sunglasses .subject-card,
+body.vfx-agent-sunglasses .category-card,
+body.vfx-agent-sunglasses .store-card,
+body.vfx-agent-sunglasses .kiddo-modal-window,
+body.vfx-agent-sunglasses .modal-header-bar,
+body.vfx-agent-sunglasses .level-node,
+body.vfx-agent-sunglasses .quiz-card {
+  background: #111827 !important;
+  border-color: #00F0FF !important;
+  color: #F8FAFC !important;
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.22) !important;
+}
+
+body.vfx-agent-sunglasses h1,
+body.vfx-agent-sunglasses h2,
+body.vfx-agent-sunglasses h3,
+body.vfx-agent-sunglasses h4,
+body.vfx-agent-sunglasses .site-brand-title {
+  color: #00F0FF !important;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.vfx-agent-badge {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  background: linear-gradient(135deg, #0F172A, #000000);
+  color: #00F0FF;
+  font-family: monospace;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 2px solid #00F0FF;
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.5);
+  z-index: 99995;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Responsive Modal & Store Scroll Enhancements */
+@media (max-width: 640px) {
+  .kiddo-modal-backdrop {
+    padding: 10px;
+  }
+  .kiddo-modal-window {
+    max-height: 94vh;
+    border-radius: 20px;
+  }
+  .modal-header-bar {
+    padding: 14px 18px;
+  }
+  .modal-body-content {
+    padding: 16px 14px 32px;
+  }
+  .store-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .store-card {
+    padding: 12px 8px !important;
+  }
+  .vfx-crown-ribbon {
+    top: 60px;
+    right: 10px;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+  .vfx-agent-badge {
+    top: 60px;
+    left: 10px;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+}
+
+/* =========================================================================
+   12. UNIFIED INTER-SUBJECT NAVIGATION & SWITCHER STRIP
+   ========================================================================= */
+.header-subject-nav {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface-soft, rgba(255, 255, 255, 0.88));
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  padding: 4px;
+  border-radius: 999px;
+  border: 2px solid var(--border-color, #E2E8F0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  gap: 4px;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+[data-theme="dark"] .header-subject-nav {
+  background: var(--bg-surface-soft, rgba(30, 41, 59, 0.88));
+  border-color: var(--border-color, #334155);
+}
+
+.subject-nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-muted, #64748B);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.subject-nav-item:hover {
+  color: var(--text-main, #1E293B);
+  background: rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .subject-nav-item:hover {
+  color: #F8FAFC;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.subject-nav-item:active {
+  transform: translateY(1px);
+}
+
+.subject-nav-item.active-subject {
+  color: #FFFFFF !important;
+  cursor: default;
+  pointer-events: none;
+  transform: none !important;
+}
+
+/* Specific Active Gradients by Module Context */
+.app-header .subject-nav-item.active-subject,
+.portal-card.card-english .subject-nav-item.active-subject {
+  background: linear-gradient(135deg, #FF5E7E, #FF8E53);
+  box-shadow: 0 3px 10px rgba(255, 94, 126, 0.35);
+}
+
+.math-header .subject-nav-item.active-subject,
+.portal-card.card-math .subject-nav-item.active-subject {
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
+}
+
+.physics-header .subject-nav-item.active-subject,
+.portal-card.card-physics .subject-nav-item.active-subject {
+  background: linear-gradient(135deg, #8B5CF6, #6366F1);
+  box-shadow: 0 3px 10px rgba(139, 92, 246, 0.35);
+}
+
+/* Responsive Handling */
+@media (max-width: 992px) {
+  .header-subject-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 640px) {
+  .subject-nav-item {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+}
+
+/* =========================================================================
+   PWA INSTALL BUTTON & GUIDE MODAL (TASK-06)
+   ========================================================================= */
+.btn-pwa-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #047857 !important;
+  box-shadow: 0 4px 0 #065F46, 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: all 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.btn-pwa-install:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #34D399 0%, #059669 100%) !important;
+  box-shadow: 0 6px 0 #065F46, 0 8px 18px rgba(16, 185, 129, 0.45) !important;
+}
+
+.btn-pwa-install:active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 2px 0 #065F46 !important;
+}
+
+.btn-pwa-install .pwa-icon {
+  font-size: 1.1rem;
+  display: inline-block;
+  animation: pwaBounce 2s infinite ease-in-out;
+}
+
+@keyframes pwaBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.18); }
+}
+
+/* Glassmorphic PWA Guide Modal */
+.pwa-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease-out;
+}
+
+.pwa-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pwa-modal-card {
+  background: #FFFFFF;
+  border-radius: 28px;
+  max-width: 440px;
+  width: 100%;
+  padding: 28px 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  position: relative;
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 3px solid #E2E8F0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+[data-theme="dark"] .pwa-modal-card {
+  background: #1E293B;
+  border-color: #334155;
+  color: #F8FAFC;
+}
+
+.pwa-modal-overlay.active .pwa-modal-card {
+  transform: scale(1) translateY(0);
+}
+
+.pwa-modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: none;
+  font-size: 1.2rem;
+  color: #64748B;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+[data-theme="dark"] .pwa-modal-close-btn {
+  background: #334155;
+  color: #CBD5E1;
+}
+
+.pwa-modal-close-btn:hover {
+  background: #FEE2E2;
+  color: #EF4444;
+  transform: scale(1.1);
+}
+
+.pwa-modal-badge-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+  margin: 0 auto 14px auto;
+  display: block;
+}
+
+.pwa-modal-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 8px;
+}
+
+[data-theme="dark"] .pwa-modal-title {
+  color: #F8FAFC;
+}
+
+.pwa-modal-desc {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.95rem;
+  color: #64748B;
+  line-height: 1.45;
+  margin-bottom: 20px;
+}
+
+[data-theme="dark"] .pwa-modal-desc {
+  color: #94A3B8;
+}
+
+.pwa-guide-box {
+  background: #F8FAFC;
+  border: 2px dashed #CBD5E1;
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+  margin-bottom: 20px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #334155;
+}
+
+[data-theme="dark"] .pwa-guide-box {
+  background: #0F172A;
+  border-color: #475569;
+  color: #E2E8F0;
+}
+
+.pwa-modal-action-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: 2px solid #047857;
+  box-shadow: 0 4px 0 #065F46, 0 6px 16px rgba(16, 185, 129, 0.35);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.pwa-modal-action-btn:hover {
+  background: linear-gradient(135deg, #34D399, #059669);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #065F46, 0 8px 20px rgba(16, 185, 129, 0.45);
+}
+
+.pwa-modal-action-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #065F46;
+}
+

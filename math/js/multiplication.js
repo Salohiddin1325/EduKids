@@ -21,7 +21,7 @@ class InteractiveMultiplicationTable {
     this.selectedRow = 7;
     this.selectedCol = 8;
     this.selectedTheme = 'apple'; // 'apple', 'star', 'candy', 'rocket'
-    this.isTurtleAudio = false;
+    this.isTurtleAudio = localStorage.getItem('kiddo_turtle') === 'true';
 
     // Drill / Quiz State
     this.drillActive = false;
@@ -153,6 +153,10 @@ class InteractiveMultiplicationTable {
 
   toggleTurtleAudio() {
     this.isTurtleAudio = !this.isTurtleAudio;
+    localStorage.setItem('kiddo_turtle', this.isTurtleAudio);
+    if (window.soundEngine && typeof window.soundEngine.toggleTurtleMode === 'function') {
+      window.soundEngine.toggleTurtleMode(this.isTurtleAudio);
+    }
     const btn = document.getElementById('btn-turtle-mult');
     if (btn) btn.classList.toggle('active', this.isTurtleAudio);
   }
@@ -356,9 +360,12 @@ class InteractiveMultiplicationTable {
   speakEquation(r, c, ans) {
     if (!('speechSynthesis' in window)) return;
 
+    // Check mute mode (Bez Zvuk)
+    if ((window.soundEngine && !window.soundEngine.soundEnabled) || (window.mathApp && !window.mathApp.soundEnabled) || localStorage.getItem('kiddo_sound') === 'false' || localStorage.getItem('kiddo_muted') === 'true') return;
+
     window.speechSynthesis.cancel();
     const lang = this.getLang();
-    const rate = this.isTurtleAudio ? 0.65 : 0.95;
+    const rate = this.isTurtleAudio ? 0.52 : 0.95;
 
     if (lang === 'uz' || !lang) {
       if (window.uzbekSpeech) {

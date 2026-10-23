@@ -843,44 +843,66 @@
 }
 
 /* Bottom Controls in Bot Bubble (Audio + Reactions) */
+.astro-msg-actions,
 .astro-msg-bot-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
-  padding-top: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px dashed var(--astro-border);
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-/* Audio Read Button */
+/* Audio Read Button (Tinglash) */
+.astro-action-speak-btn,
 .astro-tts-btn {
   background: #EFF6FF;
   border: 1.5px solid #BFDBFE;
   color: #1D4ED8;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 999px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  transition: all 0.2s;
-  font-family: inherit;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.08);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: var(--astro-font, 'Fredoka', sans-serif);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
+.astro-action-speak-btn:hover,
 .astro-tts-btn:hover {
   background: #DBEAFE;
-  transform: scale(1.04);
+  border-color: #93C5FD;
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.16);
 }
 
+.astro-action-speak-btn:active,
+.astro-tts-btn:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.astro-action-speak-btn.is-speaking,
 .astro-tts-btn.is-speaking {
   background: #FEE2E2;
   border-color: #FCA5A5;
   color: #DC2626;
   animation: speakingGlow 1.2s infinite alternate;
+}
+
+[data-theme="dark"] .astro-action-speak-btn,
+[data-theme="dark"] .astro-tts-btn {
+  background: #1E293B;
+  border-color: #3B82F6;
+  color: #93C5FD;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes speakingGlow {
@@ -890,34 +912,57 @@
 
 /* Reaction Buttons Strip */
 .astro-reactions-bar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
+  background: rgba(241, 245, 249, 0.85);
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
 }
 
+[data-theme="dark"] .astro-reactions-bar {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: #334155;
+}
+
+.astro-react-pill,
 .astro-react-btn {
   background: transparent;
   border: none;
-  font-size: 1rem;
+  font-size: 1.05rem;
+  line-height: 1;
   cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 6px;
-  transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.18s;
-  position: relative;
+  padding: 3px 4px;
+  border-radius: 8px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.18s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
+.astro-react-pill:hover,
 .astro-react-btn:hover {
-  transform: scale(1.35);
-  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.35) translateY(-2px);
+  background: rgba(255, 255, 255, 0.9);
 }
 
+[data-theme="dark"] .astro-react-pill:hover,
+[data-theme="dark"] .astro-react-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.astro-react-pill:active,
 .astro-react-btn:active {
   transform: scale(0.9);
 }
 
+.astro-react-pill.reacted,
 .astro-react-btn.reacted {
   background: #FEF3C7;
-  transform: scale(1.15);
+  transform: scale(1.18);
 }
 
 /* Floating Reaction Particle */
@@ -1225,6 +1270,53 @@
   0% { transform: translate(0, 0) scale(0.4) rotate(0deg); opacity: 1; }
   50% { opacity: 1; }
   100% { transform: translate(var(--tx, 30px), var(--ty, -60px)) scale(1.4) rotate(180deg); opacity: 0; }
+}
+
+/* =========================================================================
+   7.5 TYPING INDICATOR ANIMATION
+   ========================================================================= */
+.astro-typing-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  animation: msgSlideIn 0.2s ease;
+}
+
+.astro-typing-bubble {
+  background: var(--astro-bg-card, #FFFFFF);
+  border: 1.5px solid var(--astro-border, #E2E8F0);
+  border-radius: 18px 18px 18px 6px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08);
+}
+
+.astro-dot {
+  width: 7px;
+  height: 7px;
+  background: #0284C7;
+  border-radius: 50%;
+  display: inline-block;
+  animation: astroDotBounce 1.2s infinite ease-in-out;
+}
+
+.astro-dot:nth-child(1) { animation-delay: 0s; }
+.astro-dot:nth-child(2) { animation-delay: 0.18s; }
+.astro-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes astroDotBounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  40% {
+    transform: translateY(-6px);
+    opacity: 1;
+    background: #FFB703;
+  }
 }
 
 /* =========================================================================

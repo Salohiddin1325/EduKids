@@ -26,6 +26,10 @@
   <link rel="stylesheet" href="../shared/subscription.css">
   <link rel="stylesheet" href="../shared/level-map.css">
   <link rel="stylesheet" href="../shared/chatbot.css">
+  <link rel="stylesheet" href="../shared/age-tracks.css">
+  <link rel="stylesheet" href="../shared/screen-time.css">
+  <link rel="stylesheet" href="../shared/worksheets.css">
+  <link rel="stylesheet" href="../shared/profile-switcher.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -102,6 +106,14 @@
         <button class="btn-ctrl btn-scratchpad" id="toggle-scratchpad-btn" title="Qoralama doskani ochish / yopish">
           <span>📝</span>
           <span id="txt-scratchpad">Qoralama</span>
+        </button>
+
+        <!-- Multi-Child Profile Switcher Mount -->
+        <div id="profile-trigger-mount"></div>
+
+        <!-- Printable Worksheets Button -->
+        <button class="btn-ctrl btn-worksheets" id="btn-math-worksheets" onclick="window.EduWorksheets && window.EduWorksheets.openModal('math_fractions')" title="Chop etiladigan ish varaqalari (A4)">
+          <span>🖨️</span>
         </button>
 
         <!-- Sound Button -->
@@ -362,6 +374,7 @@
   </footer>
 
   <!-- Scripts in Proper Dependency Order -->
+  <script src="../shared/env-config.js"></script>
   <script src="../shared/pwa-register.js"></script>
   <script src="../shared/uzbek-speech.js"></script>
   <script src="../shared/audio.js"></script>
@@ -371,6 +384,12 @@
   <script src="../shared/level-map.js"></script>
   <script src="../shared/mascot-companion.js"></script>
   <script src="../shared/chatbot.js"></script>
+  <script src="../shared/mascots.js"></script>
+  <script src="../shared/age-tracks.js"></script>
+  <script src="../shared/screen-time.js"></script>
+  <script src="../shared/learning-engine.js"></script>
+  <script src="../shared/worksheets.js"></script>
+  <script src="../shared/profile-switcher.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/confetti.js"></script>
   <script src="js/whiteboard.js"></script>

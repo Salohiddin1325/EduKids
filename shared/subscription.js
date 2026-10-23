@@ -6,11 +6,11 @@
  *    - Expiration Date: MM/YY, MM strictly 01-12 (cannot enter 13+), auto-slashes.
  *    - CVC / CVV: strictly digits, exactly 3 digits.
  *    - Card Number: 16 digits, 4-by-4 grouping, brand detection (Uzcard, Humo, Visa, MC).
- * 2. Pro Plan Management: $13/month (160,000 UZS) or $10/month annual (120,000 UZS)
+ * 2. Pro Plan Management: $2.50/month (32,000 UZS) or $1.99/month annual (25,000 UZS)
  * 3. Local Gateways: Click Pass, Payme.uz, Bank Cards (Uzcard/Humo/Visa/MC) with SMS OTP
  * 4. STRICT Hard-Earned Merit Certificate System (End-Game Reward):
  *    - Strict unlock conditions (ALL 4 REQUIRED):
- *      1. Active Pro Subscription ($13/mo).
+ *      1. Active Pro Subscription ($2.50/mo).
  *      2. Complete ALL 50+ game levels in English, Math, and Physics.
  *      3. Master all 500 vocabulary words with 100% completion.
  *      4. Pass the Final "Master Grand Quiz" with 90%+ score.
@@ -99,7 +99,7 @@
         };
       }
       this.saveSubscription();
-      this.showToast(this.isPro() ? '👑 Pro Rejim ($13/oy) faollashtirildi!' : '🆓 Bepul Rejimga o‘tildi!');
+      this.showToast(this.isPro() ? '👑 Pro Rejim ($2.50/oy) faollashtirildi!' : '🆓 Bepul Rejimga o‘tildi!');
       setTimeout(() => location.reload(), 700);
     }
 
@@ -366,8 +366,8 @@
         icon: '🤖',
         title: isRu ? 'Вы использовали 10/10 бесплатных вопросов на сегодня!' : 'Bugungi 10/10 ta bepul savol limitingiz tugadi!',
         desc: isRu 
-          ? 'Перейдите на Pro ($13/мес) для 100% безлимитного общения с умным АстроБотом и решения любых задач!'
-          : 'AstroBot bilan cheksiz suhbatlashish va barcha savollarga javob olish uchun Pro rejimga ($13/oy, 160,000 UZS) o‘ting! 🚀',
+          ? 'Перейдите на Pro ($2.50/мес) для 100% безлимитного общения с умным АстроБотом и решения любых задач!'
+          : 'AstroBot bilan cheksiz suhbatlashish va barcha savollarga javob olish uchun Pro rejimga ($2.50/oy, 32,000 UZS) o‘ting! 🚀',
         perks: [
           '⚡ 100% Cheksiz savol-javob (Google Gemini 3.8 Flash AI)',
           '🎮 Barcha mini-o‘yinlarda 50+ darajalar cheksiz ochiq',
@@ -384,8 +384,8 @@
         icon: '🎮',
         title: isRu ? `Уровень ${levelNumber} доступен в Pro версии!` : `${levelNumber}-Daraja Pro A‘zolar uchun ochiq!`,
         desc: isRu 
-          ? 'В бесплатном режиме доступен 1 уровень в день. Перейдите на Pro ($13/мес) для 50+ уровней!'
-          : 'Bepul rejimda kuniga 1 ta daraja ochiq. Barcha 50+ bosqichlarni ochish uchun Pro ga o‘ting ($13/oy, 160,000 UZS)!',
+          ? 'В бесплатном режиме доступен 1 уровень в день. Перейдите на Pro ($2.50/мес) для 50+ уровней!'
+          : 'Bepul rejimda kuniga 1 ta daraja ochiq. Barcha 50+ bosqichlarni ochish uchun Pro ga o‘ting ($2.50/oy, 32,000 UZS)!',
         perks: [
           '🚀 Barcha o‘yinlarda 50+ cheksiz darajalar va xaritalar',
           '⭐ Do‘konda Pro a‘zolar uchun maxsus liboslar',
@@ -400,7 +400,7 @@
       this.showSoftPaywallModal({
         icon: '📚',
         title: `${wordTitle} so‘zi Pro A‘zolikda mavjud!`,
-        desc: 'Bepul tarifda dastlabki 50 ta asosiy so‘z ochiq. Barcha 500 ta so‘z va 20+ mavzularni ochish uchun Pro ga o‘ting ($13/oy, 160,000 UZS)!',
+        desc: 'Bepul tarifda dastlabki 50 ta asosiy so‘z ochiq. Barcha 500 ta so‘z va 20+ mavzularni ochish uchun Pro ga o‘ting ($2.50/oy, 32,000 UZS)!',
         perks: [
           '🌟 Barcha 500 ta so‘z va 20+ qiziqarli mavzular',
           '🔊 Web Speech API jonli audio talaffuz va toshbaqa rejimi',
@@ -414,7 +414,7 @@
       this.showSoftPaywallModal({
         icon: '✖️',
         title: `Karra jadvali ${r}×${c} Pro A‘zolikda mavjud!`,
-        desc: 'Bepul rejimda 1×1 dan 5×5 gacha ochiq. To‘liq 1×1 dan 12×12 gacha bo‘lgan jadvallar va 60s Tezkor Poygani ochish uchun Pro ga o‘ting ($13/oy, 160,000 UZS)!',
+        desc: 'Bepul rejimda 1×1 dan 5×5 gacha ochiq. To‘liq 1×1 dan 12×12 gacha bo‘lgan jadvallar va 60s Tezkor Poygani ochish uchun Pro ga o‘ting ($2.50/oy, 32,000 UZS)!',
         perks: [
           '🍎 To‘liq 1×1 dan 12×12 gacha vizual mevali hisoblagich',
           '🔊 O‘zbekcha va Ruscha audio ovozli ifodalash',
@@ -465,7 +465,7 @@
               ${isRu ? 'Позже' : 'Keyinroq'}
             </button>
             <button class="btn-paywall-upgrade" onclick="document.getElementById('kiddo-paywall-modal').remove(); window.subscriptionManager.openPricingModal();">
-              ${isRu ? '👑 Перейти на Pro ($13) 🚀' : '👑 Pro ga O‘tish ($13) 🚀'}
+              ${isRu ? '👑 Перейти на Pro ($2.50) 🚀' : '👑 Pro ga O‘tish ($2.50) 🚀'}
             </button>
           </div>
         </div>
@@ -495,11 +495,11 @@
       const isRu = this.getLang() === 'ru';
       const isAnnual = this.selectedBillingCycle === 'annual';
 
-      // Price: $13/mo monthly, $10/mo annual
-      const monthlyUSD = 13;
-      const annualUSD = 10;
-      const monthlyUZS = '160,000';
-      const annualUZS = '120,000';
+      // Price: $2.50/mo monthly, $1.99/mo annual
+      const monthlyUSD = '2.50';
+      const annualUSD = '1.99';
+      const monthlyUZS = '32,000';
+      const annualUZS = '25,000';
 
       const currentPriceUSD = isAnnual ? annualUSD : monthlyUSD;
       const currentPriceUZS = isAnnual ? annualUZS : monthlyUZS;
@@ -514,7 +514,7 @@
             
             <div class="discount-special-badge">
               <span>🔥</span>
-              <span>${isRu ? 'Специальное предложение: Pro план всего $13/мес!' : 'Maxsus Taklif: Pro Plan $13/oy (160,000 UZS) • Cheksiz Kirish!'}</span>
+              <span>${isRu ? 'Специальное предложение: Pro план всего $2.50/мес!' : 'Maxsus Taklif: Pro Plan $2.50/oy (32,000 UZS) • Cheksiz Kirish!'}</span>
             </div>
 
             <h2>${isRu ? 'Открой Все Возможности с Pro!' : 'Cheksiz Bilim Dunyosiga Pro Bilan!'}</h2>
@@ -524,11 +524,11 @@
             <div class="billing-cycle-toggle-wrap">
               <div class="billing-toggle-pill">
                 <button class="billing-toggle-btn ${!isAnnual ? 'active' : ''}" id="btn-billing-monthly">
-                  ${isRu ? 'Ежемесячно ($13/мес)' : 'Oylik ($13/oy)'}
+                  ${isRu ? 'Ежемесячно ($2.50/мес)' : 'Oylik ($2.50/oy)'}
                 </button>
                 <button class="billing-toggle-btn ${isAnnual ? 'active' : ''}" id="btn-billing-annual">
-                  ${isRu ? 'На 1 Год ($10/мес)' : 'Yillik ($10/oy)'}
-                  <span class="save-chip-tag">-25%</span>
+                  ${isRu ? 'На 1 Год ($1.99/мес)' : 'Yillik ($1.99/oy)'}
+                  <span class="save-chip-tag">-20%</span>
                 </button>
               </div>
             </div>
@@ -816,9 +816,9 @@
       if (!modal) return;
 
       const isAnnual = this.selectedBillingCycle === 'annual';
-      const usdPrice = isAnnual ? '10/oy ($120/yil)' : '13/oy';
-      const uzsPrice = isAnnual ? '1,440,000 UZS/yil' : '160,000 UZS/oy';
-      const periodName = isAnnual ? 'Yillik to‘lov (120,000 UZS/oy)' : 'Oylik to‘lov (160,000 UZS/oy)';
+      const usdPrice = isAnnual ? '1.99/oy ($24/yil)' : '2.50/oy';
+      const uzsPrice = isAnnual ? '300,000 UZS/yil' : '32,000 UZS/oy';
+      const periodName = isAnnual ? 'Yillik to‘lov (25,000 UZS/oy)' : 'Oylik to‘lov (32,000 UZS/oy)';
 
       modal.innerHTML = `
         <div class="sub-modal-card">
@@ -890,7 +890,7 @@
     }
 
     renderPaymentMethodForm() {
-      const uzsAmount = this.selectedBillingCycle === 'annual' ? '1,440,000' : '160,000';
+      const uzsAmount = this.selectedBillingCycle === 'annual' ? '300,000' : '32,000';
 
       if (this.selectedPaymentMethod === 'click') {
         return `
@@ -1304,8 +1304,8 @@
 
       const sub = this.subData;
       const isAnnual = sub.billingCycle === 'annual';
-      const usdAmount = isAnnual ? '$10/oy ($120/yil)' : '$13/oy';
-      const uzsAmount = isAnnual ? '1,440,000 UZS/yil' : '160,000 UZS/oy';
+      const usdAmount = isAnnual ? '$1.99/oy ($24/yil)' : '$2.50/oy';
+      const uzsAmount = isAnnual ? '300,000 UZS/yil' : '32,000 UZS/oy';
 
       modal.innerHTML = `
         <div class="sub-modal-card" style="max-width: 560px;">
@@ -1387,7 +1387,7 @@
       const isAllUnlocked = (condition1 && condition2 && condition3 && condition4) || this.demoCertUnlocked;
 
       return {
-        condition1: { completed: condition1 || this.demoCertUnlocked, title: '1. Pro Obuna ($13/oy)', value: condition1 ? 'Faol 👑' : 'Nofaol 🔒' },
+        condition1: { completed: condition1 || this.demoCertUnlocked, title: '1. Pro Obuna ($2.50/oy)', value: condition1 ? 'Faol 👑' : 'Nofaol 🔒' },
         condition2: { completed: condition2 || this.demoCertUnlocked, title: '2. 50+ O‘yin Bosqichlari', value: `${Math.min(50, levelsCount)} / 50 bosqich` },
         condition3: { completed: condition3 || this.demoCertUnlocked, title: '3. 500 Lug‘at So‘zlari', value: `${Math.min(500, wordsCount)} / 500 so‘z` },
         condition4: { completed: condition4 || this.demoCertUnlocked, title: '4. Grand Master Imtihoni (90%+)', value: grandQuizScore ? `${grandQuizScore}% Natija` : 'Topshirilmagan' },
@@ -1480,7 +1480,7 @@
                 </p>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
                   <button class="btn-upgrade-pro" onclick="document.getElementById('kiddo-cert-modal').remove(); window.subscriptionManager.openPricingModal();">
-                    👑 Pro ga O‘tish ($13)
+                    👑 Pro ga O‘tish ($2.50)
                   </button>
                   <button class="btn btn-ctrl" onclick="window.subscriptionManager.startGrandQuiz()">
                     ✍️ Grand Imtihon
@@ -1908,13 +1908,13 @@
 
         const badgeHtml = isPro
           ? `<span class="header-plan-badge plan-badge-pro" title="👑 Pro Member - Cheksiz kirish faollashtirilgan">
-              <span class="crown-icon">👑</span> <span>Pro A‘zo ($13)</span>
+              <span class="crown-icon">👑</span> <span>Pro A‘zo ($2.50)</span>
              </span>`
           : `<span class="header-plan-badge plan-badge-free" title="Bepul Plan">
               <span>🆓</span> <span>Bepul</span>
              </span>
              <button class="btn-upgrade-pro" title="Pro ga a‘zo bo‘lish">
-               <span>👑 Pro ($13) 🚀</span>
+               <span>👑 Pro ($2.50) 🚀</span>
              </button>`;
 
         badge.innerHTML = badgeHtml;

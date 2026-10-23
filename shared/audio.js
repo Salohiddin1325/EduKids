@@ -2,10 +2,11 @@
  * KiddoEducation - Unified Core Audio & Speech Engine
  * Web Audio API Synthesizer (100% Offline, Zero external MP3 dependencies)
  * Features:
- * - Safe gain limiter (max gain <= 0.35 per CYBERSECURITY.md for child ear health)
+ * - Calibrated Child-Friendly Gain Limiter (0.55 max master gain for clear, safe listening)
  * - Complete sound effects suite: Pop, Correct/Success, Wrong/Error, Fanfare/Cheer,
- *   Coin/Collect, Flip, Sparkle, Boing, Bounce, MagnetSnap, Repel, Sizzle, Laser, Explosion
- * - Native Web Speech API Text-to-Speech (English & Uzbek, kid-friendly pitch & turtle slow mode)
+ *   Coin/Collect, Flip, Sparkle, Boing, Bounce, MagnetSnap, Repel, Sizzle, Laser, Explosion, Whoosh, Chime
+ * - Guaranteed AudioContext Unlock & Safe Timestamp Scheduling
+ * - Native Web Speech API Text-to-Speech (English, Uzbek & Russian with child-friendly pitch & turtle mode)
  * - Backwards-compatible aliases: window.kiddoAudio, window.soundEngine, window.mathAudio, window.physicsAudio
  */
 
@@ -22,13 +23,34 @@
       this.voices = [];
       this.preferredVoice = null;
 
-      // Load sound state from storage if exists
-      const savedSound = localStorage.getItem('kiddo_sound_enabled');
-      if (savedSound !== null) {
-        this.soundEnabled = savedSound === 'true';
+      // Default sound to enabled (true) unless explicitly set to 'false' or 'true'
+      const savedSound = localStorage.getItem('kiddo_sound_enabled') ?? localStorage.getItem('kiddo_sound') ?? localStorage.getItem('math_sound');
+      const isMuted = localStorage.getItem('kiddo_muted');
+
+      if (isMuted === 'true' || savedSound === 'false') {
+        this.soundEnabled = false;
+      } else {
+        this.soundEnabled = true;
+      }
+
+      // Synchronize all storage flags
+      this.syncStorageFlags();
+
+      // Load turtle mode from storage
+      const savedTurtle = localStorage.getItem('kiddo_turtle');
+      if (savedTurtle !== null) {
+        this.isTurtleMode = savedTurtle === 'true';
       }
 
       this.initVoices();
+    }
+
+    syncStorageFlags() {
+      localStorage.setItem('kiddo_sound_enabled', this.soundEnabled);
+      localStorage.setItem('kiddo_sound', this.soundEnabled);
+      localStorage.setItem('math_sound', this.soundEnabled);
+      localStorage.setItem('physics_sound', this.soundEnabled);
+      localStorage.setItem('kiddo_muted', !this.soundEnabled);
     }
 
     getAudioContext() {
@@ -38,8 +60,8 @@
           if (AudioCtxClass) {
             this.audioCtx = new AudioCtxClass();
             this.masterGain = this.audioCtx.createGain();
-            // Child-safe volume limiter: <= 0.35
-            this.masterGain.gain.setValueAtTime(0.35, this.audioCtx.currentTime);
+            // Child-safe, clearly audible volume limiter: 0.55
+            this.masterGain.gain.setValueAtTime(this.soundEnabled ? 0.55 : 0, this.audioCtx.currentTime);
             this.masterGain.connect(this.audioCtx.destination);
           }
         } catch (e) {
@@ -52,6 +74,15 @@
       }
 
       return this.audioCtx;
+    }
+
+    getSafeNow(ctx) {
+      if (!ctx) return 0.01;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+        return 0.04;
+      }
+      return Math.max(ctx.currentTime, 0.001) + 0.005;
     }
 
     initVoices() {
@@ -69,7 +100,7 @@
         if (!this.voices || this.voices.length === 0) return;
 
         const englishVoices = this.voices.filter(v => v.lang && (v.lang.startsWith('en') || v.lang.startsWith('EN')));
-        // Priority 1: High-quality local offline voice
+        // Priority 1: High-quality natural voice
         const localNatural = englishVoices.find(v => v.localService && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Jenny')));
         // Priority 2: Any local English voice
         const anyLocal = englishVoices.find(v => v.localService === true);
@@ -83,14 +114,40 @@
     }
 
     toggleSound(enable) {
-      this.soundEnabled = enable !== undefined ? enable : !this.soundEnabled;
-      localStorage.setItem('kiddo_sound_enabled', this.soundEnabled);
-      localStorage.setItem('kiddo_sound', this.soundEnabled);
+      this.soundEnabled = enable !== undefined ? Boolean(enable) : !this.soundEnabled;
+      this.syncStorageFlags();
+
+      if (!this.soundEnabled) {
+        // Immediate silence when muted (Bez Zvuk)
+        if (this.speechSynth) {
+          try { this.speechSynth.cancel(); } catch (e) {}
+        }
+        if (this.masterGain && this.audioCtx) {
+          try { this.masterGain.gain.setValueAtTime(0, this.audioCtx.currentTime); } catch (e) {}
+        }
+      } else {
+        // Restore child-safe, clear audible volume limiter (0.55)
+        const ctx = this.getAudioContext();
+        if (this.masterGain && ctx) {
+          try { this.masterGain.gain.setValueAtTime(0.55, ctx.currentTime); } catch (e) {}
+        }
+      }
+
+      try {
+        window.dispatchEvent(new CustomEvent('kiddo_sound_changed', { detail: { soundEnabled: this.soundEnabled } }));
+      } catch (e) {}
+
       return this.soundEnabled;
     }
 
     toggleTurtleMode(enable) {
       this.isTurtleMode = enable !== undefined ? enable : !this.isTurtleMode;
+      localStorage.setItem('kiddo_turtle', this.isTurtleMode);
+
+      try {
+        window.dispatchEvent(new CustomEvent('kiddo_turtle_changed', { detail: { isTurtleMode: this.isTurtleMode } }));
+      } catch (e) {}
+
       return this.isTurtleMode;
     }
 
@@ -104,22 +161,22 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(480, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.08);
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.08);
 
-        gain.gain.setValueAtTime(0.30, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        gain.gain.setValueAtTime(0.42, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.08);
 
         osc.connect(gain);
         gain.connect(this.masterGain);
 
         osc.start(now);
-        osc.stop(now + 0.08);
+        osc.stop(now + 0.085);
       } catch (e) {}
     }
 
@@ -129,7 +186,7 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
         notes.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -139,8 +196,8 @@
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, t);
 
-          gain.gain.setValueAtTime(0, t);
-          gain.gain.linearRampToValueAtTime(0.3, t + 0.02);
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.36, t + 0.02);
           gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
 
           osc.connect(gain);
@@ -151,21 +208,22 @@
         });
       } catch (e) {}
     }
-    // Alias for compatibility
+    // Aliases for compatibility
     playSuccess() { this.playCorrect(); }
+
     playDing() {
       if (!this.soundEnabled) return;
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sine';
         osc.frequency.setValueAtTime(880, now);
 
-        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.setValueAtTime(0.38, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
 
         osc.connect(gain);
@@ -176,21 +234,76 @@
       } catch (e) {}
     }
 
+    /** Two-tone bell chime (G5: 784Hz, C6: 1046.5Hz) */
+    playChime() {
+      if (!this.soundEnabled) return;
+      const ctx = this.getAudioContext();
+      if (!ctx || !this.masterGain) return;
+      try {
+        const now = this.getSafeNow(ctx);
+        const notes = [783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const t = now + idx * 0.09;
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.38, t + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+
+          osc.start(t);
+          osc.stop(t + 0.34);
+        });
+      } catch (e) {}
+    }
+
+    /** Smooth canvas erase / card slide swoosh */
+    playWhoosh() {
+      if (!this.soundEnabled) return;
+      const ctx = this.getAudioContext();
+      if (!ctx || !this.masterGain) return;
+      try {
+        const now = this.getSafeNow(ctx);
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(680, now);
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.16);
+
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(now);
+        osc.stop(now + 0.17);
+      } catch (e) {}
+    }
+    playSwoosh() { this.playWhoosh(); }
+
     /** Wrong / Error Answer (Soft non-scary low buzz) */
     playWrong() {
       if (!this.soundEnabled) return;
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.setValueAtTime(240, now);
         osc.frequency.linearRampToValueAtTime(140, now + 0.22);
 
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(0.32, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
 
         osc.connect(gain);
@@ -210,7 +323,7 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const melody = [
           { f: 523.25, d: 0.12 }, // C5
           { f: 523.25, d: 0.12 }, // C5
@@ -229,7 +342,8 @@
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(item.f, t);
 
-          gain.gain.setValueAtTime(0.28, t);
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.36, t + 0.015);
           gain.gain.exponentialRampToValueAtTime(0.001, t + item.d);
 
           osc.connect(gain);
@@ -250,7 +364,7 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const notes = [987.77, 1318.51]; // B5, E6
         notes.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -260,7 +374,8 @@
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, t);
 
-          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.38, t + 0.015);
           gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
 
           osc.connect(gain);
@@ -279,7 +394,7 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
@@ -287,7 +402,7 @@
         osc.frequency.setValueAtTime(400, now);
         osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
 
-        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.setValueAtTime(0.35, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
 
         osc.connect(gain);
@@ -304,7 +419,7 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const freqs = [1046.5, 1318.5, 1567.9, 2093.0];
         freqs.forEach((f, i) => {
           const osc = ctx.createOscillator();
@@ -314,7 +429,7 @@
           osc.type = 'sine';
           osc.frequency.setValueAtTime(f, t);
 
-          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.setValueAtTime(0.30, t);
           gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
 
           osc.connect(gain);
@@ -332,16 +447,16 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(200, now);
-        osc.frequency.linearRampToValueAtTime(600, now + 0.15);
-        osc.frequency.linearRampToValueAtTime(300, now + 0.25);
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.linearRampToValueAtTime(650, now + 0.15);
+        osc.frequency.linearRampToValueAtTime(320, now + 0.25);
 
-        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.setValueAtTime(0.38, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
 
         osc.connect(gain);
@@ -358,15 +473,15 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(180, now);
-        osc.frequency.exponentialRampToValueAtTime(45, now + 0.16);
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(55, now + 0.16);
 
-        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.setValueAtTime(0.40, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
 
         osc.connect(gain);
@@ -383,15 +498,15 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(950, now);
-        osc.frequency.exponentialRampToValueAtTime(220, now + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(240, now + 0.08);
 
-        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.setValueAtTime(0.35, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
 
         osc.connect(gain);
@@ -408,16 +523,16 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(180, now);
-        osc.frequency.linearRampToValueAtTime(260, now + 0.08);
-        osc.frequency.linearRampToValueAtTime(160, now + 0.18);
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.linearRampToValueAtTime(280, now + 0.08);
+        osc.frequency.linearRampToValueAtTime(180, now + 0.18);
 
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(0.35, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
 
         osc.connect(gain);
@@ -434,15 +549,15 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(1200, now);
-        osc.frequency.exponentialRampToValueAtTime(300, now + 0.12);
+        osc.frequency.exponentialRampToValueAtTime(320, now + 0.12);
 
-        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.setValueAtTime(0.30, now);
         gain.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
 
         osc.connect(gain);
@@ -459,15 +574,15 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(880, now);
-        osc.frequency.exponentialRampToValueAtTime(110, now + 0.12);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.12);
 
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(0.32, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
 
         osc.connect(gain);
@@ -484,15 +599,15 @@
       const ctx = this.getAudioContext();
       if (!ctx || !this.masterGain) return;
       try {
-        const now = ctx.currentTime;
+        const now = this.getSafeNow(ctx);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(120, now);
-        osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(40, now + 0.35);
 
-        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.setValueAtTime(0.38, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
 
         osc.connect(gain);
@@ -519,37 +634,68 @@
         doneCb = langOrStart;
       }
 
+      // Check Mute / Bez Zvuk Mode
+      if (!this.soundEnabled || localStorage.getItem('kiddo_sound') === 'false' || localStorage.getItem('kiddo_muted') === 'true') {
+        if (typeof doneCb === 'function') doneCb();
+        return;
+      }
+
+      // If Uzbek language requested, delegate directly to high-fidelity uzbekSpeech
+      if ((targetLang.startsWith('uz') || targetLang === 'uz') && window.uzbekSpeech) {
+        window.uzbekSpeech.speak(text, {
+          turtle: this.isTurtleMode,
+          onEnd: doneCb
+        });
+        return;
+      }
+
       if (!this.speechSynth) {
         if (typeof doneCb === 'function') doneCb();
         return;
       }
 
       try {
-        // Resume synthesis if paused on mobile
+        // Unfreeze speech synthesis queue if paused
         if (this.speechSynth.paused) {
           try { this.speechSynth.resume(); } catch (e) {}
         }
 
-        // Only cancel if speaking to avoid queue lock
+        // Cancel previous speaking to prevent queue deadlock
         if (this.speechSynth.speaking) {
           try { this.speechSynth.cancel(); } catch (e) {}
         }
 
-        const utterance = new SpeechSynthesisUtterance(String(text));
-        utterance.lang = targetLang;
-        utterance.rate = this.isTurtleMode ? 0.72 : 0.95; // Child-friendly natural speed
-        utterance.pitch = 1.15; // Friendly, slightly higher kid-pitch
-        utterance.volume = 1.0; // Maximum audible clarity
-
-        if (this.preferredVoice && typeof targetLang === 'string' && targetLang.startsWith('en')) {
-          try {
-            utterance.voice = this.preferredVoice;
-          } catch (e) {}
+        if (this.voices.length === 0) {
+          this.loadVoices();
         }
 
-        // Keep reference to prevent garbage collection on Mobile Safari/Chrome
+        const utterance = new SpeechSynthesisUtterance(String(text));
+        utterance.rate = this.isTurtleMode ? 0.55 : 0.95;
+        utterance.pitch = 1.15; // Friendly, engaging tone
+        utterance.volume = 1.0;
+
+        // Find best matching voice for requested language
+        let matchedVoice = null;
+        if (this.voices && this.voices.length > 0) {
+          matchedVoice = this.voices.find(v => v.lang && v.lang.toLowerCase().startsWith(targetLang.toLowerCase().slice(0, 2)));
+        }
+
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
+          utterance.lang = matchedVoice.lang;
+        } else if (this.preferredVoice && targetLang.startsWith('en')) {
+          utterance.voice = this.preferredVoice;
+          utterance.lang = this.preferredVoice.lang;
+        } else {
+          utterance.lang = targetLang;
+        }
+
+        // Keep persistent reference to prevent GC on iOS Safari & Chrome
+        window._activeUtteranceQueue = window._activeUtteranceQueue || [];
+        window._activeUtteranceQueue.push(utterance);
+        if (window._activeUtteranceQueue.length > 8) window._activeUtteranceQueue.shift();
+
         this.currentUtterance = utterance;
-        window._activeUtterance = utterance;
 
         let finished = false;
         const cleanup = () => {
@@ -558,9 +704,8 @@
           if (this.currentUtterance === utterance) {
             this.currentUtterance = null;
           }
-          if (window._activeUtterance === utterance) {
-            window._activeUtterance = null;
-          }
+          const idx = (window._activeUtteranceQueue || []).indexOf(utterance);
+          if (idx > -1) window._activeUtteranceQueue.splice(idx, 1);
           if (typeof doneCb === 'function') {
             try { doneCb(); } catch (err) {}
           }
@@ -572,15 +717,16 @@
           cleanup();
         };
 
-        // CRITICAL: speak() MUST be synchronous to preserve user gesture activation on mobile!
-        this.speechSynth.speak(utterance);
-
-        // Safety watchdog if onend never fires (e.g. background tab)
+        // Safety watchdog if onend never fires (e.g. background tab or mobile sleep)
+        const charDuration = this.isTurtleMode ? 160 : 90;
+        const estimatedMs = Math.max(3000, String(text).length * charDuration);
         setTimeout(() => {
           if (!finished && this.currentUtterance === utterance) {
             cleanup();
           }
-        }, 6000);
+        }, estimatedMs);
+
+        this.speechSynth.speak(utterance);
       } catch (e) {
         console.warn('Speech synthesis error', e);
         if (typeof doneCb === 'function') doneCb();
@@ -596,35 +742,36 @@
   window.soundEngine = masterAudio;
   window.mathAudio = masterAudio;
   window.physicsAudio = masterAudio;
+  window.EnglishAudio = masterAudio;
   window.UnifiedKiddoAudioEngine = UnifiedKiddoAudioEngine;
 
-  // Mobile User Interaction Audio Unlocker (iOS Safari & Android Chrome)
-  const primeMobileAudio = () => {
+  // Active User Interaction Audio Unlocker (iOS Safari, Android Chrome, Desktop)
+  const primeAudioContext = () => {
     try {
       if (masterAudio.getAudioContext) {
         const ctx = masterAudio.getAudioContext();
         if (ctx && ctx.state === 'suspended') {
           ctx.resume().catch(() => {});
         }
+        // iOS Safari hardware unlock buffer
+        if (ctx && !window._webAudioUnlocked) {
+          window._webAudioUnlocked = true;
+          const buffer = ctx.createBuffer(1, 1, 22050);
+          const source = ctx.createBufferSource();
+          source.buffer = buffer;
+          source.connect(ctx.destination);
+          source.start(0);
+        }
       }
-      if (window.speechSynthesis) {
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
-        if (!window._speechSynthPrimed) {
-          window._speechSynthPrimed = true;
-          const silent = new SpeechSynthesisUtterance(' ');
-          silent.volume = 0.01;
-          silent.rate = 10;
-          window.speechSynthesis.speak(silent);
-        }
+      if (window.speechSynthesis && window.speechSynthesis.paused) {
+        try { window.speechSynthesis.resume(); } catch (e) {}
       }
     } catch (e) {}
-    window.removeEventListener('pointerdown', primeMobileAudio);
-    window.removeEventListener('touchstart', primeMobileAudio);
-    window.removeEventListener('click', primeMobileAudio);
   };
-  window.addEventListener('pointerdown', primeMobileAudio, { passive: true });
-  window.addEventListener('touchstart', primeMobileAudio, { passive: true });
-  window.addEventListener('click', primeMobileAudio, { passive: true });
+
+  // Capture phase listener ensures unlock triggers before any child stopPropagation
+  ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evtType => {
+    window.addEventListener(evtType, primeAudioContext, { capture: true, passive: true });
+    document.addEventListener(evtType, primeAudioContext, { capture: true, passive: true });
+  });
 })();

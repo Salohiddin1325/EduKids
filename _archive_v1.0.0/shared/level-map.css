@@ -1,0 +1,487 @@
+/* ==========================================================================
+   KIDDO EDUCATION - LEVEL WORLD MAP STYLESHEET (Duolingo & Candy Crush style)
+   ========================================================================== */
+
+/* World Map Container & Progress Header */
+.world-map-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 10px 14px 40px;
+}
+
+.map-progress-header {
+  width: 100%;
+  background: var(--bg-card, #FFFFFF);
+  border: 3px solid var(--border-color, #E2E8F0);
+  border-radius: 20px;
+  padding: 14px 18px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  margin-bottom: 18px;
+}
+
+.map-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.map-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-soft, #F8FAFC);
+  border: 2px solid var(--border-color, #E2E8F0);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.map-stat-pill.stars-pill {
+  border-color: #FCD34D;
+  background: #FFFBEB;
+  color: #B45309;
+}
+
+.map-stat-pill.plan-pill.pro {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  border-color: #F59E0B;
+  color: #92400E;
+  font-weight: 800;
+}
+
+.map-stat-pill.plan-pill.free {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
+.map-progress-bar-wrap {
+  width: 100%;
+  height: 12px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.map-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #3B82F6, #8B5CF6);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+}
+
+/* Tier Filter Tabs */
+.map-tier-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.tier-tab-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--border-color, #CBD5E1);
+  background: var(--bg-card, #FFFFFF);
+  color: #475569;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tier-tab-btn:hover {
+  transform: translateY(-2px);
+  border-color: #3B82F6;
+  color: #2563EB;
+}
+
+.tier-tab-btn.active {
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  border-color: #1D4ED8;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* Winding Path & Nodes */
+.map-path-stream {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  padding: 20px 0;
+  position: relative;
+}
+
+/* Connecting Dotted Track */
+.map-path-stream::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  bottom: 30px;
+  left: 50%;
+  width: 8px;
+  transform: translateX(-50%);
+  background-image: radial-gradient(circle, #CBD5E1 3px, transparent 3px);
+  background-size: 8px 24px;
+  z-index: 1;
+}
+
+.map-node-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+/* Base Level Map Node */
+.level-map-node {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 4px solid #CBD5E1;
+  box-shadow: 0 8px 0 #94A3B8, 0 12px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.18s ease;
+}
+
+.level-map-node:hover:not(.locked) {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 12px 0 #64748B, 0 16px 25px rgba(0, 0, 0, 0.2);
+}
+
+.level-map-node:active:not(.locked) {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #64748B, 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Node Tiers (Starter, Explorer, Master) */
+.level-map-node.starter {
+  border-color: #10B981;
+  box-shadow: 0 8px 0 #059669, 0 12px 20px rgba(16, 185, 129, 0.3);
+}
+.level-map-node.starter .node-num {
+  color: #047857;
+}
+
+.level-map-node.explorer {
+  border-color: #F59E0B;
+  box-shadow: 0 8px 0 #D97706, 0 12px 20px rgba(245, 158, 11, 0.3);
+}
+.level-map-node.explorer .node-num {
+  color: #B45309;
+}
+
+.level-map-node.master {
+  border-color: #8B5CF6;
+  box-shadow: 0 8px 0 #6D28D9, 0 12px 20px rgba(139, 92, 246, 0.35);
+}
+.level-map-node.master .node-num {
+  color: #6D28D9;
+}
+
+/* Completed Node State */
+.level-map-node.completed {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+}
+
+/* Active / Current Node State */
+.level-map-node.current {
+  animation: currentPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes currentPulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0.4)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 16px rgba(37, 99, 235, 0.8)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0.4)); }
+}
+
+.current-avatar-marker {
+  position: absolute;
+  top: -18px;
+  right: -8px;
+  font-size: 1.5rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  animation: floatRocket 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes floatRocket {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+
+/* Locked Node State */
+.level-map-node.locked {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  box-shadow: 0 6px 0 #94A3B8;
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.level-map-node.pro-locked {
+  background: #FFFBEB;
+  border-color: #F59E0B;
+  border-style: dashed;
+  box-shadow: 0 6px 0 #D97706, 0 8px 16px rgba(245, 158, 11, 0.25);
+  opacity: 1;
+}
+
+.node-pro-crown {
+  position: absolute;
+  top: -14px;
+  font-size: 1.3rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.node-lock-tag {
+  font-size: 0.6rem;
+  font-weight: 900;
+  background: #F59E0B;
+  color: #FFFFFF;
+  padding: 1px 5px;
+  border-radius: 999px;
+  position: absolute;
+  bottom: -4px;
+}
+
+/* Inner elements */
+.node-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.node-num {
+  font-size: 1.45rem;
+  font-weight: 900;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.node-num.muted {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.node-lock-ico {
+  font-size: 1.1rem;
+}
+
+/* Stars Row under Node */
+.node-stars-row {
+  position: absolute;
+  bottom: -16px;
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.mini-star {
+  font-size: 0.72rem;
+  color: #CBD5E1;
+}
+
+.mini-star.filled {
+  color: #F59E0B;
+  text-shadow: 0 1px 2px rgba(245, 158, 11, 0.5);
+}
+
+/* Milestone Node Styling */
+.milestone-node {
+  width: 86px;
+  height: 86px;
+  border-radius: 24px;
+}
+
+.milestone-ribbon {
+  position: absolute;
+  bottom: -32px;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+}
+
+/* World Map Modal */
+.world-map-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.world-map-modal.active {
+  display: flex;
+}
+
+.map-modal-card {
+  background: var(--bg-surface, #F8FAFC);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4);
+  border: 4px solid #FFFFFF;
+  animation: modalScaleUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalScaleUp {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.map-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: #FFFFFF;
+  border-bottom: 2px solid #E2E8F0;
+}
+
+.modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-title-icon {
+  font-size: 2.2rem;
+}
+
+.modal-title-wrap h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  color: #0F172A;
+}
+
+.modal-title-wrap p {
+  font-size: 0.85rem;
+  color: #64748B;
+  margin: 2px 0 0;
+}
+
+.map-modal-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #64748B;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.map-modal-close:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  transform: rotate(90deg);
+}
+
+.map-modal-scroll {
+  overflow-y: auto;
+  padding: 16px;
+  flex: 1;
+}
+
+/* Toast Notice */
+.map-toast-notice {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(50px);
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 10000000;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.map-toast-notice.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Map Button in Game Header */
+.game-level-map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  color: #92400E;
+  border: 2px solid #F59E0B;
+  box-shadow: 0 4px 0 #D97706;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.game-level-map-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #D97706;
+}
+
+.game-level-map-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #D97706;
+}

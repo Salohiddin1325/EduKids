@@ -1,0 +1,207 @@
+/* ==========================================================================
+   KiddoLingo — Interactive Speech Pronunciation Grader Styles
+   ========================================================================== */
+
+.speech-grader-container {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.speech-card-main {
+  background: linear-gradient(145deg, #FFFFFF, #FFF1F2);
+  border: 3px solid #FF5E7E;
+  border-radius: 32px;
+  padding: 36px 28px;
+  box-shadow: 0 15px 35px -5px rgba(255, 94, 126, 0.25);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+[data-theme="dark"] .speech-card-main {
+  background: linear-gradient(145deg, #1E293B, #831843);
+  border-color: #F43F5E;
+  color: #FDF2F8;
+}
+
+.speech-word-emoji {
+  font-size: 5rem;
+  margin-bottom: 12px;
+  display: inline-block;
+  animation: speechBounce 2.5s infinite ease-in-out;
+}
+
+@keyframes speechBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.05); }
+}
+
+.speech-target-word {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #BE123C;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+[data-theme="dark"] .speech-target-word {
+  color: #FDA4AF;
+}
+
+.speech-phonetics-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #FDA4AF;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #9F1239;
+  margin-bottom: 24px;
+}
+
+[data-theme="dark"] .speech-phonetics-badge {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: #BE123C;
+  color: #FECDD3;
+}
+
+/* Mic Action Zone */
+.speech-mic-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.btn-mic-record {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF5E7E, #E11D48);
+  border: 4px solid #FFFFFF;
+  color: #FFFFFF;
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(225, 29, 72, 0.45);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  outline: none;
+}
+
+.btn-mic-record:hover {
+  transform: scale(1.08);
+}
+
+.btn-mic-record:active {
+  transform: scale(0.95);
+}
+
+.btn-mic-record.listening {
+  background: linear-gradient(135deg, #EF4444, #B91C1C);
+  animation: micPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+  50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+}
+
+.speech-status-text {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #475569;
+  min-height: 28px;
+}
+
+[data-theme="dark"] .speech-status-text {
+  color: #CBD5E1;
+}
+
+/* Accuracy & Grade Result Display */
+.speech-result-box {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: none;
+  animation: resultIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-bottom: 20px;
+}
+
+[data-theme="dark"] .speech-result-box {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: #475569;
+}
+
+.speech-result-box.active {
+  display: block;
+}
+
+@keyframes resultIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.speech-result-stars {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.speech-result-heard {
+  font-size: 0.95rem;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.speech-result-heard strong {
+  color: #0F172A;
+}
+
+[data-theme="dark"] .speech-result-heard strong {
+  color: #F8FAFC;
+}
+
+.speech-controls-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-speech-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.btn-speech-listen {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+  color: #1D4ED8;
+}
+
+.btn-speech-next {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-speech-next:hover {
+  transform: translateY(-2px);
+}

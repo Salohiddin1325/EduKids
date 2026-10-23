@@ -30,6 +30,11 @@
   <link rel="stylesheet" href="../shared/subscription.css">
   <link rel="stylesheet" href="../shared/level-map.css">
   <link rel="stylesheet" href="../shared/chatbot.css">
+  <link rel="stylesheet" href="../shared/age-tracks.css">
+  <link rel="stylesheet" href="../shared/screen-time.css">
+  <link rel="stylesheet" href="../shared/worksheets.css">
+  <link rel="stylesheet" href="../shared/profile-switcher.css">
+  <link rel="stylesheet" href="css/speech-grader.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -113,6 +118,14 @@
           <span id="txt-turtle">Toshbaqa</span>
         </button>
 
+        <!-- Multi-Child Profile Switcher Mount -->
+        <div id="profile-trigger-mount"></div>
+
+        <!-- Printable Worksheets Button -->
+        <button class="btn-ctrl btn-worksheets" id="btn-english-worksheets" onclick="window.EduWorksheets && window.EduWorksheets.openModal('english_tracing')" title="Chop etiladigan ish varaqalari (A4)">
+          <span>🖨️</span>
+        </button>
+
         <!-- Sound Button -->
         <button class="btn-ctrl btn-icon-only" id="sound-toggle-btn" title="Ovozni yoqish / o‘chirish">
           <span id="sound-icon">🔊</span>
@@ -158,6 +171,11 @@
       <button class="nav-tab-btn active" data-target="section-vocab">
         <span>📚</span>
         <span id="tab-txt-vocab">Lug‘at / Words</span>
+      </button>
+
+      <button class="nav-tab-btn" data-target="section-speech" id="tab-btn-speech">
+        <span>🎙️</span>
+        <span id="tab-txt-speech">Talaffuz / Voice</span>
       </button>
 
       <button class="nav-tab-btn" data-target="section-grammar">
@@ -479,6 +497,51 @@
       </div>
     </section>
 
+    <!-- =========================================================================
+         SECTION 6: INTERACTIVE SPEECH PRONUNCIATION GRADER (Talaffuz)
+         ========================================================================= -->
+    <section class="app-section" id="section-speech">
+      <div class="section-banner">
+        <h2 id="sec-speech-title">Ovozli Talaffuz Sinovi (Speech Grader) 🎙️</h2>
+        <p id="sec-speech-desc">Mikrofonni bosing, so‘zni baland ovozda ayting va yulduzlar yutib oling!</p>
+      </div>
+
+      <div class="speech-grader-container">
+        <div class="speech-card-main">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <span class="age-badge age-badge-junior">🎙️ Web Speech AI</span>
+            <span id="speech-progress-tag" style="font-weight: 800; font-size: 0.95rem; color: #E11D48;">1 / 15</span>
+          </div>
+
+          <div class="speech-word-emoji" id="speech-card-emoji">🍎</div>
+          <h3 class="speech-target-word" id="speech-target-word">APPLE</h3>
+          <div class="speech-phonetics-badge" id="speech-phonetics-badge">/ˈæp.əl/</div>
+          <div style="font-size: 1.15rem; font-weight: 700; color: #475569; margin-bottom: 24px;" id="speech-card-trans">Olma</div>
+
+          <div class="speech-mic-zone">
+            <button type="button" class="btn-mic-record" id="btn-speech-mic" onclick="window.EduSpeechGrader && window.EduSpeechGrader.startListening()" title="Ovozingizni yozib olish uchun bosing">
+              🎙️
+            </button>
+            <div class="speech-status-text" id="speech-grader-status">Mikrofonni bosing va so‘zni ayting</div>
+          </div>
+
+          <div class="speech-result-box" id="speech-result-box">
+            <div class="speech-result-stars" id="speech-result-stars">⭐⭐⭐</div>
+            <div class="speech-result-heard" id="speech-result-heard">Eshitildi: <strong>APPLE</strong></div>
+          </div>
+
+          <div class="speech-controls-row">
+            <button type="button" class="btn-speech-ctrl btn-speech-listen" onclick="window.EduSpeechGrader && window.EduSpeechGrader.speakCurrentWord()">
+              <span>🔊</span> <span>Tinglash</span>
+            </button>
+            <button type="button" class="btn-speech-ctrl btn-speech-next" onclick="window.EduSpeechGrader && window.EduSpeechGrader.nextWord()">
+              <span>Keyingi so‘z</span> <span>➜</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Word Detailed View Modal -->
@@ -497,6 +560,7 @@
       qilmasdan ham ravon ishlaydi!</p>
   </footer>
 
+  <script src="../shared/env-config.js"></script>
   <script src="../shared/pwa-register.js"></script>
   <script src="../shared/uzbek-speech.js"></script>
   <script src="../shared/audio.js"></script>
@@ -506,6 +570,13 @@
   <script src="../shared/level-map.js"></script>
   <script src="../shared/mascot-companion.js"></script>
   <script src="../shared/chatbot.js"></script>
+  <script src="../shared/mascots.js"></script>
+  <script src="../shared/age-tracks.js"></script>
+  <script src="../shared/screen-time.js"></script>
+  <script src="../shared/learning-engine.js"></script>
+  <script src="../shared/worksheets.js"></script>
+  <script src="../shared/profile-switcher.js"></script>
+  <script src="js/speech-grader.js"></script>
   <script src="js/data.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/confetti.js"></script>

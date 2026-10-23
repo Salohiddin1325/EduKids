@@ -436,23 +436,36 @@ function initSoundControls() {
       window.soundEngine.toggleSound(window.appState.soundEnabled);
       window.appState.save();
       updateSoundUI(window.appState.soundEnabled);
-      if (window.appState.soundEnabled) window.soundEngine.playPop();
+      if (window.appState.soundEnabled) {
+        window.soundEngine.playPop();
+        window.appState.showToast(window.appState.lang === 'ru' ? '🔊 Звук включен' : '🔊 Ovoz yoqildi');
+      } else {
+        window.appState.showToast(window.appState.lang === 'ru' ? '🔇 Без звука (Звук выключен)' : '🔇 Ovoz o‘chirildi (Bez zvuk)');
+      }
     });
   }
 
   if (turtleToggle) {
-    updateTurtleUI(window.appState.isTurtleMode);
+    // Sync with global soundEngine state
+    const currentTurtle = window.soundEngine ? window.soundEngine.isTurtleMode : window.appState.isTurtleMode;
+    window.appState.isTurtleMode = currentTurtle;
+    updateTurtleUI(currentTurtle);
+
     turtleToggle.addEventListener('click', () => {
-      window.appState.isTurtleMode = !window.appState.isTurtleMode;
-      window.soundEngine.toggleTurtleMode(window.appState.isTurtleMode);
+      const newTurtle = window.soundEngine ? window.soundEngine.toggleTurtleMode() : !window.appState.isTurtleMode;
+      window.appState.isTurtleMode = newTurtle;
       window.appState.save();
-      updateTurtleUI(window.appState.isTurtleMode);
-      window.soundEngine.playPop();
-      if (window.appState.isTurtleMode) {
+      updateTurtleUI(newTurtle);
+      if (window.appState.soundEnabled) window.soundEngine.playPop();
+      if (newTurtle) {
         window.appState.unlockBadge('audio-master');
         window.appState.showToast(window.appState.lang === 'ru'
-          ? '🐢 Режим черепахи включен! Слова звучат медленнее.'
-          : '🐢 Toshbaqa rejimi yoqildi! So‘zlar sekinroq aytiladi.');
+          ? '🐢 Режим черепахи включен! Слова звучат очень медленно и чётко.'
+          : '🐢 Toshbaqa rejimi yoqildi! So‘zlar sekin va dona-dona aytiladi.');
+      } else {
+        window.appState.showToast(window.appState.lang === 'ru'
+          ? '⚡ Обычный темп речи включен!'
+          : '⚡ Oddiy nutq tezligi yoqildi!');
       }
     });
   }
@@ -910,8 +923,8 @@ function getCategoryName(categoryKey) {
     colors: '🎨 Ranglar',
     shapes: '📐 Shakllar',
     house: '🏠 Uy jihozlari',
-    verbs: '🏃 Harakatlar (Fe‘llar)',
-    actions: '🏃 Harakatlar (Fe‘llar)',
+    verbs: "🏃 Harakatlar (Fe'llar)",
+    actions: "🏃 Harakatlar (Fe'llar)",
     adjectives: '✨ Sifatlar',
     weather: '⛅ Ob-havo',
     food: '🍕 Ovqatlar',
@@ -950,17 +963,59 @@ function getCategoryName(categoryKey) {
   return map[categoryKey] || categoryKey;
 }
 
+/** English Audio & SpeechSynthesis Manager */
+window.EnglishAudio = window.EnglishAudio || {
+  speak: function(wordOrText, lang = 'en-US', doneCb = null) {
+    if (!wordOrText) return;
+    const text = typeof wordOrText === 'string' ? wordOrText : (wordOrText.word || String(wordOrText));
+    _unlockAudioOnGesture();
+
+    // Visual feedback on active modal button if present
+    const modalBtn = document.querySelector('.modal-listen-pronunciation-btn');
+    if (modalBtn) {
+      modalBtn.classList.add('pulse-speaking');
+      setTimeout(() => modalBtn.classList.remove('pulse-speaking'), 900);
+    }
+
+    // Try Unified Kiddo soundEngine first
+    if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+      window.soundEngine.speak(text, lang || 'en-US', doneCb);
+      return;
+    }
+
+    // Fallback: direct Web Speech API synthesis
+    _fallbackSpeak(text, lang || 'en-US', doneCb);
+  }
+};
+
 function playWordSpeech(wordId, wordText, e) {
   if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+  _unlockAudioOnGesture();
+
+  // If muted (Bez Zvuk), do not play
+  if (window.appState && !window.appState.soundEnabled) return;
+  if (window.soundEngine && !window.soundEngine.soundEnabled) return;
+
   const card = document.getElementById(`card-${wordId}`);
   if (card) card.classList.add('speaking-pulse');
 
-  if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
-    window.soundEngine.speak(wordText, 'en-US', () => {
-      if (card) card.classList.remove('speaking-pulse');
-    });
-  } else {
+  // Trigger modal visual feedback if open
+  const modalBtn = document.querySelector('.modal-listen-pronunciation-btn');
+  if (modalBtn) {
+    modalBtn.classList.add('pulse-speaking');
+    setTimeout(() => modalBtn.classList.remove('pulse-speaking'), 900);
+  }
+
+  const onDone = () => {
     if (card) card.classList.remove('speaking-pulse');
+  };
+
+  if (window.soundEngine && typeof window.soundEngine.speak === 'function') {
+    window.soundEngine.speak(wordText, 'en-US', onDone);
+  } else {
+    _fallbackSpeak(wordText, 'en-US', onDone);
   }
 
   if (window.appState && typeof window.appState.recordWordListened === 'function') {
@@ -968,8 +1023,88 @@ function playWordSpeech(wordId, wordText, e) {
   }
 }
 
+/** Unlock AudioContext & SpeechSynthesis on first user gesture (iOS/Android) */
+function _unlockAudioOnGesture() {
+  try {
+    // Resume AudioContext
+    if (window.soundEngine && window.soundEngine.audioCtx && window.soundEngine.audioCtx.state === 'suspended') {
+      window.soundEngine.audioCtx.resume().catch(() => {});
+    } else if (window.soundEngine && typeof window.soundEngine.getAudioContext === 'function') {
+      const ctx = window.soundEngine.getAudioContext();
+      if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    }
+    // Prime SpeechSynthesis
+    if (window.speechSynthesis) {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      if (!window._speechSynthPrimed) {
+        window._speechSynthPrimed = true;
+        const silent = new SpeechSynthesisUtterance(' ');
+        silent.volume = 0.01;
+        silent.rate = 10;
+        window.speechSynthesis.speak(silent);
+      }
+    }
+  } catch (_e) {}
+}
+
+// Global unlock triggers for mobile tap/click
+if (typeof window !== 'undefined') {
+  ['pointerdown', 'touchstart', 'click'].forEach(evt => {
+    window.addEventListener(evt, _unlockAudioOnGesture, { once: true, passive: true });
+  });
+}
+
+/** Direct SpeechSynthesis fallback if soundEngine is unavailable */
+function _fallbackSpeak(text, lang = 'en-US', doneCb = null) {
+  try {
+    if (window.appState && !window.appState.soundEnabled) {
+      if (typeof doneCb === 'function') doneCb();
+      return;
+    }
+    if (!('speechSynthesis' in window)) {
+      if (typeof doneCb === 'function') doneCb();
+      return;
+    }
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
+    const isTurtle = (window.appState && window.appState.isTurtleMode) || (window.soundEngine && window.soundEngine.isTurtleMode);
+    const utt = new SpeechSynthesisUtterance(String(text));
+    utt.lang = lang || 'en-US';
+    utt.rate = isTurtle ? 0.52 : 0.92;
+    utt.pitch = 1.15;
+    utt.volume = 1.0;
+
+    // Pick en-US or en-GB voice if available
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      const enVoice = voices.find(v => (v.lang === 'en-US' || v.lang === 'en-GB') && 
+        (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel') || !v.localService))
+        || voices.find(v => v.lang.startsWith('en'));
+      if (enVoice) utt.voice = enVoice;
+    }
+
+    if (typeof doneCb === 'function') {
+      utt.onend = () => { doneCb(); };
+      utt.onerror = () => { doneCb(); };
+    }
+    window.speechSynthesis.speak(utt);
+  } catch (err) {
+    console.warn('Fallback speak error:', err);
+    if (typeof doneCb === 'function') doneCb();
+  }
+}
+
 // Helpers for reading modal details aloud
 window.speakActiveModalDef = function(lang) {
+  if (window.appState && !window.appState.soundEnabled) return;
+  if (window.soundEngine && !window.soundEngine.soundEnabled) return;
+
   const word = window._activeModalWord;
   if (!word) return;
   if (lang === 'uz') {
@@ -988,6 +1123,9 @@ window.speakActiveModalDef = function(lang) {
 };
 
 window.speakActiveModalExample = function(lang) {
+  if (window.appState && !window.appState.soundEnabled) return;
+  if (window.soundEngine && !window.soundEngine.soundEnabled) return;
+
   const word = window._activeModalWord;
   if (!word) return;
   if (lang === 'uz') {
@@ -1020,7 +1158,7 @@ function openWordModal(wordId) {
     if (!modal || !modalContent) return;
 
     const lang = window.appState ? window.appState.lang : (localStorage.getItem('kiddo_language') || 'uz');
-    const audioBtnText = lang === 'ru' ? '🔊 Слушать / Listen' : '🔊 Eshitish / Listen';
+    const listenBtnLabel = lang === 'ru' ? '🔊 Слушать Произношение / Listen' : '🔊 Talaffuzni Tinglash / Listen';
     const exLabel = lang === 'ru' ? '✨ Пример предложения / Example Sentence:' : '✨ Namuna Jumla / Example Sentence:';
 
     // Store active word reference to avoid fragile inline string escaping
@@ -1030,14 +1168,14 @@ function openWordModal(wordId) {
       <button class="modal-close-btn" onclick="closeWordModal()" aria-label="Yopish">✕</button>
       
       <div class="modal-hero-visual" style="background: radial-gradient(circle, ${word.color}44, ${word.color}11);">
-        <span class="modal-big-emoji" onclick="playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" style="cursor: pointer;" title="Eshitish / Listen">${word.emoji}</span>
-        <button class="big-audio-btn" onclick="playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" title="Pronounce word">
-          ${audioBtnText}
+        <span class="modal-big-emoji" onclick="event.stopPropagation(); playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" style="cursor: pointer;" title="Eshitish / Listen">${word.emoji}</span>
+        <button class="big-audio-btn modal-listen-pronunciation-btn" onclick="event.stopPropagation(); playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" title="Pronounce word: ${word.word}">
+          ${listenBtnLabel}
         </button>
       </div>
 
       <div class="modal-info-panel">
-        <div class="modal-title-row" onclick="playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" style="cursor: pointer;" title="Eshitish / Listen">
+        <div class="modal-title-row" onclick="event.stopPropagation(); playWordSpeech('${word.id}', '${word.word.replace(/'/g, "\\'")}', event)" style="cursor: pointer;" title="Eshitish / Listen">
           <h2 class="modal-en-word">${word.word} 🔊</h2>
           <span class="modal-phonetic">${word.phonetic}</span>
         </div>
@@ -1047,8 +1185,8 @@ function openWordModal(wordId) {
             <span class="badge-mini en">English 🔊</span>
             <p>${word.definitionEn}</p>
           </div>
-          <div class="def-block uz-def" style="cursor: pointer;" onclick="speakActiveModalDef('uz')" title="O‘zbekcha talaffuzni eshitish">
-            <span class="badge-mini uz">O‘zbekcha 🔊</span>
+          <div class="def-block uz-def" style="cursor: pointer;" onclick="speakActiveModalDef('uz')" title="O'zbekcha talaffuzni eshitish">
+            <span class="badge-mini uz">O'zbekcha 🔊</span>
             <p><strong>${word.uzbek}:</strong> ${word.definitionUz}</p>
           </div>
           <div class="def-block ru-def" style="cursor: pointer;" onclick="speakActiveModalDef('ru')" title="Слушать перевод">
@@ -1063,7 +1201,7 @@ function openWordModal(wordId) {
             <p>"${word.exampleEn}"</p>
             <button class="speaker-btn mini-speaker" onclick="event.stopPropagation(); speakActiveModalExample('en')" title="Listen / Eshitish">🔊</button>
           </div>
-          <p class="example-sub-sentence" style="cursor: pointer;" onclick="speakActiveModalExample('uz')" title="O‘zbekcha jumla talaffuzi">🇺🇿 ${word.exampleUz} 🔊</p>
+          <p class="example-sub-sentence" style="cursor: pointer;" onclick="speakActiveModalExample('uz')" title="O'zbekcha jumla talaffuzi">🇺🇿 ${word.exampleUz} 🔊</p>
           <p class="example-sub-sentence" style="cursor: pointer;" onclick="speakActiveModalExample('ru')" title="Русский пример">🇷🇺 ${word.exampleRu} 🔊</p>
         </div>
       </div>
@@ -1075,8 +1213,10 @@ function openWordModal(wordId) {
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
 
-    // Pronounce the word out loud when modal opens
-    playWordSpeech(word.id, word.word);
+    // Pronounce the word aloud immediately upon opening modal only if sound is enabled
+    if (window.appState && window.appState.soundEnabled && window.soundEngine && window.soundEngine.soundEnabled) {
+      playWordSpeech(word.id, word.word);
+    }
   } catch (err) {
     console.error('Error opening word modal:', err);
   }
@@ -1251,6 +1391,7 @@ function initMascot() {
 }
 
 // Expose handlers explicitly on window for HTML onclick attributes
+window.EnglishAudio = window.EnglishAudio || EnglishAudio;
 window.openWordModal = openWordModal;
 window.closeWordModal = closeWordModal;
 window.playWordSpeech = playWordSpeech;

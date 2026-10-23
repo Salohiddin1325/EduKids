@@ -1,0 +1,143 @@
+/* ==========================================================================
+   EduKids — Age-Adaptive Learning Track System Styles (3-5, 6-8, 9-12)
+   ========================================================================== */
+
+.age-track-selector-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 2px solid #E2E8F0;
+  border-radius: 999px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .age-track-selector-bar {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: #334155;
+}
+
+.age-track-pill-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #64748B;
+  padding: 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+[data-theme="dark"] .age-track-pill-label {
+  color: #94A3B8;
+}
+
+.age-track-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: 2px solid transparent;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-height: 36px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+[data-theme="dark"] .age-track-btn {
+  color: #CBD5E1;
+}
+
+.age-track-btn:hover {
+  background: rgba(241, 245, 249, 0.9);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .age-track-btn:hover {
+  background: rgba(51, 65, 85, 0.8);
+}
+
+.age-track-btn.active {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #1D4ED8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  transform: translateY(-2px);
+}
+
+.age-track-btn[data-track="toddler"].active {
+  background: linear-gradient(135deg, #FF5E7E, #F43F5E);
+  border-color: #E11D48;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+}
+
+.age-track-btn[data-track="junior"].active {
+  background: linear-gradient(135deg, #10B981, #059669);
+  border-color: #047857;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.age-track-btn[data-track="senior"].active {
+  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  border-color: #6D28D9;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
+
+/* Age Badge attached to Cards or Lessons */
+.age-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+.age-badge-toddler {
+  background: #FFE4E6;
+  color: #BE123C;
+  border: 1px solid #FDA4AF;
+}
+
+.age-badge-junior {
+  background: #D1FAE5;
+  color: #047857;
+  border: 1px solid #6EE7B7;
+}
+
+.age-badge-senior {
+  background: #EDE9FE;
+  color: #6D28D9;
+  border: 1px solid #C4B5FD;
+}
+
+/* Dimming/Highlighting when an age filter is active */
+[data-active-age="toddler"] [data-age-track]:not([data-age-track~="toddler"]),
+[data-active-age="junior"] [data-age-track]:not([data-age-track~="junior"]),
+[data-active-age="senior"] [data-age-track]:not([data-age-track~="senior"]) {
+  opacity: 0.45;
+  filter: grayscale(0.2);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+[data-active-age="toddler"] [data-age-track~="toddler"],
+[data-active-age="junior"] [data-age-track~="junior"],
+[data-active-age="senior"] [data-age-track~="senior"] {
+  opacity: 1;
+  filter: none;
+  border-color: var(--primary, #2563EB);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}

@@ -273,6 +273,63 @@ Ushbu hujjat **[PRD.md](file:///c:/Users/Salohiddin/OneDrive/Desktop/yosh%20bola
 
 ---
 
-*Hujjat versiyasi: 1.0.0*  
-*Tasdiqlangan: EduKids Loyihasi Rivojlantirish Markazi*  
-*Status: Amalga oshirishga tayyor*
+---
+
+## 🌟 Phase 6: EduKids v2.0 Jahon Standarti Upgrade (Audit Xulosalari Asosida)
+
+| Bosqich | Vazifalar Soni | Bajarildi | Holat |
+| :--- | :---: | :---: | :---: |
+| **Phase 6: Xalqaro Audit Asosida Qayta Ishlash** | 9 | 9 / 9 | ✅ Bajarildi (v2.0) |
+
+### [x] TASK-14: Oltin Versiyani To‘liq Arxivlash (v1.0.0 Archive)
+* **Ustuvorlik:** P0 (Kritik)
+* **Tegishli Fayllar:**
+  - `EduKids_v1.0.0_Original_Archive.zip` (684 KB yaxlit arxiv)
+  - `_archive_v1.0.0/` (Barcha asl fayllarning ochiq zaxira papkasi)
+* **Bajarilgan Ish:** Barcha asl kodlar o‘zgarishsiz saqlandi va xavfsiz arxivlandi.
+
+### [x] TASK-15: Yoshi Bo‘yicha 3 Bosqichli Adaptiv Ta’lim Yo‘lagi (Age-Adaptive Tracks)
+* **Ustuvorlik:** P0 (Kritik)
+* **Tegishli Fayllar:** `shared/age-tracks.js`, `shared/age-tracks.css`, `index.html`
+* **Bajarilgan Ish:** 3–5 yosh (Kichkintoylar), 6–8 yosh (Boshlang‘ich) va 9–12 yosh (Katta) uchun filtr tasmachasi va dinamik karta moslashuvchanligi joriy etildi.
+
+### [x] TASK-16: Interaktiv Nutq va Talaffuz Sinovchisi (Speech Pronunciation Grader)
+* **Ustuvorlik:** P0 (Kritik)
+* **Tegishli Fayllar:** `english/js/speech-grader.js`, `english/css/speech-grader.css`, `english/index.html`
+* **Bajarilgan Ish:** Web Speech Recognition API asosida bolaning inglizcha talaffuzini eshitish, fonetik solishtirish va 1–3 yulduz bilan taqdirlash tizimi yaratildi.
+
+### [x] TASK-17: Ko‘p Bolali Oilalar Profillari va JSON Zaxira Nusxasi (Multi-Child Profiles)
+* **Ustuvorlik:** P0 (Kritik)
+* **Tegishli Fayllar:** `shared/profile-switcher.js`, `shared/profile-switcher.css`, `shared/gamification.js`
+* **Bajarilgan Ish:** Bitta planshetda bir nechta farzand alohida yulduz/XP bilan o‘qishi uchun profil almashtirgich va ota-onalar uchun JSON zaxira eksport/importi qo‘shildi.
+
+### [x] TASK-18: Ko‘z Salomatligi va "Cosmo Bilan Dam Olish" Taymeri (Eye Safety Break)
+* **Ustuvorlik:** P1 (Yuqori)
+* **Tegishli Fayllar:** `shared/screen-time.js`, `shared/screen-time.css`
+* **Bajarilgan Ish:** 20 daqiqa faol ekrandan so‘ng 20-20-20 qoidasi bo‘yicha ko‘z mashqlari va 30 soniyalik sokin nafas olish parchalari joriy qilindi.
+
+### [x] TASK-19: Oflayn Interval Qaytarish Dvigateli (Spaced Repetition / Leitner Engine)
+* **Ustuvorlik:** P1 (Yuqori)
+* **Tegishli Fayllar:** `shared/learning-engine.js`
+* **Bajarilgan Ish:** Xato qilingan savollar va so‘zlarni 1, 3 va 7 kunlik oraliqda takrorlatuvchi kognitiv xotira algoritmi ulandi.
+
+### [x] TASK-20: Chop Etiladigan A4 Ish Varaqalari (Printable PDF Worksheets)
+* **Ustuvorlik:** P1 (Yuqori)
+* **Tegishli Fayllar:** `shared/worksheets.js`, `shared/worksheets.css`
+* **Bajarilgan Ish:** Kasrlar pitsasi, A-Z harf yozuvi, karra jadvali va fizika bo‘yicha `@media print` bilan optimallashgan A4 bosma varaqalari yaratildi.
+
+### [x] TASK-21: Vektorli SVG Brend Maskotlari Tizimi
+* **Ustuvorlik:** P1 (Yuqori)
+* **Tegishli Fayllar:** `shared/mascots.js`
+* **Bajarilgan Ish:** Cosmo, Zippy, Newton va Astro-Cat uchun OS-mustaqil 100% tiniq vektorli SVG grafiklari joriy qilindi.
+
+### [x] TASK-22: Service Worker (v4) va Barcha Sahifalarga Integratsiya
+* **Ustuvorlik:** P0 (Kritik)
+* **Tegishli Fayllar:** `sw.js`, `index.html`, `math/index.html`, `english/index.html`, `physics/index.html`
+* **Bajarilgan Ish:** Kesh versiyasi `edukids-v4` ga yangilandi, barcha yangi skript va stillar oflayn kesh ro‘yxatiga kiritildi.
+
+---
+
+*Hujjat versiyasi: 2.0.0 (Jahon Standarti Yakuniy Release)*  
+*Tasdiqlangan: EduKids Mahsulot va Ta’lim Texnologiyalari Markazi*  
+*Status: 100% Muvaffaqiyatli Yakunlandi*

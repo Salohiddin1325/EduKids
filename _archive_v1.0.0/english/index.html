@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KiddoLingo - Yosh Bolalar Uchun Ingliz Tili | Английский язык для детей</title>
+  <meta name="description"
+    content="Yosh bolalar uchun zamonaviy, rang-barang va qiziqarli ingliz tili o‘rganish platformasi. Lug‘at, ovozli talaffuz, grammatika, viktorinalar va mini-o‘yinlar!">
+  <!-- Content Security Policy (CYBERSECURITY.md Section 5) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; img-src 'self' data: https: blob:; media-src 'self' blob:;">
+
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#2563EB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="EduKids">
+  <meta name="application-name" content="EduKids">
+  <meta name="msapplication-TileColor" content="#2563EB">
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="../shared/shared.css">
+  <link rel="stylesheet" href="../shared/subscription.css">
+  <link rel="stylesheet" href="../shared/level-map.css">
+  <link rel="stylesheet" href="../shared/chatbot.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Floating Background Clouds -->
+  <div class="clouds-bg" aria-hidden="true">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+  </div>
+
+  <!-- Sticky Top Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <!-- Left: Brand Logo -->
+      <div class="brand-logo" onclick="location.reload()" title="KiddoLingo">
+        <span class="logo-badge">🦁</span>
+        <div class="brand-text">
+          <h1>KiddoLingo</h1>
+          <span class="brand-tagline" id="brand-tagline">Ingliz tili - Oson va Quvnoq! 🌟</span>
+        </div>
+      </div>
+
+      <!-- Center: Subject Quick Switcher Pill Strip -->
+      <nav class="header-subject-nav" aria-label="Fanlararo o‘tish">
+        <span class="subject-nav-item active-subject" title="Hozirgi fan: Ingliz Tili">
+          <span class="subject-icon">🦁</span>
+          <span class="subject-label" id="link-txt-english">Ingliz Tili</span>
+        </span>
+        <a href="../math/index.html" class="subject-nav-item" title="Matematika darsiga o‘tish">
+          <span class="subject-icon">🚀</span>
+          <span class="subject-label" id="link-txt-math">Matematika</span>
+        </a>
+        <a href="../physics/index.html" class="subject-nav-item" title="Fizika darsiga o‘tish">
+          <span class="subject-icon">⚛️</span>
+          <span class="subject-label" id="link-txt-physics">Fizika</span>
+        </a>
+      </nav>
+
+      <!-- Right: Stats & Action Controls Group -->
+      <div class="header-controls">
+        <!-- Stats Group -->
+        <div class="header-stats-group" title="Sizning yutuqlaringiz">
+          <div class="stat-chip stat-streak" title="Kunlik seriya / Daily Streak" id="stat-streak">
+            <span class="stat-icon">🔥</span>
+            <span id="stat-streak-count">1 kun</span>
+          </div>
+          <div class="stat-chip stat-stars" title="To‘plangan yulduzlar / Stars" id="stat-stars">
+            <span class="stat-icon">⭐</span>
+            <span id="stat-stars-count">15</span>
+          </div>
+          <div class="stat-chip stat-gems" title="Qimmatbaho olmoslar / Gems" id="stat-gems">
+            <span class="stat-icon">💎</span>
+            <span id="stat-gems-count">3</span>
+          </div>
+        </div>
+
+        <!-- 3D Tactile PWA Install Button -->
+        <button class="btn-ctrl btn-pwa-install" id="btn-pwa-install" onclick="window.EduKidsPWA && window.EduKidsPWA.promptInstall()" title="Ilovani o‘rnatish (100% Oflayn ishlash)">
+          <span class="pwa-icon">📲</span>
+          <span id="txt-pwa-install">Ilovani O‘rnatish</span>
+        </button>
+
+        <!-- Language Switcher Pill -->
+        <div class="lang-switcher-pill" role="group" aria-label="Tilni tanlash / Выбор языка">
+          <button class="lang-btn active" id="btn-lang-uz" onclick="window.appState.setLanguage('uz')">
+            <span>🇺🇿</span>
+            <span>UZ</span>
+          </button>
+          <button class="lang-btn" id="btn-lang-ru" onclick="window.appState.setLanguage('ru')">
+            <span>🇷🇺</span>
+            <span>RU</span>
+          </button>
+        </div>
+
+        <!-- Turtle Mode Button -->
+        <button class="btn-ctrl btn-turtle" id="turtle-toggle-btn"
+          title="Toshbaqa rejimi: so‘zlarni sekinroq va aniq eshiting!">
+          <span>🐢</span>
+          <span id="txt-turtle">Toshbaqa</span>
+        </button>
+
+        <!-- Sound Button -->
+        <button class="btn-ctrl btn-icon-only" id="sound-toggle-btn" title="Ovozni yoqish / o‘chirish">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-text" class="sr-only">Ovoz</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="btn-ctrl btn-icon-only" id="theme-toggle-btn" title="Mavzuni almashtirish (Kunduz / Kecha)">
+          <span id="theme-icon">☀️</span>
+        </button>
+
+        <!-- Home Hub Link -->
+        <a href="../index.html" class="btn-ctrl btn-icon-only btn-home-link" title="Bosh sahifaga qaytish">
+          <span>🏠</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+
+    <!-- Friendly Interactive Mascot Hero Banner -->
+    <section class="mascot-hero-card" id="mascot-hero">
+      <div class="mascot-avatar-wrap" id="interactive-mascot" title="Menga bosing! / Tap me!">
+        <span class="mascot-avatar">🦊</span>
+        <span class="mascot-click-hint" id="mascot-click-hint">Menga bosing! 👆</span>
+      </div>
+
+      <div class="mascot-dialogue">
+        <div class="speech-bubble">
+          <h2 class="mascot-greeting" id="mascot-greeting">Salom, yosh do‘stim! Men Zippyman! 🎉</h2>
+          <p class="mascot-speech-text" id="mascot-speech-text">
+            Keling, ingliz tilini birgalikda o‘rganamiz! Kartochkalarni bosing, talaffuzni tinglang va qiziqarli
+            o‘yinlar o‘ynang!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="main-nav-tabs" aria-label="Main Navigation">
+      <button class="nav-tab-btn active" data-target="section-vocab">
+        <span>📚</span>
+        <span id="tab-txt-vocab">Lug‘at / Words</span>
+      </button>
+
+      <button class="nav-tab-btn" data-target="section-grammar">
+        <span>✏️</span>
+        <span id="tab-txt-grammar">Grammatika / Rules</span>
+      </button>
+
+      <button class="nav-tab-btn" data-target="section-exercises">
+        <span>🎯</span>
+        <span id="tab-txt-exercises">Mashqlar / Quizzes</span>
+      </button>
+
+      <button class="nav-tab-btn" data-target="section-games">
+        <span>🎈</span>
+        <span id="tab-txt-games">O‘yinlar / Games</span>
+      </button>
+
+      <button class="nav-tab-btn" data-target="section-badges">
+        <span>🏆</span>
+        <span id="tab-txt-badges">Yutuqlar / Badges</span>
+      </button>
+    </nav>
+
+    <!-- =========================================================================
+         SECTION 1: VOCABULARY ZONE (Lug'at)
+         ========================================================================= -->
+    <section class="app-section active" id="section-vocab">
+      <div class="section-banner">
+        <h2 id="sec-vocab-title">Sehrli So‘zlar Olami 🌈</h2>
+        <p id="sec-vocab-desc">Har bir kartochkani bosing, inglizcha talaffuzini eshiting va tarjimasini bilib oling!
+        </p>
+      </div>
+
+      <!-- 26 Letters Alphabet & Phonics Zone -->
+      <div class="phonics-container-box" id="phonics-container-box">
+        <div class="phonics-header">
+          <div class="phonics-title-wrap">
+            <span class="phonics-icon-badge">🔤 A–Z</span>
+            <div>
+              <h3 class="phonics-main-title" id="phonics-header-title">Sehrli Harflar va Fonika (26 Harf)</h3>
+              <p class="phonics-sub-title" id="phonics-header-desc">Har bir harfni bosing, fonetik talaffuzini eshiting va ushbu harf bilan boshlanadigan so‘zlarni ko‘ring!</p>
+            </div>
+          </div>
+          <button class="btn btn-ctrl phonics-reset-btn active" id="btn-phonics-all" onclick="window.appState.setLetterFilter(null)">
+            ✨ <span id="phonics-txt-all">Barchasi (All)</span>
+          </button>
+        </div>
+
+        <div class="phonics-letters-grid" id="phonics-letters-grid">
+          <!-- 26 Letter Tactile 3D Buttons Injected by JavaScript -->
+        </div>
+
+        <!-- Phonics Active Spotlight / Listening Card -->
+        <div class="phonics-spotlight-card" id="phonics-spotlight-card" style="display: none;">
+          <!-- Dynamically displayed when a letter is clicked -->
+        </div>
+      </div>
+
+      <!-- Search & Category Filters -->
+      <div class="vocab-filter-tray">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="vocab-search-input" class="search-input"
+            placeholder="So‘z qidiring (masalan: Lion, Apple, Olma, Книга)...">
+        </div>
+
+        <div class="category-chips-row">
+          <button class="category-filter-btn active" data-category="all" id="cat-btn-all">✨ Barchasi (500)</button>
+          <button class="category-filter-btn" data-category="animals" id="cat-btn-animals">🦁 Hayvonlar (25)</button>
+          <button class="category-filter-btn" data-category="fruits" id="cat-btn-fruits">🍎 Mevalar (25)</button>
+          <button class="category-filter-btn" data-category="space" id="cat-btn-space">🚀 Koinot (25)</button>
+          <button class="category-filter-btn" data-category="vehicles" id="cat-btn-vehicles">🚗 Transport (25)</button>
+          <button class="category-filter-btn" data-category="emotions" id="cat-btn-emotions">😊 Hissiyotlar
+            (25)</button>
+          <button class="category-filter-btn" data-category="school" id="cat-btn-school">📚 Maktab (25)</button>
+          <button class="category-filter-btn" data-category="jobs" id="cat-btn-jobs">👩‍⚕️ Kasblar (25)</button>
+          <button class="category-filter-btn" data-category="nature" id="cat-btn-nature">🌲 Tabiat (25)</button>
+          <button class="category-filter-btn" data-category="body" id="cat-btn-body">🖐️ Tana a‘zolari (25)</button>
+          <button class="category-filter-btn" data-category="colors" id="cat-btn-colors">🎨 Ranglar (25)</button>
+          <button class="category-filter-btn" data-category="shapes" id="cat-btn-shapes">🔺 Shakllar (25)</button>
+          <button class="category-filter-btn" data-category="house" id="cat-btn-house">🏠 Uy & Jihozlar (25)</button>
+          <button class="category-filter-btn" data-category="verbs" id="cat-btn-verbs">🏃 Harakatlar (25)</button>
+          <button class="category-filter-btn" data-category="adjectives" id="cat-btn-adjectives">🌟 Sifatlar
+            (25)</button>
+          <button class="category-filter-btn" data-category="weather" id="cat-btn-weather">☀️ Ob-havo (25)</button>
+          <button class="category-filter-btn" data-category="food" id="cat-btn-food">🍕 Taomlar (25)</button>
+          <button class="category-filter-btn" data-category="sports" id="cat-btn-sports">⚽ Sport (25)</button>
+          <button class="category-filter-btn" data-category="clothing" id="cat-btn-clothing">👕 Kiyimlar (25)</button>
+          <button class="category-filter-btn" data-category="family" id="cat-btn-family">👨‍👩‍👧 Oila (25)</button>
+          <button class="category-filter-btn" data-category="time" id="cat-btn-time">⏰ Vaqt & Fasllar (25)</button>
+        </div>
+      </div>
+
+      <!-- Vocabulary Cards Grid -->
+      <div class="vocab-grid" id="vocab-cards-grid">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Vocabulary Pagination Controls -->
+      <div class="vocab-pagination-wrap" id="vocab-pagination-controls">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2: GRAMMAR WORLD (Grammatika)
+         ========================================================================= -->
+    <section class="app-section" id="section-grammar">
+      <div class="section-banner">
+        <h2 id="sec-grammar-title">Qiziqarli Grammatika ✏️</h2>
+        <p id="sec-grammar-desc">Qoidalarni oson rasmlar orqali tushuning va darhol sinovdan o‘tkazing!</p>
+      </div>
+
+      <div class="grammar-grid" id="grammar-lessons-list">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 3: INTERACTIVE EXERCISES (Mashqlar)
+         ========================================================================= -->
+    <section class="app-section" id="section-exercises">
+      <div class="section-banner">
+        <h2 id="sec-exercises-title">Mashqlar va Sinovlar 🎯</h2>
+        <p id="sec-exercises-desc">Bilimlaringizni sinab ko‘ring, to‘g‘ri javoblar uchun yulduzlar va ballar to‘plang!
+        </p>
+      </div>
+
+      <!-- Sub Navigation for Exercises -->
+      <div class="sub-nav-tray">
+        <button class="sub-tab-btn exercise-tab-btn active" data-target="panel-quiz">
+          <span id="subtab-quiz">❓ Viktorina (Quiz)</span>
+        </button>
+        <button class="sub-tab-btn exercise-tab-btn" data-target="panel-match">
+          <span id="subtab-match">🧩 Juftlikni Top (Match)</span>
+        </button>
+        <button class="sub-tab-btn exercise-tab-btn" data-target="panel-blank">
+          <span id="subtab-blank">📝 Gapni To‘ldir (Fill Blank)</span>
+        </button>
+      </div>
+
+      <!-- Sub-Panel 1: Multiple Choice Quiz -->
+      <div class="exercise-panel active" id="panel-quiz">
+        <div id="quiz-container">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Sub-Panel 2: Word Match -->
+      <div class="exercise-panel" id="panel-match">
+        <div id="match-game-container">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Sub-Panel 3: Fill in the Blank -->
+      <div class="exercise-panel" id="panel-blank">
+        <div id="fill-blank-container">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 4: MINI-GAMES ARCADE (O'yinlar)
+         ========================================================================= -->
+    <section class="app-section" id="section-games">
+      <div class="section-banner">
+        <h2 id="sec-games-title">O‘yinlar Xiyoboni 🎮</h2>
+        <p id="sec-games-desc">O‘ynab ingliz tilini yanada tezroq va qiziqroq o‘rganing!</p>
+      </div>
+
+      <!-- Sub Navigation for Games -->
+      <div class="sub-nav-tray">
+        <button class="sub-tab-btn game-tab-btn active" data-target="panel-memory">
+          <span id="subtab-memory">🧠 Sehrli Kartalar (Memory Match)</span>
+        </button>
+        <button class="sub-tab-btn game-tab-btn" data-target="panel-balloon">
+          <span id="subtab-balloon">🎈 Havo Sharlarini Portlat (Balloon Pop)</span>
+        </button>
+        <button class="sub-tab-btn game-tab-btn" data-target="panel-wordbuilder">
+          <span id="subtab-builder">🔤 So‘z Yig‘uvchi (Word Builder)</span>
+        </button>
+      </div>
+
+      <!-- Game 1: Magic Memory Cards -->
+      <div class="game-panel active" id="panel-memory">
+        <div class="memory-game-box">
+          <div class="memory-stats-bar">
+            <div class="memory-stat-pill">
+              <span id="lbl-memory-moves">Urinishlar: </span><strong id="memory-moves-display">0</strong>
+            </div>
+            <div class="memory-stat-pill">
+              <span id="lbl-memory-time">Vaqt: </span><strong id="memory-timer-display">0s</strong>
+            </div>
+            <div class="memory-stat-pill" style="border-color: #8B5CF6; background: #F5F3FF;">
+              <span>🎯 Daraja: </span><strong id="memory-level-display" style="color: #6D28D9;">1</strong>
+            </div>
+            <button class="game-level-map-btn" onclick="window.miniGamesManager.openMemoryMap()">
+              🗺️ 50+ Daraja
+            </button>
+            <button class="btn btn-ctrl" onclick="window.miniGamesManager.initMemoryGame()">
+              <span id="btn-memory-refresh">🔄 Yangilash</span>
+            </button>
+          </div>
+
+          <div class="memory-grid" id="memory-grid">
+            <!-- Injected via JavaScript -->
+          </div>
+
+          <div id="memory-win-banner" class="memory-win-banner" style="display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Game 2: Balloon Pop Spelling & Word Catcher -->
+      <div class="game-panel" id="panel-balloon">
+        <div class="balloon-game-box">
+          <div class="balloon-top-panel">
+            <div class="target-badge-panel">
+              <span class="target-label" id="lbl-balloon-target">Topilishi kerak bo‘lgan so‘z / Target Word:</span>
+              <div class="balloon-target-word" id="balloon-target-word">🦁 LION</div>
+              <div class="balloon-target-hint" id="balloon-target-hint">Ma’nosi: Sher (Лев)</div>
+            </div>
+
+            <div class="balloon-score-pill">
+              <span id="lbl-balloon-score">⭐ Ball:</span> <span id="balloon-score-display">0</span>
+            </div>
+
+            <div class="balloon-score-pill" style="border-color: #10B981; background: #ECFDF5;">
+              <span>🎯 Daraja:</span> <strong id="balloon-level-display" style="color: #047857;">1</strong>
+            </div>
+
+            <button class="game-level-map-btn" onclick="window.miniGamesManager.openBalloonMap()">
+              🗺️ 50+ Daraja
+            </button>
+
+            <button class="btn btn-primary" id="balloon-start-btn"
+              onclick="window.miniGamesManager.toggleBalloonGame()">
+              <span id="txt-balloon-start">▶️ O‘yinni boshlash</span>
+            </button>
+          </div>
+
+          <div class="balloon-arena" id="balloon-arena">
+            <!-- Floating Balloons Spawn Here -->
+          </div>
+
+          <div id="balloon-win-banner" class="memory-win-banner" style="display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Game 3: Word Builder & Scramble -->
+      <div class="game-panel" id="panel-wordbuilder">
+        <div class="wordbuilder-game-box">
+          <div class="wordbuilder-top-panel">
+            <div class="memory-stats-bar">
+              <div class="memory-stat-pill">
+                <span>⭐ Ball: </span><strong id="builder-score-display">0</strong>
+              </div>
+              <div class="memory-stat-pill">
+                <span>📝 So‘zlar: </span><strong id="builder-words-count-display">0/3</strong>
+              </div>
+              <div class="memory-stat-pill" style="border-color: #F59E0B; background: #FFFBEB;">
+                <span>🎯 Daraja: </span><strong id="builder-level-display" style="color: #D97706;">1</strong>
+              </div>
+              <button class="game-level-map-btn" onclick="window.miniGamesManager.openBuilderMap()">
+                🗺️ 50+ Daraja
+              </button>
+              <button class="btn btn-ctrl" onclick="window.miniGamesManager.resetCurrentBuilderWord()">
+                🔄 Tozalash
+              </button>
+            </div>
+
+            <!-- Clue Card -->
+            <div class="builder-clue-card">
+              <span class="builder-clue-emoji" id="builder-clue-emoji">🐱</span>
+              <div class="builder-clue-text">
+                <span class="builder-clue-label" id="builder-clue-label">Topilishi kerak bo‘lgan so‘z:</span>
+                <div class="builder-clue-meaning" id="builder-clue-meaning">Mushuk (Кошка) • [kæt]</div>
+              </div>
+              <button class="speaker-circle-btn" onclick="if(window.miniGamesManager.currentWordObj) window.soundEngine.speak(window.miniGamesManager.currentWordObj.word)" title="Listen / Eshitish">
+                🔊
+              </button>
+            </div>
+          </div>
+
+          <!-- Letter Slots (Target Drop / Placeholders) -->
+          <div class="builder-slots-container">
+            <div class="builder-slots-row" id="builder-slots-row">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Letter Bank (Scrambled Clickable Tiles) -->
+          <div class="builder-bank-container">
+            <div class="builder-bank-title" id="builder-bank-hint">👇 Harflarni to‘g‘ri tartibda bosing:</div>
+            <div class="builder-letter-bank" id="builder-letter-bank">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <div id="builder-win-banner" class="memory-win-banner" style="display: none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 5: TROPHY & BADGES ROOM (Yutuqlar)
+         ========================================================================= -->
+    <section class="app-section" id="section-badges">
+      <div class="section-banner">
+        <h2 id="sec-badges-title">Yutuqlar va Nishonlar Zali 🏆</h2>
+        <p id="sec-badges-desc">Siz erishgan barcha muvaffaqiyatlar va ochilishi kerak bo‘lgan sovg‘alar!</p>
+      </div>
+
+      <div class="badges-container">
+        <div class="badges-grid" id="badges-grid-container">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Word Detailed View Modal -->
+  <div class="kiddo-modal" id="word-modal" onclick="if(event.target === this) closeWordModal()">
+    <div class="modal-content-card" id="word-modal-content">
+      <!-- Injected dynamically on click -->
+    </div>
+  </div>
+
+  <!-- Cute Footer -->
+  <footer class="app-footer">
+    <div class="footer-mascot">🦊 🦁 🐼 🐬</div>
+    <p id="english-footer-p1"><strong>KiddoLingo</strong> - Bolalar uchun eng quvnoq va xavfsiz ingliz tili platformasi.
+    </p>
+    <p class="footer-note" id="english-footer-p2">Web Speech API va Web Audio API asosida tayyorlangan. Internet talab
+      qilmasdan ham ravon ishlaydi!</p>
+  </footer>
+
+  <script src="../shared/env-config.js"></script>
+  <script src="../shared/pwa-register.js"></script>
+  <script src="../shared/uzbek-speech.js"></script>
+  <script src="../shared/audio.js"></script>
+  <script src="../shared/subscription.js"></script>
+  <script src="../shared/screen-vfx.js"></script>
+  <script src="../shared/gamification.js"></script>
+  <script src="../shared/level-map.js"></script>
+  <script src="../shared/mascot-companion.js"></script>
+  <script src="../shared/chatbot.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/exercises.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
